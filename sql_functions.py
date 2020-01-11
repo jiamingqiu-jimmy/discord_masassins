@@ -1,6 +1,30 @@
 import sqlite3
 import settings
 
+def find_team_id(cur, team_name):
+    find_team_id = """
+    SELECT team_id FROM teams WHERE name=? 
+    """
+    cur.execute(find_team_id, [team_name])
+    r = cur.fetchone()
+    return r[0]
+
+def find_player_id(cur, player_name):
+    find_player_id = """
+    SELECT player_id FROM players WHERE name=?
+    """
+    cur.execute(find_player_id, [player_name])
+    r = cur.fetchone()
+    return r[0]
+
+def find_item_id(cur, item_name):
+    find_item_id = """
+    SELECT item_id FROM items where name=?
+    """
+    cur.execute(find_item_id, [item_name])
+    r = cur.fetchone()
+    return r[0]
+
 def drop_tables(cur):
     drop_table_players = """
     DROP TABLE IF EXISTS players
@@ -96,15 +120,11 @@ def valid_team_check( cur, team_name ):
     return 0
 
 def populate_players_table( cur, player_name, team_name ):
-    find_team_id = """
-    SELECT team_id FROM teams where name=?
-    """
     populate_players_table = """
     INSERT INTO players (name, health, gold, team_id) VALUES (?,?,?,?)
     """
-    cur.execute(find_team_id, [team_name])
-    r = cur.fetchone()
-    new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_gold, r[0])
+    team_id = find_team_id(cur, team_name)
+    new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_gold, team_id)
     cur.execute(populate_players_table, new_player)
 
 def view_teams_list(cur):
@@ -117,4 +137,29 @@ def view_teams_list(cur):
     for row in rows:
         print("Row : ", row[1])
 
+#Give Gold
+def update_player_gold(cur, gold_increase_decrease_amount):
+   update_player_gold = """
+   UPDATE players
+   SET gold = gold + ?
+   """
+   cur.execute(update_player_gold, [gold_increase_decrease_amount])
 
+#Give HP
+def update_player_hp(cur, hp_increase_decrease_amount):
+    update_player_hp = """
+    UPDATE players
+    SET hp = hp + ?
+    """
+    cur.execute(update_player_hp, [hp_increase_amount])
+
+#Give Item
+def give_player_item(cur, player_name, item_name):
+    give_player_item = """
+    INSERT INTO players_items (player_id, item_id) 
+        VALUES (?,?)
+    """
+    player_id = find_player_id(cur, player_name)
+    item_id = find_item_id(cur, item_name)
+    cur.execute(give_player_item, [player_id], [item_id])
+    
