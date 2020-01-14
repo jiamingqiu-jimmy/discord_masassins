@@ -5,12 +5,14 @@ team_list = ["Grass", "Fire", "Water"]
 
 #Items Initialization
 item_dict = {
-    "Potion" : "Restore 25 HP to a signle player"
+    "Potion" : "Restore 25 HP to a single player"
 }
 
 #New Player Initialization
 new_player_starting_health = 200
 new_player_starting_gold = 0
+
+team_starting_experience = 0
 
 player_team_dict = {
     "Bert":"Grass",

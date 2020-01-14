@@ -5,6 +5,10 @@ import sqlite3
 
 from discord.ext import commands
 
+#Local Files import
+import settings
+import sql_functions as sql
+
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
 #Creating sqlite3 db cursor
@@ -21,39 +25,14 @@ async def on_ready():
 
 @bot.command(name='reset', help="ADMINS ONLY: Resets ALL database tables and entries")
 async def reset(ctx):
+    sql.drop_tables(cur)
+    sql.create_tables(cur)
 
 @bot.command(name='populate', help="ADMIN: Populates the teams with members")
 async def game_populate(ctx):
-    
-    valid_team_check = """
-    SELECT * FROM teams WHERE name=?
-    """
-
-    for name, team_type in player_team_dict.items():
-        try:
-            cur.execute(valid_team_check, team_type)
-            rows = cur.fetchall()
-            if len(rows) == 0:
-                await self.send("One of the teams listed was not found in the database, please double check input values")
-                return
-        except sqlite3.Error:
-            await self.send("Failed to populate members, error occured")
-            return
-
-    # After confirming that all the teams were there
-    find_team_id = """
-    SELECT team_id FROM teams where name=?
-    """
-
-    populate_players_table = """
-    INSERT INTO players (name, health, gold, team_id) VALUES (?,?,?,?)
-    """
-
-    for name, team_type in player_team_dict.items():
-        cur.execute(find_team_id, team_type)
-        r = cur.fetchone()
-        new_player = (name, new_player_starting_health, new_player_starting_gold, r['team_id'])
-        cur.execute(populate_players_table,new_player)
+    sql.populate_teams_table(cur, settings.team_list)
+    sql.populate_items_table(cur, settings.item_dict)
+    sql.populate_players_table(cur, settings.player_team_dict)
 
 @bot.command(name="give_gold", help "ADMIN: Gives gold to a specific player")
 async def give_gold(ctx):
