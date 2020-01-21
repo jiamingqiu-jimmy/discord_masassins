@@ -70,6 +70,7 @@ def create_tables(cur):
         health INTEGER NOT NULL,
         gold INTEGER NOT NULL,
         team_id INTEGER NOT NULL,
+        discord_id INTEGER UNIQUE,
         FOREIGN KEY (team_id)
             REFERENCES teams (team_id)
     )"""
@@ -150,9 +151,13 @@ def populate_players_table( cur, player_name, team_name ):
     populate_players_table = """
     INSERT INTO players (name, health, gold, team_id) VALUES (?,?,?,?)
     """
+    valid_team_code = valid_team_check(cur, team_name)
+    if valid_team_code != 0:
+        return -1
     team_id = find_team_id(cur, team_name)
     new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_gold, team_id)
     cur.execute(populate_players_table, new_player)
+    return 0
 
 #Give Gold
 def update_player_gold(cur, player_name, gold_increase_decrease_amount):
