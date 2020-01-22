@@ -1,7 +1,8 @@
 # settings.py
 
+masassins_role = "MASAssins 2020"
 #Team Initialization
-team_list = ["Grass", "Fire", "Water"]
+team_list = ["Grass", "Fire", "Water", "Flying"]
 
 #Items Initialization
 item_dict = {
@@ -10,12 +11,13 @@ item_dict = {
 
 #New Player Initialization
 new_player_starting_health = 200
-new_player_starting_gold = 0
 
 team_starting_experience = 0
+team_starting_gold = 0
 
 player_team_dict = {
     "Bert":"Grass",
     "Charlie":"Water",
-    "David":"Fire"
+    "David":"Fire",
+    "Jimmy":"Flying"
 }

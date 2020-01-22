@@ -51,7 +51,8 @@ def create_tables(cur):
     CREATE TABLE teams (
         team_id INTEGER PRIMARY KEY,
         name text NOT NULL UNIQUE,
-        experience INTEGER NOT NULL
+        experience INTEGER NOT NULL,
+        gold INTEGER NOT NULL
     )"""
     cur.execute(create_teams_table)
 
@@ -68,7 +69,6 @@ def create_tables(cur):
         player_id INTEGER PRIMARY KEY,
         name text NOT NULL UNIQUE,
         health INTEGER NOT NULL,
-        gold INTEGER NOT NULL,
         team_id INTEGER NOT NULL,
         discord_id INTEGER UNIQUE,
         FOREIGN KEY (team_id)
@@ -102,11 +102,11 @@ def populate_items_table( cur, item_dict ):
     
 def populate_teams_table( cur, team_list ):
     populate_teams_table = """
-    INSERT INTO teams (name, experience) VALUES (?, ?)
+    INSERT INTO teams (name, experience, gold) VALUES (?, ?, ?)
     """
     for team_name in team_list:
         print("INSERT Team Name :", team_name)
-        cur.execute(populate_teams_table, (team_name, settings.team_starting_experience))
+        cur.execute(populate_teams_table, (team_name, settings.team_starting_experience, settings.team_starting_gold))
 
 def valid_team_check( cur, team_name ):
     valid_team_check = """
@@ -149,18 +149,18 @@ def valid_item_check( cur, item_name ):
 
 def populate_players_table( cur, player_name, team_name ):
     populate_players_table = """
-    INSERT INTO players (name, health, gold, team_id) VALUES (?,?,?,?)
+    INSERT INTO players (name, health, team_id) VALUES (?,?,?)
     """
     valid_team_code = valid_team_check(cur, team_name)
     if valid_team_code != 0:
         return -1
     team_id = find_team_id(cur, team_name)
-    new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_gold, team_id)
+    new_player = (player_name, settings.new_player_starting_health, team_id)
     cur.execute(populate_players_table, new_player)
     return 0
 
 #Give Gold
-def update_player_gold(cur, player_name, gold_increase_decrease_amount):
+def update_team_gold(cur, player_name, gold_increase_decrease_amount):
    update_player_gold = """
    UPDATE players
    SET gold = gold+?
@@ -170,15 +170,6 @@ def update_player_gold(cur, player_name, gold_increase_decrease_amount):
    print("Gold Amount : ", [gold_increase_decrease_amount])
    cur.execute(update_player_gold, (gold_increase_decrease_amount, player_name))
 
-#Give HP
-def update_player_hp(cur, player_name, hp_increase_decrease_amount):
-    update_player_hp = """
-    UPDATE players
-    SET health = health+?
-    WHERE name=?
-    """
-    cur.execute(update_player_hp, (hp_increase_decrease_amount, player_name))
-
 #Update Team Experience
 def update_team_experience(cur, team_name, experience_increase_decrease_amount):
     update_team_experience = """
@@ -187,6 +178,15 @@ def update_team_experience(cur, team_name, experience_increase_decrease_amount):
     WHERE name=?
     """
     cur.execute(update_team_experience, (experience_increase_decrease_amount, team_name))
+
+#Give HP
+def update_player_hp(cur, player_name, hp_increase_decrease_amount):
+    update_player_hp = """
+    UPDATE players
+    SET health = health+?
+    WHERE name=?
+    """
+    cur.execute(update_player_hp, (hp_increase_decrease_amount, player_name))
 
 #Give Item
 def give_player_item(cur, player_name, item_name):
