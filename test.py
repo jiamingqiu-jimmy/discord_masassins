@@ -19,9 +19,9 @@ for player_name,team_name in settings.player_team_dict.items():
         print("Errror!!!!", return_code)
     sql.populate_players_table(cur, player_name, team_name)
     print("Player Name :", player_name, " : ", "Team Name : ", team_name)
-    sql.update_player_gold(cur, player_name, 30)
+    sql.update_team_gold(cur, team_name, 30)
     sql.update_player_hp(cur, player_name, -10)
-sql.give_player_item(cur, "Bert", "Potion")
+sql.give_team_item(cur, "Fire", "Potion")
 sql.update_team_experience(cur, "Fire", 100)
 
 #Printing list of all the tables

@@ -1,6 +1,8 @@
 # settings.py
 
-masassins_role = "MASAssins 2020"
+masassins_role = "masassins2020"
+
+admin_role = "MASA Staff"
 #Team Initialization
 team_list = ["Grass", "Fire", "Water", "Flying"]
 

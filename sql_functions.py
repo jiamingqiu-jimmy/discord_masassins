@@ -41,10 +41,10 @@ def drop_tables(cur):
     """
     cur.execute(drop_table_items)
     
-    drop_table_players_items = """
-    DROP TABLE IF EXISTS players_items
+    drop_table_teams_items = """
+    DROP TABLE IF EXISTS teams_items
     """
-    cur.execute(drop_table_players_items)
+    cur.execute(drop_table_teams_items)
 
 def create_tables(cur):
     create_teams_table = """
@@ -76,13 +76,13 @@ def create_tables(cur):
     )"""
     cur.execute(create_players_table)
 
-    create_players_items_table = """
-    CREATE TABLE players_items (
-        player_id INTEGER,
+    create_teams_items_table = """
+    CREATE TABLE teams_items (
+        team_id INTEGER,
         item_id INTEGER,
-        PRIMARY KEY (player_id, item_id),
-        FOREIGN KEY (player_id)
-            REFERENCES players (player_id)
+        PRIMARY KEY (team_id, item_id),
+        FOREIGN KEY (team_id)
+            REFERENCES players (team_id)
                 ON DELETE CASCADE
                 ON UPDATE NO ACTION,
         FOREIGN KEY (item_id)
@@ -90,7 +90,7 @@ def create_tables(cur):
                 ON DELETE CASCADE
                 ON UPDATE NO ACTION
     )"""
-    cur.execute(create_players_items_table)
+    cur.execute(create_teams_items_table)
 
 def populate_items_table( cur, item_dict ):
     populate_items_table = """
@@ -160,15 +160,15 @@ def populate_players_table( cur, player_name, team_name ):
     return 0
 
 #Give Gold
-def update_team_gold(cur, player_name, gold_increase_decrease_amount):
-   update_player_gold = """
-   UPDATE players
+def update_team_gold(cur, team_name, gold_increase_decrease_amount):
+   update_team_gold = """
+   UPDATE teams
    SET gold = gold+?
    WHERE name=?
    """
-   print("Player name : ", [player_name])
+   print("Team name : ", [team_name])
    print("Gold Amount : ", [gold_increase_decrease_amount])
-   cur.execute(update_player_gold, (gold_increase_decrease_amount, player_name))
+   cur.execute(update_team_gold, (gold_increase_decrease_amount, team_name))
 
 #Update Team Experience
 def update_team_experience(cur, team_name, experience_increase_decrease_amount):
@@ -189,20 +189,20 @@ def update_player_hp(cur, player_name, hp_increase_decrease_amount):
     cur.execute(update_player_hp, (hp_increase_decrease_amount, player_name))
 
 #Give Item
-def give_player_item(cur, player_name, item_name):
-    give_player_item = """
-    INSERT INTO players_items (player_id, item_id) 
+def give_team_item(cur, team_name, item_name):
+    give_team_item = """
+    INSERT INTO teams_items (team_id, item_id) 
         VALUES (?,?)
     """
-    player_id = find_player_id(cur, player_name)
+    team_id = find_team_id(cur, team_name)
     item_id = find_item_id(cur, item_name)
-    print("Player : ", player_id, " Item_ID : ", item_id)
-    cur.execute(give_player_item, (player_id, item_id))
+    print("Team : ", team_id, " Item_ID : ", item_id)
+    cur.execute(give_team_item, (team_id, item_id))
     
 find_all_teams_sql = """ SELECT * FROM teams """
 find_all_players_sql = """ SELECT * FROM players """
 find_all_items_sql = """ SELECT * FROM items """
-find_all_players_items_sql = """ SELECT * FROM players_items """
+find_all_teams_items_sql = """ SELECT * FROM teams_items """
 
 def view_teams_list(cur, team_list):
     cur.execute(find_all_teams_sql)
@@ -226,7 +226,7 @@ def print_all_list(cur):
     for row in rows:
         print("Item : ", row)
 
-    cur.execute(find_all_players_items_sql)
+    cur.execute(find_all_teams_items_sql)
     rows = cur.fetchall()
     for row in rows:
         print("Player_Item : ", row)
