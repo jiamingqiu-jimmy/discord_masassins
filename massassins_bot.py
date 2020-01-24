@@ -237,8 +237,8 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         await defending_player_channel.send("Confirmation time has expired")
         await ctx.send("Confirmation time has expired")
     else:
-        await defending_player_channel.send("Thank you for confirming, values updating...")
-        await ctx.send("Player {} has confirmed, values updating...".format(defending_player.name))
+        await defending_player_channel.send("Thank you for confirming, proceeding...")
+        await ctx.send("Player {} has confirmed, proceeding...".format(defending_player.name))
 
     #If confirmed: Calculate damage based on team effectiveness and items
     life_steal, hit_damage, damage_output_string = battle.damage_check_team(
@@ -250,6 +250,8 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     #Sending out damage calculations
     defending_player_channel.send(damage_output_string)
     ctx.send(damage_output_string)
+
+    sql.update_player_hp(cur, attacking_player.name, life_steal)
 
     #Resolve damage and check for deaths
     defending_player_death = False
@@ -269,7 +271,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         await defending_player.add_roles(masassins_dead_role)
 
         #Set their health to zero
-        sql.update_palyer_hp(cur, defending_player.name, (0-defending_player_health))
+        sql.update_player_hp(cur, defending_player.name, (0-defending_player_health))
     else:
         sql.update_player_hp(cur, defending_player.name, (0-hit_damage))
 
@@ -280,7 +282,13 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         defending_player.name, defending_player_team
         )
 
-    #Kill-Log for descriptions
+    #Sending out reward strings
+    ctx.send(total_rewards_string)
+
+    #Distributing rewards
+    sql.update_player_experience(cur, attacking_player.name, total_experience_reward)
+    sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
+    sql.update_team_gold(cur, attack_player_team, total_gold_reward)
 
 @attack.error
 async def attack_error(ctx, error):
