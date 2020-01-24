@@ -19,12 +19,12 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
     if super_effective_team_attack == defending_player_team:
         total_damage_dealt += settings.super_effective_damage
         effectiveness_string = "Super effective attack : {} damage".format(settings.super_effective_damage)
-    else if super_effective_team_defend == attacking_player_team:
+    elif super_effective_team_defend == attacking_player_team:
         total_damage_dealt += settings.not_very_effective_damage
         effectiveness_string = "Not very effective attack : {} damage".format(settings.not_very_effective_damage)
     else:
         total_damage_dealt += settings.normal_damage
-        effectiveness_string = "Normal attack : {} damage".,format(settings.normal_damage)
+        effectiveness_string = "Normal attack : {} damage".format(settings.normal_damage)
 
     #Check for X-attack on attacking team
     if sql.find_team_item(attacking_player_team, settings.item_name_x_attack) != 0:
@@ -42,13 +42,7 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
         shell_bell_string = spacing + "Attacking Player Shell Bell: {} has been healed to {}".format(settings.shell_bell_hit_healing, attacking_player_name)
     
     total_damage_string = "Total Damage:" + str(total_damage_dealt)
-    final_output_string = "Damage Calculations: " + 
-        total_damage_string + 
-        " Breakdown: " + 
-        effectiveness_string + spacing +
-        x_attack_string + spacing + 
-        x_defense_string + spacing +
-        shell_bell_string
+    final_output_string = "Damage Calculations: " + total_damage_string + " Breakdown: " + effectiveness_string + x_attack_string + x_defense_string + shell_bell_string
         
     return total_life_steal, total_damage_dealt, total_damage_string
 
@@ -92,12 +86,7 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
     total_gold_string = "Total gold: " + str(total_gold_amount)
     total_experience_string = "Total experience: " + str(total_experience_amount)
 
-    final_string = total_gold_string +
-        "Breakdown: " +
-        base_gold_string + bonus_gold_string + amulet_coin_gold_bonus_string + "\n"
-        total_experience_string + 
-        "Breakdown: " +
-        base_experience_string + bonus_experience_string + exp_share_bonus_string
+    final_string = total_gold_string + "Breakdown: " + base_gold_string + bonus_gold_string + amulet_coin_gold_bonus_string + "\n" + total_experience_string + "Breakdown: " + base_experience_string + bonus_experience_string + exp_share_bonus_string
 
     return total_gold_amount, total_experience_amount, final_string
     

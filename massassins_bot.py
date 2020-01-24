@@ -277,7 +277,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
 
     #Calculate reward based on whether death is true and items etc.
     total_gold_reward, total_experience_reward, total_rewards_string = battle.reward_check_player(
-        cur, defending_player_death
+        cur, defending_player_death,
         attacking_player.name, attacking_player_team, 
         defending_player.name, defending_player_team
         )
