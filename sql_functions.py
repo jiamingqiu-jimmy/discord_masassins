@@ -20,12 +20,12 @@ def find_team_item(cur, team_name, item_name):
     """
     cur.execute(find_team_item, (team_name, item_name))
     r = cur.fetchone()
-    return len(r)
+    return r
 
 def find_player_item(cur, player_name, item_name):
     find_player_item = """
         SELECT *
-        FROM players-items
+        FROM players_items
         WHERE player_id=
         (SELECT player_id FROM players WHERE name=?)
         AND item_id=
@@ -33,7 +33,20 @@ def find_player_item(cur, player_name, item_name):
     """
     cur.execute(find_player_item, (player_name, item_name))
     r = cur.fetchone()
-    return len(r)
+    return r
+
+def delete_item_from_team(cur, team_name, item_name):
+    delete_item_from_team = """
+    DELETE from teams_items
+    WHERE team_id=
+    (
+        SELECT *
+        FROM teams
+        WHERE name=?
+    )
+    LIMIT 1
+    """
+    cur.execute(delete_item_from_team, [team_name])
 
 def team_name_from_team_id(cur, team_id):
     team_name_from_team_id = """
@@ -43,7 +56,7 @@ def team_name_from_team_id(cur, team_id):
     """
     cur.execute(team_name_from_team_id, [team_id])
     r = cur.fetchone()
-    return len(r)
+    return r[0]
 
 def find_team_name_from_player(cur, player_name):
     find_team_name_from_player = """
@@ -99,6 +112,12 @@ def drop_tables(cur):
     DROP TABLE IF EXISTS teams_items
     """
     cur.execute(drop_table_teams_items)
+
+    drop_table_players_items = """
+    DROP TABLE IF EXISTS players_items
+    """
+    cur.execute(drop_table_players_items)
+
     cur.connection.commit()
 
 def create_tables(cur):

@@ -4,6 +4,7 @@ import sqlite3
 
 
 def damage_check_team(cur, attacking_player_name, attacking_player_team, defending_player_name, defending_player_team):
+    print("Step 1")
     total_damage_dealt = 0
     total_life_steal = 0
 
@@ -13,6 +14,7 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
     shell_bell_string = ""
     spacing = " - "
 
+    print("Step 2")
     #Check for effectiveness
     super_effective_team_attack = settings.team_effectiveness[attacking_player_team]
     super_effective_team_defend = settings.team_effectiveness[defending_player_team]
@@ -25,24 +27,28 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
     else:
         total_damage_dealt += settings.normal_damage
         effectiveness_string = "Normal attack : {} damage".format(settings.normal_damage)
-
+    print("We have gotten here step 3")
     #Check for X-attack on attacking team
-    if sql.find_team_item(attacking_player_team, settings.item_name_x_attack) != 0:
+    if sql.find_team_item(cur, attacking_player_team, settings.item_name_x_attack) is not None:
         total_damage_dealt += settings.x_attack_damage_bonus
         x_attack_string = spacing + "Attacking Team X-Attack: {} bonus damage".format(settings.x_attack_damage_bonus)
 
+    print("Step 4")
     #Check for X-Defense on defending team
-    if sql.find_team_item(defending_player_team, settings.item_name_x_defense) != 0:
+    if sql.find_team_item(cur, defending_player_team, settings.item_name_x_defense) is not None:
         total_damage_dealt += settings.x_defense_damage_negation
         x_defense_string = spacing + "Defending Team X-Defense: {} damage negation".format(settings.x_defense_damage_negation)
 
+    print("Step 5")
     #Check for attacking player shell bell
-    if sql.find_player_item(attacking_player_name, settings.item_name_shell_bell) != 0:
+    if sql.find_player_item(cur, attacking_player_name, settings.item_name_shell_bell) is not None:
         total_life_steal += settings.shell_bell_hit_healing
         shell_bell_string = spacing + "Attacking Player Shell Bell: {} has been healed to {}".format(settings.shell_bell_hit_healing, attacking_player_name)
     
-    total_damage_string = "Total Damage:" + str(total_damage_dealt)
-    final_output_string = "Damage Calculations: " + total_damage_string + " Breakdown: " + effectiveness_string + x_attack_string + x_defense_string + shell_bell_string
+    print("Step 5.6")
+    total_damage_string = "Total Damage:" + str(total_damage_dealt) + "\n"
+    print("Step 6")
+    final_output_string = "Damage Calculations: " + total_damage_string + "\n Breakdown: " + effectiveness_string + x_attack_string + x_defense_string + shell_bell_string
         
     return total_life_steal, total_damage_dealt, total_damage_string
 
@@ -74,12 +80,12 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
         bonus_experience_string = spacing + "Bonus experience reward: {} experience".format(settings.bonus_experience_reward)
 
     #Check attacking player for Amulet Coin gold bonus
-    if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) != 0:
+    if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) is not None:
         total_gold_amount += settings.amulet_coin_gold_bonus
         amulet_coin_gold_bonus_string = spacing + "Bonus amulet coin reward: {} gold".format(settings.amulet_coin_gold_bonus)
 
     #Check attacking palyer for Share Exp experience bonus
-    if sql.find_player_item(cur, attacking_player_name, settings.item_name_expshare) != 0:
+    if sql.find_player_item(cur, attacking_player_name, settings.item_name_expshare) is not None:
         total_experience_amount += settings.exp_share_exp_bonus
         exp_share_bonus_string = spacing + "Bonus exp share reward : {} experience".format(settings.item_name_expshare)
 

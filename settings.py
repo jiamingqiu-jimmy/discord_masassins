@@ -3,7 +3,7 @@
 #Channels
 #Channels MUST NOT have spaces and spaces must have -
 masassins_category_channel_name = "Masassins-Team-Channels"
-masassins_announcements_channel_name = "Kill-Log"
+masassins_announcements_channel_name = "masamon-announcements"
 masassins_all_team_channel_name = "All-Team-Discussion"
 
 #NEW AUTO CHANNELS MUST BE ADDED TO THIS LIST
@@ -23,14 +23,35 @@ base_masassins_roles = [
 admin_role = "MASA Staff"
 
 #Team Initialization
-team_list = ["Grass", "Fire", "Water", "Flying"]
+team_name_fire = "Fire"
+team_name_bug = "Bug"
+team_name_dark = "Dark"
+team_name_ghost = "Ghost"
+team_name_psychic = "Psychic"
+team_name_fighting = "Fighting"
+team_name_rock = "Rock"
+team_name_alumni = "Alumni"
+team_name_team_rocket = "Team Rocket"
+
+team_list = [
+    team_name_fire, team_name_bug,
+    team_name_dark, team_name_ghost,
+    team_name_psychic, team_name_fighting,
+    team_name_rock, team_name_alumni,
+    team_name_team_rocket
+]
 team_starting_experience = 0
 team_starting_gold = 0
 
 team_effectiveness = {
-    "Grass":"Water",
-    "Water":"Fire",
-    "Fire":"Grass"
+    team_name_fire : team_name_bug,
+    team_name_bug : team_name_dark,
+    team_name_dark : team_name_ghost,
+    team_name_ghost : team_name_psychic,
+    team_name_psychic : team_name_fighting,
+    team_name_fighting : team_name_rock,
+    team_name_alumni : "Normal",
+    team_name_team_rocket : "Normal"
 }
 
 #Battle Calculations
@@ -42,6 +63,9 @@ base_experience_reward = 10
 base_gold_reward = 10
 bonus_experience_reward = 20
 bonus_gold_reward = 20
+
+team_kill_bonus_gold = 50
+team_kill_bonus_experience = 50
 
 #Items Initialization
 item_name_x_attack = "X Attack"
@@ -74,12 +98,15 @@ revive_healing = 75
 new_player_starting_health = 200
 new_player_starting_experience = 0
 
+#Alumni Player Initialization
+alumni_player_starting_health = 200
+alumni_player_starting_experience = 0
+
 player_team_dict = {
-    "Bert":"Grass",
-    "Charlie":"Water",
-    "David":"Fire",
-    "Jimmy":"Flying",
-    "starnova7":"Water"
+    "Aizzer":team_name_bug,
+    "Jimmy":team_name_fighting,
+    "Annie":team_name_dark,
+    "Selina":team_name_ghost
 }
 
 #String Creation Initialization
