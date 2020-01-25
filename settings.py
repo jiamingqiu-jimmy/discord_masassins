@@ -16,11 +16,15 @@ base_channels_namelist = [
 #Roles
 masassins_alive_role = "masassins2020-ALIVE"
 masassins_dead_role = "masassins2020-FAINTED"
+admin_role = "masassins-planner"
+MASA_staff_role = "MASA Staff"
 base_masassins_roles = [
     masassins_alive_role,
-    masassins_dead_role
+    masassins_dead_role,
+    admin_role
 ]
-admin_role = "MASA Staff"
+admins_list = ["Jimmy"]
+
 
 #Team Initialization
 team_name_fire = "Fire"
@@ -75,6 +79,32 @@ item_name_shell_bell = "Shell Bell"
 item_name_potion = "Potion"
 item_name_revive = "Revive"
 item_name_expshare = "EXP Share"
+
+item_cost_x_attack = 150
+item_cost_x_defense = 150
+item_cost_amulet_coin = 50
+item_cost_shell_bell = 100
+item_cost_potion = 50
+item_cost_revive = 70
+
+item_list = [
+    item_name_potion,
+    item_name_revive,
+    item_name_shell_bell,
+    item_name_amulet_coin,
+    item_name_x_attack,
+    item_name_x_defense,
+    item_name_expshare
+]
+
+item_cost_dict = {
+    item_name_potion : item_cost_potion,
+    item_name_revive : item_cost_revive,
+    item_name_shell_bell : item_cost_shell_bell,
+    item_name_amulet_coin : item_cost_amulet_coin,
+    item_name_x_attack : item_cost_x_attack,
+    item_name_x_defense : item_cost_x_defense
+}
 
 item_dict = {
     item_name_potion : "Heals 50 HP. Note: you cannot heal a player past their maximum HP",

@@ -27,7 +27,7 @@ client = discord.Client()
 async def on_ready():
     print('{} has connected to Discord!'.format(bot.user.name))
 
-@bot.command(name='reset', help="ADMINS ONLY: Resets ALL database tables, entries and roles <ONLY USE ONCE TO RESET GAME>")
+@bot.command(name='reset', help="ADMINS ONLY: Resets some tables")
 @commands.is_owner()
 async def reset(ctx):
     #Creating sqlite3 db cursor
@@ -64,7 +64,7 @@ async def reset(ctx):
 async def reset_error(ctx, error):
     await ctx.send(error)
 
-@bot.command(name='populate', help="ADMINS ONLY: Populates the teams with members <ONLY USE ONCE TO RESET GAME>")
+@bot.command(name='populate', help="ADMINS ONLY: Populates game")
 @commands.is_owner()
 async def game_populate(ctx):
     #Creating sqlite3 db cursor
@@ -90,6 +90,18 @@ async def game_populate(ctx):
         masassins_alive_role = await guild.create_role(name=settings.masassins_alive_role)
         await ctx.send("The Massassins-alive role is created")
 
+    masassins_admin_role = get(guild.roles, name=settings.admin_role)
+
+    if masassins_admin_role is None:
+        await ctx.send("Creating masassins-admin role...")
+        masassins_admin_role = await guild.create_role(name=settings.admin_role)
+        await ctx.send("The masassins-admin role is created")
+
+    for player_name in settings.admins_list:
+        admin_player = get(guild.members, name=player_name)
+        if admin_player is not None:
+            await admin_player.add_roles(masassins_admin_role)
+
     for team_name in settings.team_list:
         team_role = get(guild.roles, name=team_name)
         if team_role is None:
@@ -107,7 +119,7 @@ async def game_populate(ctx):
             await ctx.send("{} has been processed...".format(player_name))
     await ctx.send("All players has been processed, waiting for players to join...")
 
-@bot.command(name="add_player", help="ADMINS ONLY: Adds a player into the game <DOES NOT CHANGE HARD-CODED PLAYER_TEAM_MAPS>")
+@bot.command(name="add_player", help="ADMINS ONLY: Adds a player")
 @commands.has_role(settings.admin_role)
 async def add_player(ctx, player_name, team_name):
     return_code = sql.populate_players_table(cur, player_name, team_name)
@@ -123,7 +135,7 @@ async def give_gold(ctx, team_name, gold_amount):
     sql.update_team_gold(cur, team_name, gold_amount)
     await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
 
-@bot.command(name="give_team_experience", help="ADMIN ONLY: Gives experience to a specific team : !give_team_experience <team_name> <experience_amount>")
+@bot.command(name="give_team_experience", help="ADMIN ONLY: Gives experience to a specific team")
 @commands.has_role(settings.admin_role)
 async def give_team_experience(ctx, team_name, experience_amount):
     cur = conn.cursor()
@@ -153,10 +165,12 @@ async def create_channels(ctx):
     for team_name in settings.team_list:
         team_role = get(guild.roles, name=team_name)
         admin_role = get(guild.roles, name=settings.admin_role)
+        staff_role = get(guild.roles, name=settings.MASA_staff_role)
         team_channel_overwrite = {
             admin_role: discord.PermissionOverwrite(read_messages=True),
-            team_role: discord.PermissionOverwrite(read_messages=True),
-            guild.default_role: discord.PermissionOverwrite(read_messages=False)
+            team_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            staff_role: discord.PermissionOverwrite(read_messages=False)
         }
         await masassins_channel.create_text_channel(name=team_name, overwrites=team_channel_overwrite)
         await ctx.send("Created {} Discussion Channel".format(team_name))
@@ -184,7 +198,7 @@ async def delete_channels(ctx):
 
     await ctx.send("Complete!")
 
-@bot.command(name="join", help="As a member, if you are signed up for Masassins and admins have coded you in, join processes you as a valid player in the game")
+@bot.command(name="join", help="join the game!")
 async def join(ctx):
     cur = conn.cursor()
     player_display_name = ctx.author.name
@@ -296,10 +310,11 @@ async def use_an_item(ctx, item_name, player_name):
 
 @use_an_item.error
 async def use_an_item_error(ctx,error):
-    ctx.send(error)
+    await ctx.send(error)
 
 @bot.command(name="attack", help="Attack a player : !attack player_name")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
     cur = conn.cursor()
     guild = ctx.guild
@@ -307,8 +322,8 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     defending_player = get(ctx.guild.members, name=player_name)
 
     #Check for a valid player in the database
-    if sql.valid_player_check(cur, defending_player.name) != 0 or defending_player is None:
-        await ctx.send("Please check that you have the right player, the command is !attack <player_name>")
+    if defending_player is None or sql.valid_player_check(cur, defending_player.name) != 0 :
+        await ctx.send("Please check that you have the right player (capitalization matters), the command is !attack <player_name>")
         return 
 
     #Send message into the player's team channel asking for confirmation use @mention
@@ -328,7 +343,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     message = message.format(defending_player_team, attacking_player.name, defending_player.name, defending_player.mention)
     await defending_player_channel.send(message)
     def check(m):
-        return m.content.lower() == "confirm" and m.channel == defending_player_channel
+        return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.name == defending_player.name
     try:
         msg = await bot.wait_for('message', check=check, timeout=30)
     except asyncio.TimeoutError:
@@ -385,11 +400,16 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     #Sending out reward strings
     await ctx.send(total_rewards_string)
 
+    announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+    if defending_player_death:
+        announcements_channel.send("Player {} has killed Player {}".format(attacking_player.name, defending_player.name))
+    else:
+        announcements_channel.send("Player {} has hit Player {} for {} damage".format(attacking_player.name, defending_player.name, hit_damage))
+
     #Distributing rewards
     sql.update_player_experience(cur, attacking_player.name, total_experience_reward)
     sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
     sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
-    await ctx.send("Attack completion")
 
 @attack.error
 async def attack_error(ctx, error):
@@ -410,58 +430,101 @@ async def hello(ctx):
     else:
         await channel.send("Hello {.author.mention}!".format(msg))
 
+@bot.command(name="shop")
+@commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
+async def pokemart(ctx):
+    embed = discord.Embed(
+        title="Poke Mart",
+        description = "You can buy items here!",
+        colour = discord.Colour.blue()
+    )
 
-@bot.command(name="view_players", help="View the players and their current stats")
-async def view_players(ctx):
-    cur = conn.cursor()
-    markdown_start = "```"
-    markdown_end = "```"
+    for item_name in settings.item_list:
+        item_cost = 0
+        title_name = 0
 
-    newLine = "\n"
-    #creation of title_string
-    team_title = "Team"
-    player_title = "Player"
-    health_title = "Health"
-    experience_title = "EXP"
-    items_title = "Items"
-    divider = "-" * 45
-
-    main_string = team_title + "       " + player_title + "       " + health_title + " " + experience_title + "  " + items_title + newLine + divider + newLine
-    print(main_string)
-    player_rows = sql.view_players(cur).fetchall()
-    for row in player_rows:
-        print("Main_string:", main_string)
-        team_id = row[0]
-        team_name = sql.team_name_from_team_id(cur, team_id)
-        main_string += team_name[:settings.length_of_team]
-        length = len(team_name[:settings.length_of_team])
-        main_string += " " * (settings.length_of_team - length + settings.spacing)
+        if item_name == settings.item_name_expshare:
+            title_name = item_name + " - Out of Stock "
+        else:
+            item_cost = " - {} gold".format(settings.item_cost_dict[item_name])
+            title_name = item_name + item_cost
         
-        player_name = row[1]
-        length = len(player_name[:settings.length_of_name])
-        main_string += player_name
-        main_string += " " * (settings.length_of_name - length + settings.spacing)
+        embed.add_field(name=title_name,value=settings.item_dict[item_name],inline=False)
+    
+    await ctx.send(embed=embed)
 
-        health = row[2]
-        length = len(str(health))
-        main_string += str(health)
-        main_string += " " * (settings.length_of_health - length + settings.spacing)
+@bot.command(name="buy")
+@commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
+async def buy(ctx, *args):
+    cur = conn.cursor()
+    player = ctx.author
+    player_name = ctx.author.name
+    team_name = sql.find_team_name_from_player(cur, player_name)
+    item_name = " ".join(args[:])
+    print(item_name)
 
-        experience = row[3]
-        length = len(str(experience))
-        main_string += str(experience)
-        main_string += " " * (settings.length_of_experience - length + settings.spacing)
+    #Check if it is a valid item
+    if sql.valid_item_check(cur, item_name) != 0:
+        await ctx.send("Please check that the item name you inputted is correct")
+        return
 
-        #items = row[4]
-        #if len(items) > settings.length_of_items:
-        #    main_string += items + newLine
-        #else:
-        #    main_string += items
-        #    main_string += " " * (settings.length_of_items - length + settings.spacing)
+    #Check if the team has enough gold to buy it
+    team_gold_amount = sql.get_team_gold(cur, team_name)
+    if team_gold_amount < settings.item_cost_dict[item_name]:
+        await ctx.send("Your team does not have enough gold")
+        return
 
-        main_string += newLine
+    #Check to see if there is enough inventory space
+    
+    #Give item to team
+    await ctx.send("You have bought a {}".format(item_name))
+    sql.give_team_item(cur, team_name, item_name)
 
-    message = markdown_start + main_string + markdown_end
-    await ctx.send(message)
+@buy.error
+async def buy_error(ctx, error):
+    await ctx.send(error)
 
+@bot.command(name="give_team_item", help="!give_team_item <team_name> <item_name>")
+@commands.has_any_role(settings.admin_role)
+async def give_team_item(ctx, team_name, item_name):
+    cur = conn.cursor()
+
+    sql.give_team_item(cur, team_name, item_name)
+
+@give_team_item.error
+async def give_team_item_error(ctx, error):
+    ctx.send(error)
+
+@bot.command(name="view_all", help="View Everything")
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def view_all(ctx):
+    cur = conn.cursor()
+    for team_name in settings.team_list:
+        player_rows = sql.view_players(cur, team_name)
+        if len(player_rows) != 0:
+            name_string = ""
+            health_string = ""
+            exp_string = ""
+            items_string = ""
+            for player_row in player_rows:
+                name_string += player_row[0] + "\n"
+                health_string += str(player_row[1]) + "\n"
+                exp_string += str(player_row[2]) + "\n"
+ 
+            team_gold, team_experience = sql.view_teams(cur, team_name)
+            team_items = sql.view_team_items(cur, team_name)
+            print("Team Items : ", team_items)
+            for item_row in team_items:
+                items_string += item_row[0] + " "
+
+            
+            embed = discord.Embed(
+                title = team_name,
+                description = "Gold: {}  -  EXP: {}\nItems: {}".format(team_gold, team_experience, items_string),
+                color = discord.Colour.blue()
+            )
+            embed.add_field(name="Name", value=name_string, inline=True)
+            embed.add_field(name="Health", value=health_string, inline=True)
+            embed.add_field(name="EXP", value=exp_string, inline=True)
+            await ctx.send(embed=embed)
 bot.run(token)

@@ -1,13 +1,55 @@
 import sqlite3
 import settings
 
-def view_players(cur):
+def view_players(cur, team_name):
     view_players = """
-        SELECT team_id, name, health, experience
+        SELECT name, health, experience
         FROM players
-        ORDER BY team_id, name
+        WHERE team_id=
+        (SELECT team_id FROM teams WHERE name=?)
+        ORDER BY experience, health
     """
-    return cur.execute(view_players)
+    return cur.execute(view_players, [team_name]).fetchall()
+
+def view_teams(cur, team_name):
+    view_teams = """
+        SELECT gold, experience
+        FROM teams
+        WHERE name=?
+    """
+    return cur.execute(view_teams, [team_name]).fetchone()
+
+def view_team_items(cur, team_name):
+    view_team_items = """
+        SELECT name
+        FROM items
+        WHERE item_id IN (
+            SELECT item_id
+            FROM teams_items
+            WHERE team_id=(
+                SELECT team_id
+                FROM teams
+                WHERE name=?
+            )
+        )
+    """
+    return cur.execute(view_team_items, [team_name]).fetchall()
+
+def view_player_items(cur, player_name):
+    view_player_items = """
+        SELECT name
+        FROM items
+        WHERE item_id = (
+            SELECT item_id
+            FROM players_items
+            WHERE player_id = (
+                SELECT player_id
+                FROM players
+                WHERE name=?
+            )
+        )
+    """
+    return cur.execute(view_player_items, [player_name]).fetchall()
 
 def find_team_item(cur, team_name, item_name):
     find_team_item = """
@@ -40,13 +82,14 @@ def delete_item_from_team(cur, team_name, item_name):
     DELETE from teams_items
     WHERE team_id=
     (
-        SELECT *
+        SELECT team_id
         FROM teams
         WHERE name=?
+        LIMIT 1
     )
-    LIMIT 1
     """
     cur.execute(delete_item_from_team, [team_name])
+    cur.connection.commit()
 
 def team_name_from_team_id(cur, team_id):
     team_name_from_team_id = """
@@ -305,6 +348,17 @@ def get_player_hp(cur, player_name):
     WHERE name=?
     """
     cur.execute(get_player_hp, [player_name])
+    r = cur.fetchone()
+    return r[0]
+
+#Get team gold amount
+def get_team_gold(cur, team_name):
+    get_team_gold = """
+    SELECT gold
+    FROM teams
+    WHERE name=?
+    """
+    cur.execute(get_team_gold, [team_name])
     r = cur.fetchone()
     return r[0]
 
