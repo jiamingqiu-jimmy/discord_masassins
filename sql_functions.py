@@ -20,7 +20,7 @@ def find_team_item(cur, team_name, item_name):
     """
     cur.execute(find_team_item, (team_name, item_name))
     r = cur.fetchone()
-    return r[0]
+    return len(r)
 
 def find_player_item(cur, player_name, item_name):
     find_player_item = """

@@ -67,6 +67,8 @@ x_defense_damage_negation = 25
 shell_bell_hit_healing = 15
 amulet_coin_gold_bonus = 5
 exp_share_exp_bonus = 10
+potion_healing = 50
+revive_healing = 75
 
 #New Player Initialization
 new_player_starting_health = 200

@@ -130,6 +130,7 @@ async def give_team_experience(ctx, team_name, experience_amount):
     await ctx.send("{} EXP has been given to team {}".format(experience_amount, team_name))
 
 @bot.command(name="create_channels", help="ADMINS ONLY: Create all the team channels and text channels for masassins")
+@commands.has_role(settings.admin_role)
 async def create_channels(ctx):
     await ctx.send("Creating all necessary channels...")
     guild = ctx.guild
@@ -153,6 +154,7 @@ async def create_channels(ctx):
         await ctx.send("Created {} Discussion Channel".format(team_name))
     
 @bot.command(name="delete_channels", help="ADMINS ONLY: Delete all the team channels and text channels for masassins")
+@commands.has_role(settings.admin_role)
 async def delete_channels(ctx):
     guild = ctx.guild
 
@@ -194,12 +196,41 @@ async def join(ctx):
         await ctx.send("Sorry your name was not found, please contact the admins")
 
 @bot.command(name='use', help='Use an item!')
-async def use_an_item(ctx, item_name):
+@commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
+async def use_an_item(ctx, item_name, player_name):
     cur = conn.cursor()
-    if item_name == "Potion":
-        player_name = ctx.message.author.name 
+    init_player = ctx.author
+
+    #Init_player_team_name
+    init_player_team_name = sql.find_team_name_from_player(cur, init_player.name)
+
+    #Get the player's current team
+    team_name = sql.find_team_name_from_player(cur, player_name)
+
+    #Check to see if the team listed is the player's team
+    if (init_player_team_name != team_name):
+        ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
+        return
+
+    #Check to see if it is a valid item
+    if (sql.valid_item_check(cur, item_name) != 0):
+        ctx.send("Please check that the item name is correct")
+        return
+
+    #Check to see if the current team owns the item
+    if sql.find_team_item(cur, init_player_team_name, item_name) == 0:
+        ctx.send("Your team does not currently own this item")
+        return
+
+    #Calculate whether or not 
+    if item_name == settings.item_name_potion:
         sql.update_player_hp(cur, player_name, 50)
         await ctx.send("You have used a potion! you have gained {} health".format("50"))
+
+
+@use_an_item.error
+async def use_an_item_error(ctx,error):
+    ctx.send(error)
 
 @bot.command(name="attack", help="Attack a player : !attack player_name")
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
