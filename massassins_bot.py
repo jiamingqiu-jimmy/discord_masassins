@@ -125,6 +125,7 @@ async def add_player(ctx, player_name, team_name):
     return_code = sql.populate_players_table(cur, player_name, team_name)
     if return_code == -1:
         await ctx.send("There has been an error, please check team_name is valid")
+        return
     await ctx.send("Player {} has been added into the game, waiting for them to join".format(player_name))
 
 @bot.command(name="give_gold", help="ADMINS ONLY: Gives gold to a specific player")
@@ -229,6 +230,7 @@ async def use(ctx, item_name, player_name):
     #Init_player_team_name
     init_player_team_name = sql.find_team_name_from_player(cur, init_player.name)
 
+    print("Player : ", player_name)
     #Get the player's current team
     team_name = sql.find_team_name_from_player(cur, player_name)
 
@@ -239,15 +241,18 @@ async def use(ctx, item_name, player_name):
 
     #Check to see if it is a valid item
     if (sql.valid_item_check(cur, item_name) != 0):
-        ctx.send("Please check that the item name is correct")
+        await ctx.send("Please check that the item name is correct")
         return
 
-    #Check to see if the current team owns the item --- FIX
-    if sql.find_team_item(cur, init_player_team_name, item_name) == 0:
-        ctx.send("Your team does not currently own this item")
+    #Check to see if the current team owns the item
+    if sql.find_team_item(cur, init_player_team_name, item_name) is None:
+        await ctx.send("Your team does not currently own this item")
         return
 
     target_player = get(guild.members, name=player_name)
+    if target_player is None:
+        await ctx.send("This player is not part of the game")
+        return
 
     #Map the item to a specific item and effect
     if item_name == settings.item_name_potion:
@@ -270,7 +275,7 @@ async def use(ctx, item_name, player_name):
 
     elif item_name == settings.item_name_amulet_coin:
         #Check to make sure the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) != 0:
+        if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
 
@@ -282,24 +287,23 @@ async def use(ctx, item_name, player_name):
 
     elif item_name == settings.item_name_shell_bell:
         #Check to make sure that the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) != 0:
+        if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return 
-
         #Shell bell, give shell bell to a player
-        sql.give_player_item(cur, target_player, item_name)
+        sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given shell bell".format(target_player))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
     
     elif item_name == settings.item_name_expshare:
         #Check to make sure the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) != 0:
+        if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
         
         #Exp share, give exp share to a player
-        sql.give_player_item(cur, target_player, item_name)
+        sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given shell bell".format(target_player))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
@@ -337,10 +341,14 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
 
     #Check to make sure that the player has joined the game
     defending_player_masassins_role = get(defending_player.roles, name=settings.masassins_alive_role)
-
     if defending_player_masassins_role is None:
-        await ctx.send("You cannot this player who hasn't officially joined the game yet!")
+        await ctx.send("You cannot attack this player who hasn't officially joined the game yet!")
         return
+
+    #Check to make sure that the attacking player has joined the game
+    attacking_player_masassins_role = get(attacking_player.roles, name=settings.masassins_alive_role)
+    if attacking_player_masassins_role is None:
+        await ctx.send("You cannot attack this player when you haven't officially joined the game yet!")
 
     #Wait for confirmation, 60 second deadline or auto-cancel
     message = """
@@ -360,14 +368,13 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         await defending_player_channel.send("Thank you for confirming, proceeding...")
         await ctx.send("Player {} has confirmed, proceeding...".format(defending_player.name))
 
-    print("Hello world")
     #If confirmed: Calculate damage based on team effectiveness and items
     life_steal, hit_damage, damage_output_string = battle.damage_check_team(
         cur,
         attacking_player.name, attacking_player_team, 
         defending_player.name, defending_player_team
         )
-    print("Hello we finished calculations")
+
     #Sending out damage calculations
     await defending_player_channel.send(damage_output_string)
     await ctx.send(damage_output_string)
@@ -456,7 +463,7 @@ async def pokemart(ctx):
             title_name = item_name + item_cost
         
         embed.add_field(name=title_name,value=settings.item_dict[item_name],inline=False)
-    
+
     await ctx.send(embed=embed)
 
 @bot.command(name="buy")
@@ -515,14 +522,15 @@ async def view_all(ctx):
         player_rows = sql.view_players(cur, team_name)
         if len(player_rows) != 0:
             name_string = ""
-            health_string = ""
-            exp_string = ""
+            health_exp_string = ""
             items_string = ""
             for player_row in player_rows:
-                name_string += player_row[0] + "\n"
-                health_string += str(player_row[1]) + "\n"
-                exp_string += str(player_row[2]) + "\n"
- 
+                player_name = player_row[0]
+                name_string += player_name + "\n"
+                health_string += str(player_row[1]) + " / " str(player_row[2]) + "\n"
+                for item_name in settings.item_list:
+                    if 
+
             team_gold, team_experience = sql.view_teams(cur, team_name)
             team_items = sql.view_team_items(cur, team_name)
             print("Team Items : ", team_items)
@@ -538,6 +546,6 @@ async def view_all(ctx):
 
             embed.add_field(name="Name", value=name_string, inline=True)
             embed.add_field(name="Health", value=health_string, inline=True)
-            embed.add_field(name="EXP", value=exp_string, inline=True)
+            embed.add_field(name="EXP", value=items_string, inline=True)
             await ctx.send(embed=embed)
 bot.run(token)

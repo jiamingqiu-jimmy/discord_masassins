@@ -107,8 +107,15 @@ def delete_item_from_team(cur, team_name, item_name):
         WHERE name=?
         LIMIT 1
     )
+    AND item_id=
+    (
+        SELECT item_id
+        FROM items
+        WHERE name=?
+        LIMIT 1
+    )
     """
-    cur.execute(delete_item_from_team, [team_name])
+    cur.execute(delete_item_from_team, (team_name, item_name))
     cur.connection.commit()
 
 def team_name_from_team_id(cur, team_id):
@@ -141,8 +148,11 @@ def find_team_id(cur, team_name):
 
 def find_player_id(cur, player_name):
     find_player_id = """
-    SELECT player_id FROM players WHERE name=?
+    SELECT player_id
+    FROM players
+    WHERE name=?
     """
+    print(player_name)
     cur.execute(find_player_id, [player_name])
     r = cur.fetchone()
     return r[0]
@@ -400,7 +410,9 @@ def give_player_item(cur, player_name, item_name):
     INSERT INTO players_items (player_id, item_id)
     VALUES (?,?)
     """
+    print("Hellsdasd")
     player_id = find_player_id(cur, player_name)
+    print("asdsfff")
     item_id = find_item_id(cur, item_name)
     print("Player : ", player_id, " Item_ID : ", item_id)
     cur.execute(give_player_item, (player_id, item_id))
