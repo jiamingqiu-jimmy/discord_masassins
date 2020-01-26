@@ -12,6 +12,7 @@ from discord.utils import get
 import settings
 import sql_functions as sql
 import battle_functions as battle
+import view_functions as view
 
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
@@ -144,7 +145,7 @@ async def give_team_experience(ctx, team_name, experience_amount):
     await ctx.send("{} EXP has been given to team {}".format(experience_amount, team_name))
 
 @bot.command(name="create_channels", help="ADMINS ONLY: Create all the team channels and text channels for masassins")
-@commands.has_role(settings.admin_role)
+@commands.is_owner()
 async def create_channels(ctx):
     await ctx.send("Creating all necessary channels...")
     guild = ctx.guild
@@ -179,7 +180,7 @@ async def create_channels(ctx):
     await ctx.send("All Done!")
 
 @bot.command(name="delete_channels", help="ADMINS ONLY: Delete all the team channels and text channels for masassins")
-@commands.has_role(settings.admin_role)
+@commands.is_owner()
 async def delete_channels(ctx):
     guild = ctx.guild
 
@@ -236,7 +237,7 @@ async def use(ctx, item_name, player_name):
 
     #Check to see if the team listed is the player's team
     if (init_player_team_name != team_name):
-        ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
+        await ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
         return
 
     #Check to see if it is a valid item
@@ -280,7 +281,7 @@ async def use(ctx, item_name, player_name):
             return
 
         #Amulet coin, give amulet coin to a player
-        sql.give_player_item(cur, target_player, item_name)
+        sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given amulet coin".format(target_player))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
@@ -317,7 +318,7 @@ async def use_an_item_error(ctx,error):
 
 @bot.command(name="attack", help="Attack a player : !attack player_name")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
-@commands.cooldown(1, 30, commands.BucketType.user)
+@commands.cooldown(1, 25, commands.BucketType.user)
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
     cur = conn.cursor()
     guild = ctx.guild
@@ -368,16 +369,14 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         await defending_player_channel.send("Thank you for confirming, proceeding...")
         await ctx.send("Player {} has confirmed, proceeding...".format(defending_player.name))
 
+
     #If confirmed: Calculate damage based on team effectiveness and items
-    life_steal, hit_damage, damage_output_string = battle.damage_check_team(
+    life_steal, hit_damage, damage_output_list = battle.damage_check_team(
         cur,
         attacking_player.name, attacking_player_team, 
         defending_player.name, defending_player_team
         )
 
-    #Sending out damage calculations
-    await defending_player_channel.send(damage_output_string)
-    await ctx.send(damage_output_string)
 
     sql.update_player_hp(cur, attacking_player.name, life_steal)
 
@@ -404,20 +403,39 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         sql.update_player_hp(cur, defending_player.name, (0-hit_damage))
 
     #Calculate reward based on whether death is true and items etc.
-    total_gold_reward, total_experience_reward, total_rewards_string = battle.reward_check_player(
+    total_gold_reward, total_experience_reward, total_rewards_list = battle.reward_check_player(
         cur, defending_player_death,
         attacking_player.name, attacking_player_team, 
         defending_player.name, defending_player_team
         )
 
-    #Sending out reward strings
-    await ctx.send(total_rewards_string)
+    attack_situation_string = ""
+    if defending_player_death:
+        attack_situation_string = "fainted "
+    else:
+        attack_situation_string = "hit "
+
+    embed = discord.Embed(
+        title = attacking_player.name + " ({}) ".format(attacking_player_team) + attack_situation_string + defending_player.name + " ({}) ".format(defending_player_team),
+        colour = discord.Colour.orange()
+    )
+
+    damage_calculations_string = ""
+    for calc in damage_output_list:
+        damage_calculations_string += calc + "\n"
+
+    rewards_calculations_string = ""
+    for reward in total_rewards_list:
+        rewards_calculations_string += reward + "\n"
+
+    embed.add_field(name="Damage Calculations", value=damage_calculations_string, inline=False)
+    embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=True)
+
+    #Sending out damage calculations
+    await ctx.send(embed=embed)
 
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
-    if defending_player_death:
-        await announcements_channel.send("Player {} has killed Player {}".format(attacking_player.name, defending_player.name))
-    else:
-        await announcements_channel.send("Player {} has hit Player {} for {} damage".format(attacking_player.name, defending_player.name, hit_damage))
+    await announcements_channel.send(embed=embed)
 
     #Distributing rewards
     sql.update_player_experience(cur, attacking_player.name, total_experience_reward)
@@ -519,33 +537,19 @@ async def give_team_item_error(ctx, error):
 async def view_all(ctx):
     cur = conn.cursor()
     for team_name in settings.team_list:
-        player_rows = sql.view_players(cur, team_name)
-        if len(player_rows) != 0:
-            name_string = ""
-            health_exp_string = ""
-            items_string = ""
-            for player_row in player_rows:
-                player_name = player_row[0]
-                name_string += player_name + "\n"
-                health_string += str(player_row[1]) + " / " str(player_row[2]) + "\n"
-                for item_name in settings.item_list:
-                    if 
+        await view.view_team(cur, ctx, team_name)
 
-            team_gold, team_experience = sql.view_teams(cur, team_name)
-            team_items = sql.view_team_items(cur, team_name)
-            print("Team Items : ", team_items)
-            for item_row in team_items:
-                item_count = sql.view_team_item_count(cur, team_name, item_row[0])
-                items_string += item_row[0] + "({})".format(item_count[0]) + " "
-            
-            embed = discord.Embed(
-                title = team_name,
-                description = "Gold: {}  -  EXP: {}\nItems: {}".format(team_gold, team_experience, items_string),
-                color = discord.Colour.blue()
-            )
+@bot.command(name="v", help="View specific team")
+async def v(ctx, team_name):
+    cur = conn.cursor()
+    for name in settings.team_list:
+        if name.lower() == team_name.lower():
+            await view.view_team(cur, ctx, team_name)
+            return
+    await ctx.send("Team name not found, double check your team name input")
 
-            embed.add_field(name="Name", value=name_string, inline=True)
-            embed.add_field(name="Health", value=health_string, inline=True)
-            embed.add_field(name="EXP", value=items_string, inline=True)
-            await ctx.send(embed=embed)
+@v.error
+async def v_error(ctx, error):
+    await ctx.send(error)
+
 bot.run(token)

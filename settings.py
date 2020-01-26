@@ -59,6 +59,8 @@ team_effectiveness = {
 }
 
 #Battle Calculations
+effective_string = "Effectiveness"
+total_damage_string = "Total Damage"
 super_effective_damage = 75
 normal_damage = 50
 not_very_effective_damage = 25

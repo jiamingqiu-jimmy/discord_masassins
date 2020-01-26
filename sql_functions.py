@@ -152,7 +152,6 @@ def find_player_id(cur, player_name):
     FROM players
     WHERE name=?
     """
-    print(player_name)
     cur.execute(find_player_id, [player_name])
     r = cur.fetchone()
     return r[0]
@@ -226,9 +225,9 @@ def create_tables(cur):
 
     create_players_items_table = """
     CREATE TABLE players_items (
+        player_item_id PRIMARY KEY,
         player_id INTEGER,
         item_id INTEGER,
-        PRIMARY KEY (player_id, item_id),
         FOREIGN KEY (player_id)
             REFERENCES players (player_id)
                 ON DELETE CASCADE
@@ -263,7 +262,6 @@ def populate_items_table( cur, item_dict ):
     INSERT INTO items (name, description) VALUES (?,?)
     """
     for item in item_dict.items():
-        print("Item : ", item)
         cur.execute(populate_items_table,item)
     cur.connection.commit()
     
@@ -272,7 +270,6 @@ def populate_teams_table( cur, team_list ):
     INSERT INTO teams (name, experience, gold) VALUES (?, ?, ?)
     """
     for team_name in team_list:
-        print("INSERT Team Name :", team_name)
         cur.execute(populate_teams_table, (team_name, settings.team_starting_experience, settings.team_starting_gold))
     cur.connection.commit()
 
@@ -335,8 +332,6 @@ def update_team_gold(cur, team_name, gold_increase_decrease_amount):
    SET gold = gold+?
    WHERE name=?
    """
-   print("Team name : ", [team_name])
-   print("Gold Amount : ", [gold_increase_decrease_amount])
    cur.execute(update_team_gold, (gold_increase_decrease_amount, team_name))
    cur.connection.commit()
 
@@ -400,7 +395,6 @@ def give_team_item(cur, team_name, item_name):
     """
     team_id = find_team_id(cur, team_name)
     item_id = find_item_id(cur, item_name)
-    print("Team : ", team_id, " Item_ID : ", item_id)
     cur.execute(give_team_item, (team_id, item_id))
     cur.connection.commit()
 
@@ -410,11 +404,8 @@ def give_player_item(cur, player_name, item_name):
     INSERT INTO players_items (player_id, item_id)
     VALUES (?,?)
     """
-    print("Hellsdasd")
     player_id = find_player_id(cur, player_name)
-    print("asdsfff")
     item_id = find_item_id(cur, item_name)
-    print("Player : ", player_id, " Item_ID : ", item_id)
     cur.execute(give_player_item, (player_id, item_id))
     cur.connection.commit()
 
@@ -428,24 +419,3 @@ def view_teams_list(cur, team_list):
     rows = cur.fetchall()
     for row in rows:
         team_list.append(row)
-
-def print_all_list(cur):
-    cur.execute(find_all_teams_sql)
-    rows = cur.fetchall()
-    for row in rows:
-        print("Team : ", row)
-    
-    cur.execute(find_all_players_sql)
-    rows = cur.fetchall()
-    for row in rows:
-        print("Player : ", row)
-
-    cur.execute(find_all_items_sql)
-    rows = cur.fetchall()
-    for row in rows:
-        print("Item : ", row)
-
-    cur.execute(find_all_teams_items_sql)
-    rows = cur.fetchall()
-    for row in rows:
-        print("Player_Item : ", row)
