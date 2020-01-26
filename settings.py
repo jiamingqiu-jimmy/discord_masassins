@@ -72,10 +72,10 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 #Items Initialization
-item_name_x_attack = "X Attack"
-item_name_x_defense = "X Defense"
-item_name_amulet_coin = "Amulet Coin"
-item_name_shell_bell = "Shell Bell"
+item_name_x_attack = "X-Attack"
+item_name_x_defense = "X-Defense"
+item_name_amulet_coin = "Amulet-Coin"
+item_name_shell_bell = "Shell-Bell"
 item_name_potion = "Potion"
 item_name_revive = "Revive"
 item_name_expshare = "EXP Share"

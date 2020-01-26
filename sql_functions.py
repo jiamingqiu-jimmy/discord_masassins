@@ -35,6 +35,26 @@ def view_team_items(cur, team_name):
     """
     return cur.execute(view_team_items, [team_name]).fetchall()
 
+def view_team_item_count(cur, team_name, item_name):
+    view_team_item_count = """
+        SELECT COUNT(*)
+        FROM (
+            SELECT item_id
+            FROM teams_items
+            WHERE team_id = (
+                SELECT team_id
+                FROM teams
+                WHERE name=?
+            )
+            AND item_id = (
+                SELECT item_id
+                FROM items
+                WHERE name=?
+            )
+        )
+    """
+    return cur.execute(view_team_item_count, (team_name, item_name)).fetchone()
+
 def view_player_items(cur, player_name):
     view_player_items = """
         SELECT name
@@ -213,9 +233,9 @@ def create_tables(cur):
 
     create_teams_items_table = """
     CREATE TABLE teams_items (
-        team_id INTEGER,
-        item_id INTEGER,
-        PRIMARY KEY (team_id, item_id),
+        team_item_id PRIMARY KEY,
+        team_id INTEGER NOT NULL,
+        item_id INTEGER NOT NULL,
         FOREIGN KEY (team_id)
             REFERENCES teams (team_id)
                 ON DELETE CASCADE

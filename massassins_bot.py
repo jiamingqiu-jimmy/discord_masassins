@@ -221,7 +221,7 @@ async def join(ctx):
 
 @bot.command(name='use', help='Use an item!')
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
-async def use_an_item(ctx, item_name, player_name):
+async def use(ctx, item_name, player_name):
     cur = conn.cursor()
     init_player = ctx.author
     guild = ctx.guild
@@ -242,7 +242,7 @@ async def use_an_item(ctx, item_name, player_name):
         ctx.send("Please check that the item name is correct")
         return
 
-    #Check to see if the current team owns the item
+    #Check to see if the current team owns the item --- FIX
     if sql.find_team_item(cur, init_player_team_name, item_name) == 0:
         ctx.send("Your team does not currently own this item")
         return
@@ -253,7 +253,7 @@ async def use_an_item(ctx, item_name, player_name):
     if item_name == settings.item_name_potion:
         sql.update_player_hp(cur, player_name, settings.potion_healing)
         await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
-        sql.delete_item_from_team(cur, team_name, player_name)
+        sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_revive:
         #Check that the target_player is dead
@@ -266,7 +266,7 @@ async def use_an_item(ctx, item_name, player_name):
         masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
         await target_player.add_roles(masassins_alive_role)       
         sql.update_player_hp(cur, player_name, settings.revive_healing)
-        sql.delete_item_from_team(cur, team_name, player_name)
+        sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_amulet_coin:
         #Check to make sure the player does not already have the item
@@ -278,7 +278,7 @@ async def use_an_item(ctx, item_name, player_name):
         sql.give_player_item(cur, target_player, item_name)
         await ctx.send("{} has been given amulet coin".format(target_player))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, player_name)
+        sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_shell_bell:
         #Check to make sure that the player does not already have the item
@@ -290,7 +290,7 @@ async def use_an_item(ctx, item_name, player_name):
         sql.give_player_item(cur, target_player, item_name)
         await ctx.send("{} has been given shell bell".format(target_player))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, player_name)
+        sql.delete_item_from_team(cur, team_name, item_name)
     
     elif item_name == settings.item_name_expshare:
         #Check to make sure the player does not already have the item
@@ -302,19 +302,18 @@ async def use_an_item(ctx, item_name, player_name):
         sql.give_player_item(cur, target_player, item_name)
         await ctx.send("{} has been given shell bell".format(target_player))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, player_name)
+        sql.delete_item_from_team(cur, team_name, item_name)
 
     else:
         await ctx.send("You cannot give that item to a player")
 
-
-@use_an_item.error
+@use.error
 async def use_an_item_error(ctx,error):
     await ctx.send(error)
 
 @bot.command(name="attack", help="Attack a player : !attack player_name")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
-@commands.cooldown(1, 60, commands.BucketType.user)
+@commands.cooldown(1, 30, commands.BucketType.user)
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
     cur = conn.cursor()
     guild = ctx.guild
@@ -336,16 +335,23 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         await ctx.send("You cannot attack players from the same team!")
         return
 
+    #Check to make sure that the player has joined the game
+    defending_player_masassins_role = get(defending_player.roles, name=settings.masassins_alive_role)
+
+    if defending_player_masassins_role is None:
+        await ctx.send("You cannot this player who hasn't officially joined the game yet!")
+        return
+
     #Wait for confirmation, 60 second deadline or auto-cancel
     message = """
         Hello team {}, {} has just initiated a hit on {}. 
-        {} you have 30 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
+        {} you have 15 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
     message = message.format(defending_player_team, attacking_player.name, defending_player.name, defending_player.mention)
     await defending_player_channel.send(message)
     def check(m):
         return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.name == defending_player.name
     try:
-        msg = await bot.wait_for('message', check=check, timeout=30)
+        msg = await bot.wait_for('message', check=check, timeout=15)
     except asyncio.TimeoutError:
         await defending_player_channel.send("Confirmation time has expired")
         await ctx.send("Confirmation time has expired")
@@ -402,9 +408,9 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
 
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
     if defending_player_death:
-        announcements_channel.send("Player {} has killed Player {}".format(attacking_player.name, defending_player.name))
+        await announcements_channel.send("Player {} has killed Player {}".format(attacking_player.name, defending_player.name))
     else:
-        announcements_channel.send("Player {} has hit Player {} for {} damage".format(attacking_player.name, defending_player.name, hit_damage))
+        await announcements_channel.send("Player {} has hit Player {} for {} damage".format(attacking_player.name, defending_player.name, hit_damage))
 
     #Distributing rewards
     sql.update_player_experience(cur, attacking_player.name, total_experience_reward)
@@ -458,6 +464,7 @@ async def pokemart(ctx):
 async def buy(ctx, *args):
     cur = conn.cursor()
     player = ctx.author
+    guild = ctx.guild
     player_name = ctx.author.name
     team_name = sql.find_team_name_from_player(cur, player_name)
     item_name = " ".join(args[:])
@@ -474,11 +481,16 @@ async def buy(ctx, *args):
         await ctx.send("Your team does not have enough gold")
         return
 
-    #Check to see if there is enough inventory space
-    
     #Give item to team
     await ctx.send("You have bought a {}".format(item_name))
+    
+    #Subtract their gold
+    sql.update_team_gold(cur, team_name, (0-settings.item_cost_dict[item_name]))
+
     sql.give_team_item(cur, team_name, item_name)
+    announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+
+    await announcements_channel.send("Team {} has just bought a {}".format(team_name, item_name))
 
 @buy.error
 async def buy_error(ctx, error):
@@ -515,14 +527,15 @@ async def view_all(ctx):
             team_items = sql.view_team_items(cur, team_name)
             print("Team Items : ", team_items)
             for item_row in team_items:
-                items_string += item_row[0] + " "
-
+                item_count = sql.view_team_item_count(cur, team_name, item_row[0])
+                items_string += item_row[0] + "({})".format(item_count[0]) + " "
             
             embed = discord.Embed(
                 title = team_name,
                 description = "Gold: {}  -  EXP: {}\nItems: {}".format(team_gold, team_experience, items_string),
                 color = discord.Colour.blue()
             )
+
             embed.add_field(name="Name", value=name_string, inline=True)
             embed.add_field(name="Health", value=health_string, inline=True)
             embed.add_field(name="EXP", value=exp_string, inline=True)
