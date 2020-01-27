@@ -70,6 +70,7 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
         total_experience_amount += settings.exp_share_exp_bonus
         total_reward_list.append("Bonus exp share reward : {} experience".format(settings.item_name_expshare))
 
+    total_reward_list.append("---------Total Rewards---------")
     total_reward_list.append("Total gold: " + str(total_gold_amount))
     total_reward_list.append("Total experience: " + str(total_experience_amount))
 

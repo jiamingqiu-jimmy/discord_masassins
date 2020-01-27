@@ -54,6 +54,7 @@ team_effectiveness = {
     team_name_ghost : team_name_psychic,
     team_name_psychic : team_name_fighting,
     team_name_fighting : team_name_rock,
+    team_name_rock : team_name_fire
     team_name_alumni : "Normal",
     team_name_team_rocket : "Normal"
 }
@@ -138,7 +139,22 @@ player_team_dict = {
     "Aizzer":team_name_bug,
     "Jimmy":team_name_fighting,
     "Annie":team_name_dark,
-    "Selina":team_name_ghost
+    "Selina":team_name_ghost,
+    "Derek":team_name_psychic,
+    "Jillian":team_name_rock,
+    "Jessica_Nguyen":team_name_fire,
+    "Kriti":team_name_psychic,
+    "Will":team_name_bug,
+    "Anna":team_name_fire,
+    "Austin":team_name_alumni,
+    "Betsy":team_name_alumni,
+    "Alisa":team_name_dark,
+    "Brian":team_name_fighting,
+    "Christine":team_name_bug,
+    "Nitika":team_name_ghost,
+    "Chaz":team_name_dark,
+    "Ice":team_name_fire,
+    "Vivian":team_name_ghost
 }
 
 #String Creation Initialization

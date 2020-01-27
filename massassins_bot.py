@@ -231,7 +231,10 @@ async def use(ctx, item_name, player_name):
     #Init_player_team_name
     init_player_team_name = sql.find_team_name_from_player(cur, init_player.name)
 
-    print("Player : ", player_name)
+    if player_name is None or sql.valid_player_check(cur, player_name) != 0:
+        await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
+        return
+
     #Get the player's current team
     team_name = sql.find_team_name_from_player(cur, player_name)
 
@@ -244,6 +247,7 @@ async def use(ctx, item_name, player_name):
     if (sql.valid_item_check(cur, item_name) != 0):
         await ctx.send("Please check that the item name is correct")
         return
+
 
     #Check to see if the current team owns the item
     if sql.find_team_item(cur, init_player_team_name, item_name) is None:
