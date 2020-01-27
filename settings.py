@@ -54,7 +54,7 @@ team_effectiveness = {
     team_name_ghost : team_name_psychic,
     team_name_psychic : team_name_fighting,
     team_name_fighting : team_name_rock,
-    team_name_rock : team_name_fire
+    team_name_rock : team_name_fire,
     team_name_alumni : "Normal",
     team_name_team_rocket : "Normal"
 }

@@ -13,6 +13,7 @@ import settings
 import sql_functions as sql
 import battle_functions as battle
 import view_functions as view
+import help_functions as f_help
 
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
@@ -23,12 +24,26 @@ token = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='!')
 client = discord.Client()
+bot.remove_command('help')
 
 @bot.event
 async def on_ready():
     print('{} has connected to Discord!'.format(bot.user.name))
 
-@bot.command(name='reset', help="ADMINS ONLY: Resets some tables")
+@bot.command(name="help")
+async def help(ctx):
+    embed = discord.Embed(
+        title = "Functions Academy",
+        description = "List of functions and their use",
+        color = discord.Colour.teal()
+    )
+
+    for help_command in f_help.list_of_help:
+        embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
+
+    await ctx.send(embed=embed)
+
+@bot.command(name='reset')
 @commands.is_owner()
 async def reset(ctx):
     #Creating sqlite3 db cursor
@@ -65,7 +80,7 @@ async def reset(ctx):
 async def reset_error(ctx, error):
     await ctx.send(error)
 
-@bot.command(name='populate', help="ADMINS ONLY: Populates game")
+@bot.command(name='populate')
 @commands.is_owner()
 async def game_populate(ctx):
     #Creating sqlite3 db cursor
@@ -120,7 +135,7 @@ async def game_populate(ctx):
             await ctx.send("{} has been processed...".format(player_name))
     await ctx.send("All players has been processed, waiting for players to join...")
 
-@bot.command(name="add_player", help="ADMINS ONLY: Adds a player")
+@bot.command(name="add_player")
 @commands.has_role(settings.admin_role)
 async def add_player(ctx, player_name, team_name):
     return_code = sql.populate_players_table(cur, player_name, team_name)
@@ -129,7 +144,7 @@ async def add_player(ctx, player_name, team_name):
         return
     await ctx.send("Player {} has been added into the game, waiting for them to join".format(player_name))
 
-@bot.command(name="give_gold", help="ADMINS ONLY: Gives gold to a specific player")
+@bot.command(name="give_gold")
 @commands.has_role(settings.admin_role)
 async def give_gold(ctx, team_name, gold_amount):
 
@@ -137,14 +152,14 @@ async def give_gold(ctx, team_name, gold_amount):
     sql.update_team_gold(cur, team_name, gold_amount)
     await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
 
-@bot.command(name="give_team_experience", help="ADMIN ONLY: Gives experience to a specific team")
+@bot.command(name="give_team_experience")
 @commands.has_role(settings.admin_role)
 async def give_team_experience(ctx, team_name, experience_amount):
     cur = conn.cursor()
     sql.update_team_experience(cur, team_name, experience_amount)
     await ctx.send("{} EXP has been given to team {}".format(experience_amount, team_name))
 
-@bot.command(name="create_channels", help="ADMINS ONLY: Create all the team channels and text channels for masassins")
+@bot.command(name="create_channels")
 @commands.is_owner()
 async def create_channels(ctx):
     await ctx.send("Creating all necessary channels...")
@@ -179,7 +194,7 @@ async def create_channels(ctx):
     
     await ctx.send("All Done!")
 
-@bot.command(name="delete_channels", help="ADMINS ONLY: Delete all the team channels and text channels for masassins")
+@bot.command(name="delete_channels")
 @commands.is_owner()
 async def delete_channels(ctx):
     guild = ctx.guild
@@ -200,7 +215,7 @@ async def delete_channels(ctx):
 
     await ctx.send("Complete!")
 
-@bot.command(name="join", help="join the game!")
+@bot.command(name="join")
 async def join(ctx):
     cur = conn.cursor()
     player_display_name = ctx.author.name
@@ -214,6 +229,9 @@ async def join(ctx):
 
         masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
         team_role = get(guild.roles, name=team_name)
+        if get(member.roles, name=team_name) is not None:
+            await ctx.send("You already joined the game")
+
         await member.add_roles(masassins_alive_role)
         await member.add_roles(team_role)
         await ctx.send("Hello {}, we found your name in our database so you will now be given your team and corresponding roles".format(player_display_name))
@@ -221,7 +239,7 @@ async def join(ctx):
     else:
         await ctx.send("Sorry your name was not found, please contact the admins")
 
-@bot.command(name='use', help='Use an item!')
+@bot.command(name='use')
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
 async def use(ctx, item_name, player_name):
     cur = conn.cursor()
@@ -320,7 +338,7 @@ async def use(ctx, item_name, player_name):
 async def use_an_item_error(ctx,error):
     await ctx.send(error)
 
-@bot.command(name="attack", help="Attack a player : !attack player_name")
+@bot.command(name="attack")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
 @commands.cooldown(1, 25, commands.BucketType.user)
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
@@ -525,7 +543,7 @@ async def buy(ctx, *args):
 async def buy_error(ctx, error):
     await ctx.send(error)
 
-@bot.command(name="give_team_item", help="!give_team_item <team_name> <item_name>")
+@bot.command(name="give_team_item")
 @commands.has_any_role(settings.admin_role)
 async def give_team_item(ctx, team_name, item_name):
     cur = conn.cursor()
@@ -536,14 +554,14 @@ async def give_team_item(ctx, team_name, item_name):
 async def give_team_item_error(ctx, error):
     ctx.send(error)
 
-@bot.command(name="view_all", help="View Everything")
+@bot.command(name="view_all")
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def view_all(ctx):
     cur = conn.cursor()
     for team_name in settings.team_list:
         await view.view_team(cur, ctx, team_name)
 
-@bot.command(name="v", help="View specific team")
+@bot.command(name="v")
 async def v(ctx, team_name):
     cur = conn.cursor()
     for name in settings.team_list:
