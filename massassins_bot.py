@@ -114,7 +114,7 @@ async def game_populate(ctx):
         await ctx.send("The masassins-admin role is created")
 
     for player_name in settings.admins_list:
-        admin_player = get(guild.members, name=player_name)
+        admin_player = get(guild.members, display_name=player_name)
         if admin_player is not None:
             await admin_player.add_roles(masassins_admin_role)
 
@@ -201,7 +201,6 @@ async def delete_channels(ctx):
 
     channels_list = guild.channels
     for channel in channels_list:
-        print(channel.name)
         for base_channel_name in settings.base_channels_namelist:
             if base_channel_name.lower() == channel.name.lower():
                 await ctx.send("Deleting {}...".format(base_channel_name))
@@ -218,9 +217,9 @@ async def delete_channels(ctx):
 @bot.command(name="join")
 async def join(ctx):
     cur = conn.cursor()
-    player_display_name = ctx.author.name
+    player_display_name = ctx.author.display_name
     guild = ctx.guild
-    await ctx.send("Hello {} please wait while we process your join request at {}".format(player_display_name, guild.name))
+    await ctx.send("Hello {} please wait while we process your join request".format(player_display_name))
     if sql.valid_player_check(cur, player_display_name) == 0:
         team_name = sql.find_team_name_from_player(cur, player_display_name)
 
@@ -244,10 +243,11 @@ async def join(ctx):
 async def use(ctx, item_name, player_name):
     cur = conn.cursor()
     init_player = ctx.author
+    init_player_name = ctx.author.display_name
     guild = ctx.guild
 
     #Init_player_team_name
-    init_player_team_name = sql.find_team_name_from_player(cur, init_player.name)
+    init_player_team_name = sql.find_team_name_from_player(cur, init_player_name)
 
     if player_name is None or sql.valid_player_check(cur, player_name) != 0:
         await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
@@ -272,7 +272,7 @@ async def use(ctx, item_name, player_name):
         await ctx.send("Your team does not currently own this item")
         return
 
-    target_player = get(guild.members, name=player_name)
+    target_player = get(guild.members, display_name=player_name)
     if target_player is None:
         await ctx.send("This player is not part of the game")
         return
@@ -294,6 +294,7 @@ async def use(ctx, item_name, player_name):
         masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
         await target_player.add_roles(masassins_alive_role)       
         sql.update_player_hp(cur, player_name, settings.revive_healing)
+        await ctx.send("{} has been given revive. He has been revived!".format(player_name))
         sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_amulet_coin:
@@ -304,7 +305,7 @@ async def use(ctx, item_name, player_name):
 
         #Amulet coin, give amulet coin to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given amulet coin".format(target_player))
+        await ctx.send("{} has been given amulet coin".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
@@ -315,7 +316,7 @@ async def use(ctx, item_name, player_name):
             return 
         #Shell bell, give shell bell to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given shell bell".format(target_player))
+        await ctx.send("{} has been given shell bell".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
     
@@ -327,7 +328,7 @@ async def use(ctx, item_name, player_name):
         
         #Exp share, give exp share to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given shell bell".format(target_player))
+        await ctx.send("{} has been given shell bell".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
@@ -471,7 +472,7 @@ async def attack_error(ctx, error):
 @bot.command(name="hello")
 async def hello(ctx):
     channel = ctx.channel
-    await channel.send("Hello there!")
+    await channel.send("Hello there {}!".format(ctx.author.display_name))
 
     def check(m):
         return m.content == "hello" and m.channel == channel
