@@ -333,7 +333,11 @@ def populate_players_table( cur, player_name, team_name ):
     if valid_team_code != 0:
         return -1
     team_id = find_team_id(cur, team_name)
-    new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_experience, team_id)
+    new_player = 0
+    if team_name == settings.team_name_alumni:
+        new_player = (player_name, settings.alumni_player_starting_health, settings.alumni_player_starting_experience, team_id)
+    else:
+        new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_experience, team_id)
     cur.execute(populate_players_table, new_player)
     cur.connection.commit()
     return 0
