@@ -1,13 +1,13 @@
 import sqlite3
 import settings
-
+#define SQLITE_ENABLE_UPDATE_DELETE_LIMIT
 def view_players(cur, team_name):
     view_players = """
         SELECT name, health, experience
         FROM players
         WHERE team_id=
         (SELECT team_id FROM teams WHERE name=?)
-        ORDER BY experience, health
+        ORDER BY experience DESC, health DESC
     """
     return cur.execute(view_players, [team_name]).fetchall()
 
@@ -116,6 +116,19 @@ def delete_item_from_team(cur, team_name, item_name):
     )
     """
     cur.execute(delete_item_from_team, (team_name, item_name))
+    cur.connection.commit()
+
+def delete_items_from_player(cur, player_name):
+    delete_item_player = """
+    DELETE from players_items
+    WHERE player_id =
+    (
+        SELECT player_id
+        FROM players
+        WHERE name=?
+    )
+    """
+    cur.execute(delete_item_player, [player_name])
     cur.connection.commit()
 
 def team_name_from_team_id(cur, team_id):

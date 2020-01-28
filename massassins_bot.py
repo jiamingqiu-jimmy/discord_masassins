@@ -96,21 +96,23 @@ async def game_populate(ctx):
     #Creating all the necessary roles
     if masassins_dead_role is None:
         await ctx.send("Creating masassins-fainted role...")
-        masassins_dead_role = await guild.create_role(name=settings.masassins_dead_role)
+        masassins_dead_role = await guild.create_role(name=settings.masassins_dead_role, colour=discord.Color.dark_orange())
+        masassins_dead_role.color = discord.Color.dark_orange()
         await ctx.send("The Masassins-fainted role is created")
 
     masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
 
     if masassins_alive_role is None:
         await ctx.send("Creating masassins-alive role...")
-        masassins_alive_role = await guild.create_role(name=settings.masassins_alive_role)
+        masassins_alive_role = await guild.create_role(name=settings.masassins_alive_role, colour=discord.Color.dark_green())
+        masassins_alive_role.color = discord.Color.dark_green()
         await ctx.send("The Massassins-alive role is created")
 
     masassins_admin_role = get(guild.roles, name=settings.admin_role)
 
     if masassins_admin_role is None:
         await ctx.send("Creating masassins-admin role...")
-        masassins_admin_role = await guild.create_role(name=settings.admin_role)
+        masassins_admin_role = await guild.create_role(name=settings.admin_role, hoist=True, colour=discord.Color.dark_gold())
         await ctx.send("The masassins-admin role is created")
 
     for player_name in settings.admins_list:
@@ -122,7 +124,7 @@ async def game_populate(ctx):
         team_role = get(guild.roles, name=team_name)
         if team_role is None:
             await ctx.send("Creating new team role {} ...".format(team_name))
-            team_role = await guild.create_role(name=team_name)
+            team_role = await guild.create_role(name=team_name, hoist=True)
             await ctx.send("The Team Role {} is created".format(team_name))
 
     #Processing the players
@@ -151,6 +153,13 @@ async def give_gold(ctx, team_name, gold_amount):
     cur = conn.cursor()
     sql.update_team_gold(cur, team_name, gold_amount)
     await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
+
+@bot.command(name="remove_item")
+@commands.has_role(settings.admin_role)
+async def remove_item(ctx, team_name, item_name):
+    cur = conn.cursor()
+    sql.delete_item_from_team(cur, team_name, item_name)
+    await ctx.send("{} has been removed from team {}".format(item_name, team_name))
 
 @bot.command(name="give_team_experience")
 @commands.has_role(settings.admin_role)
@@ -279,15 +288,26 @@ async def use(ctx, item_name, player_name):
 
     #Map the item to a specific item and effect
     if item_name == settings.item_name_potion:
-        sql.update_player_hp(cur, player_name, settings.potion_healing)
-        await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
+        player_health = sql.get_player_hp(cur, player_name)
+
+        max_player_hp = settings.max_player_hp
+        if player_health == max_player_hp:
+            await ctx.send("Player is already at max health! You cannot use a potion on him")
+            return
+        elif player_health > (max_player_hp - settings.potion_healing):
+            await ctx.send("You have used a potion! You healed to full by gaining {} health!".format(max_player_hp - player_health))
+            sql.update_player_hp(cur, player_name, (max_player_hp - player_health))
+        else:
+            sql.update_player_hp(cur, player_name, settings.potion_healing)
+            await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
+    
         sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_revive:
         #Check that the target_player is dead
         masassins_dead_role = get(target_player.roles, name=settings.masassins_dead_role)
         if masassins_dead_role is None:
-            await ctx.send("Target player is not dead, you cannot use revive on them")
+            await ctx.send("Target player is not fainted, you cannot use revive on them")
             return
         await target_player.remove_roles(masassins_dead_role)
 
@@ -346,16 +366,18 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     cur = conn.cursor()
     guild = ctx.guild
     attacking_player = ctx.author
-    defending_player = get(ctx.guild.members, name=player_name)
+    attacking_player_name = ctx.author.display_name
+    defending_player = get(ctx.guild.members, display_name=player_name)
+    defending_player_name = defending_player.display_name
 
     #Check for a valid player in the database
-    if defending_player is None or sql.valid_player_check(cur, defending_player.name) != 0 :
+    if defending_player is None or sql.valid_player_check(cur, defending_player_name) != 0 :
         await ctx.send("Please check that you have the right player (capitalization matters), the command is !attack <player_name>")
         return 
 
     #Send message into the player's team channel asking for confirmation use @mention
-    defending_player_team = sql.find_team_name_from_player(cur, defending_player.name)
-    attacking_player_team = sql.find_team_name_from_player(cur, attacking_player.name)
+    defending_player_team = sql.find_team_name_from_player(cur, defending_player_name)
+    attacking_player_team = sql.find_team_name_from_player(cur, attacking_player_name)
 
     defending_player_channel = get(guild.text_channels, name=defending_player_team.lower())
 
@@ -378,10 +400,10 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     message = """
         Hello team {}, {} has just initiated a hit on {}. 
         {} you have 15 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
-    message = message.format(defending_player_team, attacking_player.name, defending_player.name, defending_player.mention)
+    message = message.format(defending_player_team, attacking_player_name, defending_player_name, defending_player.mention)
     await defending_player_channel.send(message)
     def check(m):
-        return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.name == defending_player.name
+        return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.display_name == defending_player_name
     try:
         msg = await bot.wait_for('message', check=check, timeout=15)
     except asyncio.TimeoutError:
@@ -390,22 +412,26 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         return
     else:
         await defending_player_channel.send("Thank you for confirming, proceeding...")
-        await ctx.send("Player {} has confirmed, proceeding...".format(defending_player.name))
+        await ctx.send("Player {} has confirmed, proceeding...".format(defending_player_name))
 
 
     #If confirmed: Calculate damage based on team effectiveness and items
     life_steal, hit_damage, damage_output_list = battle.damage_check_team(
         cur,
-        attacking_player.name, attacking_player_team, 
-        defending_player.name, defending_player_team
+        attacking_player_name, attacking_player_team, 
+        defending_player_name, defending_player_team
         )
 
-
-    sql.update_player_hp(cur, attacking_player.name, life_steal)
+    player_health = sql.get_player_hp(cur, attacking_player_name)
+    if player_health != settings.max_player_hp:
+        if player_health > (settings.max_player_hp - settings.shell_bell_hit_healing ):
+            sql.update_player_hp(cur, attacking_player_name, (settings.max_player_hp - settings.shell_bell_hit_healing))
+        else:
+            sql.update_player_hp(cur, attacking_player_name, life_steal)
 
     #Resolve damage and check for deaths
     defending_player_death = False
-    defending_player_health = sql.get_player_hp(cur, defending_player.name)
+    defending_player_health = sql.get_player_hp(cur, defending_player_name)
 
     #Check for faint
     if defending_player_health <= hit_damage:
@@ -420,16 +446,17 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         masassins_dead_role = get(guild.roles, name=settings.masassins_dead_role)
         await defending_player.add_roles(masassins_dead_role)
 
+        sql.delete_items_from_player(cur, defending_player_name)
         #Set their health to zero
-        sql.update_player_hp(cur, defending_player.name, (0-defending_player_health))
+        sql.update_player_hp(cur, defending_player_name, (0-defending_player_health))
     else:
-        sql.update_player_hp(cur, defending_player.name, (0-hit_damage))
+        sql.update_player_hp(cur, defending_player_name, (0-hit_damage))
 
     #Calculate reward based on whether death is true and items etc.
     total_gold_reward, total_experience_reward, total_rewards_list = battle.reward_check_player(
         cur, defending_player_death,
-        attacking_player.name, attacking_player_team, 
-        defending_player.name, defending_player_team
+        attacking_player_name, attacking_player_team, 
+        defending_player_name, defending_player_team
         )
 
     attack_situation_string = ""
@@ -439,9 +466,16 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         attack_situation_string = "hit "
 
     embed = discord.Embed(
-        title = attacking_player.name + " ({}) ".format(attacking_player_team) + attack_situation_string + defending_player.name + " ({}) ".format(defending_player_team),
+        title = attacking_player_name + " ({}) ".format(attacking_player_team) + attack_situation_string + defending_player_name + " ({}) ".format(defending_player_team),
         colour = discord.Colour.orange()
     )
+
+    attacking_health = sql.get_player_hp(cur, attacking_player_name)
+    defending_health = sql.get_player_hp(cur, defending_player_name)
+
+    damage_output_list.append("----- Remaining HP -----")
+    damage_output_list.append("{} HP : {}".format(attacking_player_name, attacking_health))
+    damage_output_list.append("{} HP : {}".format(defending_player_name, defending_health))
 
     damage_calculations_string = ""
     for calc in damage_output_list:
@@ -452,18 +486,21 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         rewards_calculations_string += reward + "\n"
 
     embed.add_field(name="Damage Calculations", value=damage_calculations_string, inline=False)
-    embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=True)
+    embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=False)
 
-    #Sending out damage calculations
-    await ctx.send(embed=embed)
+
+    #Distributing rewards
+    sql.update_player_experience(cur, attacking_player_name, total_experience_reward)
+    sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
+    sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
+
+    attacking_team_gold, attacking_team_exp = sql.view_teams(cur, attacking_player_team)
+    attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
+    embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
     await announcements_channel.send(embed=embed)
-
-    #Distributing rewards
-    sql.update_player_experience(cur, attacking_player.name, total_experience_reward)
-    sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
-    sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
+    await ctx.send(embed=embed)
 
 @attack.error
 async def attack_error(ctx, error):
@@ -513,7 +550,7 @@ async def buy(ctx, *args):
     cur = conn.cursor()
     player = ctx.author
     guild = ctx.guild
-    player_name = ctx.author.name
+    player_name = ctx.author.display_name
     team_name = sql.find_team_name_from_player(cur, player_name)
     item_name = " ".join(args[:])
     print(item_name)
@@ -527,6 +564,10 @@ async def buy(ctx, *args):
     team_gold_amount = sql.get_team_gold(cur, team_name)
     if team_gold_amount < settings.item_cost_dict[item_name]:
         await ctx.send("Your team does not have enough gold")
+        return
+
+    if sql.find_team_item(cur,team_name,item_name) is not None:
+        await ctx.send("Your team can only hold one of this item!")
         return
 
     #Give item to team

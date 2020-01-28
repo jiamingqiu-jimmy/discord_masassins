@@ -35,7 +35,7 @@ team_name_psychic = "Psychic"
 team_name_fighting = "Fighting"
 team_name_rock = "Rock"
 team_name_alumni = "Alumni"
-team_name_team_rocket = "Team Rocket"
+team_name_team_rocket = "Team-Rocket"
 
 team_list = [
     team_name_fire, team_name_bug,
@@ -83,8 +83,8 @@ item_name_potion = "Potion"
 item_name_revive = "Revive"
 item_name_expshare = "EXP Share"
 
-item_cost_x_attack = 150
-item_cost_x_defense = 150
+item_cost_x_attack = 200
+item_cost_x_defense = 200
 item_cost_amulet_coin = 50
 item_cost_shell_bell = 100
 item_cost_potion = 50
@@ -130,6 +130,7 @@ revive_healing = 75
 #New Player Initialization
 new_player_starting_health = 200
 new_player_starting_experience = 0
+max_player_hp = 200
 
 #Alumni Player Initialization
 alumni_player_starting_health = 200
@@ -156,11 +157,3 @@ player_team_dict = {
     "Ice":team_name_fire,
     "Vivian":team_name_ghost
 }
-
-#String Creation Initialization
-spacing = 1
-length_of_team = 10
-length_of_name = 15
-length_of_health = 3
-length_of_experience = 4
-length_of_items = 10

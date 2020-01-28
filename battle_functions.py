@@ -14,30 +14,30 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
     super_effective_team_defend = settings.team_effectiveness[defending_player_team]
     if super_effective_team_attack == defending_player_team:
         total_damage_dealt += settings.super_effective_damage
-        damage_output_list.append("Super effective attack : {} damage".format(settings.super_effective_damage))
+        damage_output_list.append("Super effective attack : {} DMG".format(settings.super_effective_damage))
     elif super_effective_team_defend == attacking_player_team:
         total_damage_dealt += settings.not_very_effective_damage
-        damage_output_list.append("Not very effective attack : {} damage".format(settings.not_very_effective_damage))
+        damage_output_list.append("Not very effective attack : {} DMG".format(settings.not_very_effective_damage))
     else:
         total_damage_dealt += settings.normal_damage
-        damage_output_list.append("Normal attack : {} damage".format(settings.normal_damage))
+        damage_output_list.append("Normal attack : {} DMG".format(settings.normal_damage))
     #Check for X-attack on attacking team
     if sql.find_team_item(cur, attacking_player_team, settings.item_name_x_attack) is not None:
         total_damage_dealt += settings.x_attack_damage_bonus
-        damage_output_list.append("X attack : {} damage".format(settings.x_attack_damage_bonus))
+        damage_output_list.append("X attack : +{} DMG".format(settings.x_attack_damage_bonus))
 
     #Check for X-Defense on defending team
     if sql.find_team_item(cur, defending_player_team, settings.item_name_x_defense) is not None:
         total_damage_dealt -= settings.x_defense_damage_negation
-        damage_output_list.append("Defending Team X-Defense: {} damage negation".format(settings.x_defense_damage_negation))
+        damage_output_list.append("Defending Team X-Defense: -{} DMG".format(settings.x_defense_damage_negation))
 
+    damage_output_list.append("Total Damage Dealt : " + str(total_damage_dealt))
+        
     #Check for attacking player shell bell
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_shell_bell) is not None:
         total_life_steal += settings.shell_bell_hit_healing
-        damage_output_list.append("Attacking Player Shell Bell: {} health has been given to {}".format(settings.shell_bell_hit_healing, attacking_player_name))
+        damage_output_list.append("=====\nAttacking Player Shell Bell: +{} HP to {}".format(settings.shell_bell_hit_healing, attacking_player_name))
     
-    damage_output_list.append("Total Damage Dealt : " + str(total_damage_dealt))
-        
     return total_life_steal, total_damage_dealt, damage_output_list
 
 def reward_check_player(cur, defending_player_death, attacking_player_name, attacking_player_team, defending_player_name, defending_player_team):
@@ -50,29 +50,28 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
     total_experience_amount += settings.base_experience_reward
 
     total_reward_list.append("Base gold reward: {} gold".format(settings.base_gold_reward))
-    total_reward_list.append("Base experience reward: {} EXP".format(settings.base_experience_reward))
+    total_reward_list.append("Base EXP reward: {} EXP".format(settings.base_experience_reward))
 
     #If death is true add extra experience and gold amounts
     if defending_player_death:
         total_gold_amount += settings.bonus_gold_reward
         total_experience_amount += settings.bonus_experience_reward
-        total_reward_list.append("Bonus reward from faint")
-        total_reward_list.append("Bonus gold reward: {} gold".format(settings.bonus_gold_reward))
-        total_reward_list.append("Bonus experience reward: {} experience".format(settings.bonus_experience_reward))
+        total_reward_list.append("Fainting gold reward: {} gold".format(settings.bonus_gold_reward))
+        total_reward_list.append("Fainting EXP reward: {} EXP\n=====".format(settings.bonus_experience_reward))
 
     #Check attacking player for Amulet Coin gold bonus
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) is not None:
         total_gold_amount += settings.amulet_coin_gold_bonus
-        total_reward_list.append("Bonus amulet coin reward: {} gold".format(settings.amulet_coin_gold_bonus))
+        total_reward_list.append("Bonus Amulet Coin reward: +{} gold".format(settings.amulet_coin_gold_bonus))
 
     #Check attacking palyer for Share Exp experience bonus
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_expshare) is not None:
         total_experience_amount += settings.exp_share_exp_bonus
-        total_reward_list.append("Bonus exp share reward : {} experience".format(settings.item_name_expshare))
+        total_reward_list.append("Bonus exp share reward : +{} EXP".format(settings.item_name_expshare))
 
-    total_reward_list.append("---------Total Rewards---------")
+    total_reward_list.append("--------- Total Rewards ---------")
     total_reward_list.append("Total gold: " + str(total_gold_amount))
-    total_reward_list.append("Total experience: " + str(total_experience_amount))
+    total_reward_list.append("Total EXP: " + str(total_experience_amount))
 
     return total_gold_amount, total_experience_amount, total_reward_list
     
