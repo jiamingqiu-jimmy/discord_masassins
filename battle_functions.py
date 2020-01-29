@@ -57,17 +57,17 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
         total_gold_amount += settings.bonus_gold_reward
         total_experience_amount += settings.bonus_experience_reward
         total_reward_list.append("Fainting gold reward: {} gold".format(settings.bonus_gold_reward))
-        total_reward_list.append("Fainting EXP reward: {} EXP\n=====".format(settings.bonus_experience_reward))
+        total_reward_list.append("Fainting EXP reward: {} EXP".format(settings.bonus_experience_reward))
 
     #Check attacking player for Amulet Coin gold bonus
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) is not None:
         total_gold_amount += settings.amulet_coin_gold_bonus
-        total_reward_list.append("Bonus Amulet Coin reward: +{} gold".format(settings.amulet_coin_gold_bonus))
+        total_reward_list.append("=====\nBonus Amulet Coin reward: +{} gold".format(settings.amulet_coin_gold_bonus))
 
     #Check attacking palyer for Share Exp experience bonus
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_expshare) is not None:
         total_experience_amount += settings.exp_share_exp_bonus
-        total_reward_list.append("Bonus exp share reward : +{} EXP".format(settings.item_name_expshare))
+        total_reward_list.append("=====\nBonus exp share reward : +{} EXP".format(settings.item_name_expshare))
 
     total_reward_list.append("--------- Total Rewards ---------")
     total_reward_list.append("Total gold: " + str(total_gold_amount))

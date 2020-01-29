@@ -81,7 +81,7 @@ item_name_amulet_coin = "Amulet-Coin"
 item_name_shell_bell = "Shell-Bell"
 item_name_potion = "Potion"
 item_name_revive = "Revive"
-item_name_expshare = "EXP Share"
+item_name_expshare = "EXP-Share"
 
 item_cost_x_attack = 200
 item_cost_x_defense = 200

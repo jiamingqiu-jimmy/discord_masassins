@@ -361,7 +361,7 @@ async def use_an_item_error(ctx,error):
 
 @bot.command(name="attack")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
-@commands.cooldown(1, 25, commands.BucketType.user)
+@commands.cooldown(1, 30, commands.BucketType.user)
 async def attack(ctx, player_name): #Maybe consider instead of inputting names, use mention
     cur = conn.cursor()
     guild = ctx.guild
@@ -396,16 +396,16 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     if attacking_player_masassins_role is None:
         await ctx.send("You cannot attack this player when you haven't officially joined the game yet!")
 
-    #Wait for confirmation, 60 second deadline or auto-cancel
+    #Wait for confirmation, 25 second deadline or auto-cancel
     message = """
         Hello team {}, {} has just initiated a hit on {}. 
-        {} you have 15 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
+        {} you have 25 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
     message = message.format(defending_player_team, attacking_player_name, defending_player_name, defending_player.mention)
     await defending_player_channel.send(message)
     def check(m):
         return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.display_name == defending_player_name
     try:
-        msg = await bot.wait_for('message', check=check, timeout=15)
+        msg = await bot.wait_for('message', check=check, timeout=25)
     except asyncio.TimeoutError:
         await defending_player_channel.send("Confirmation time has expired")
         await ctx.send("Confirmation time has expired")
@@ -591,10 +591,11 @@ async def give_team_item(ctx, team_name, item_name):
     cur = conn.cursor()
 
     sql.give_team_item(cur, team_name, item_name)
+    await ctx.send("Team {} has been given {}".format(team_name, item_name))
 
 @give_team_item.error
 async def give_team_item_error(ctx, error):
-    ctx.send(error)
+    await ctx.send(error)
 
 @bot.command(name="view_all")
 @commands.cooldown(1, 10, commands.BucketType.user)
