@@ -154,6 +154,46 @@ async def give_gold(ctx, team_name, gold_amount):
     sql.update_team_gold(cur, team_name, gold_amount)
     await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
 
+@bot.command(name="trade_gold")
+@commands.has_role(settings.masassins_alive_role)
+async def trade_gold(ctx, team_name, gold_amount):
+    cur = conn.cursor()
+    guild = ctx.guild
+    player_name = ctx.author.display_name
+
+    if int(gold_amount) < 1:
+        await ctx.send("You cannot trade 0 or negative gold")
+        return
+
+    if team_name not in settings.team_list:
+        await ctx.send("That is not a valid team, please check team name")
+        return
+
+    #Init_player_team_name
+    init_player_team_name = sql.find_team_name_from_player(cur, player_name)
+
+    cur = conn.cursor()
+    lock = asyncio.Lock()
+    await lock.acquire()
+    try:
+        team_gold_amount = sql.get_team_gold(cur, init_player_team_name)
+        if int(team_gold_amount) < int(gold_amount):
+            await ctx.send("Your team does not have that much gold to trade!")
+            return
+        sql.update_team_gold(cur, init_player_team_name, int(0-int(gold_amount)))
+        sql.update_team_gold(cur, team_name, int(gold_amount))
+        announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+        await announcements_channel.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
+        await ctx.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
+    except:
+        await ctx.send("An error has occured! Please check to make sure nothing changed and try again!")
+    finally:
+        lock.release()
+
+@trade_gold.error
+async def trade_gold_error(ctx, error):
+    await ctx.send(error)
+
 @bot.command(name="remove_item")
 @commands.has_role(settings.admin_role)
 async def remove_item(ctx, team_name, item_name):
