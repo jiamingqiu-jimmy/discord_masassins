@@ -12,24 +12,17 @@ async def view_team(cur, ctx, team_name):
     player_rows = sql.view_players(cur, team_name)
     if len(player_rows) != 0:
 
-        name_string = ""
-        health_exp_string = ""
-        player_items_string = ""
-        team_items_string = ""
+        player_string = ""
         for player_row in player_rows:
             player_name = player_row[0]
-            name_string += player_name + "\n"
-            health_exp_string += str(player_row[1]) + " / " + str(player_row[2]) + "\n"
-            items_string = ""
+            player_string += player_name + " - "
+            player_string += str(player_row[1]) + " / " + str(player_row[2]) + " - "
             for item_name in settings.item_list:
                 if sql.find_player_item(cur, player_name, item_name) is not None:
-                    items_string += item_name + " - "
+                    player_string += item_name + " - "
+            player_string += "\n"
 
-            if items_string == "":
-                player_items_string += "no items\n"
-            else:
-                player_items_string += items_string + "\n"
-
+        team_items_string = ""
         team_gold, team_experience = sql.view_teams(cur, team_name)
         team_items = sql.view_team_items(cur, team_name)
         for item_row in team_items:
@@ -42,9 +35,6 @@ async def view_team(cur, ctx, team_name):
             color = discord.Colour.blue()
         )
         
-        if items_string == "":
-            items_string = "no items"
-        embed.add_field(name="Name", value=name_string, inline=True)
-        embed.add_field(name="Health/EXP", value=health_exp_string, inline=True)
-        embed.add_field(name="Items", value=player_items_string, inline=True)
+        embed.add_field(name="Name - Health/Exp - Items(etc..)", value=player_string, inline=True)
+
         await ctx.send(embed=embed)

@@ -51,13 +51,30 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
 
     total_reward_list.append("Base gold reward: {} gold".format(settings.base_gold_reward))
     total_reward_list.append("Base EXP reward: {} EXP".format(settings.base_experience_reward))
-
+    if defending_player_team == settings.team_name_alumni:
+        total_gold_amount += settings.alumni_player_bonus_base_gold
+        total_experience_amount += settings.alumni_player_bonus_base_exp
+        total_reward_list.append("Bonus Alumni gold reward: {} gold".format(settings.alumni_player_bonus_base_gold))
+        total_reward_list.append("Bonus Alumni EXP reward: {} EXP".format(settings.alumni_player_bonus_base_exp))
+    if defending_player_team == settings.team_name_fire:
+        total_gold_amount += 20
+        total_experience_amount += 20
+        total_reward_list.append("Bonus gold/exp for hitting fire : 20")
+    elif defending_player_team == settings.team_name_psychic:
+        total_gold_amount += 10
+        total_experience_amount += 10
+        total_reward_list.append("Bonus gold/exp for hitting psychic : 10")
     #If death is true add extra experience and gold amounts
     if defending_player_death:
         total_gold_amount += settings.bonus_gold_reward
         total_experience_amount += settings.bonus_experience_reward
         total_reward_list.append("Fainting gold reward: {} gold".format(settings.bonus_gold_reward))
         total_reward_list.append("Fainting EXP reward: {} EXP".format(settings.bonus_experience_reward))
+        if defending_player_team == settings.team_name_alumni:
+            total_gold_amount += settings.alumni_player_bonus_faint_gold
+            total_experience_amount += settings.alumni_player_bonus_faint_exp
+            total_reward_list.append("Fainting Alumni bonus: {} gold".format(settings.alumni_player_bonus_faint_gold))
+            total_reward_list.append("Fainting Alumni bonus: {} EXP".format(settings.alumni_player_bonus_faint_exp))
 
     #Check attacking player for Amulet Coin gold bonus
     if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) is not None:

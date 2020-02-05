@@ -118,6 +118,14 @@ def delete_item_from_team(cur, team_name, item_name):
     cur.execute(delete_item_from_team, (team_name, item_name))
     cur.connection.commit()
 
+def delete_player(cur, player_name):
+    delete_player = """
+    DELETE from players
+    WHERE name=?
+    """
+    cur.execute(delete_player, [player_name])
+    cur.connection.commit()
+
 def delete_items_from_player(cur, player_name):
     delete_item_player = """
     DELETE from players_items
@@ -334,7 +342,7 @@ def populate_players_table( cur, player_name, team_name ):
         return -1
     team_id = find_team_id(cur, team_name)
     new_player = 0
-    if team_name == settings.team_name_alumni:
+    if team_name == settings.team_name_alumni or team_name == settings.team_name_team_rocket:
         new_player = (player_name, settings.alumni_player_starting_health, settings.alumni_player_starting_experience, team_id)
     else:
         new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_experience, team_id)

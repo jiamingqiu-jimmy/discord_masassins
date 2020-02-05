@@ -23,7 +23,7 @@ base_masassins_roles = [
     masassins_dead_role,
     admin_role
 ]
-admins_list = ["Jimmy"]
+admins_list = ["Jimmy", "Selina", "Annie", "Aizzer"]
 
 
 #Team Initialization
@@ -112,8 +112,8 @@ item_cost_dict = {
 item_dict = {
     item_name_potion : "Heals 50 HP. Note: you cannot heal a player past their maximum HP",
     item_name_revive : "Revives a player from fainting to 75 HP",
-    item_name_shell_bell : "Heals 15 HP even time you tag someone. Each shell bell can only be held by one player. A player can either have a shell bell OR amulet coin.",
-    item_name_amulet_coin : "Gain an additional 5 gold each time you tag someone. Each amulet coin can only be held by one player. A player can either have a shell bell OR amulet coin.",
+    item_name_shell_bell : "Heals 15 HP even time you tag someone. Each shell bell can only be held by one player. Does not transfer once you give it to someone",
+    item_name_amulet_coin : "Gain an additional 5 gold each time you tag someone. Each amulet coin can only be held by one player. Does not transfer once you give it to someone",
     item_name_x_attack : "Entire team deals an extra 25 HP damage each time they tag someone. Only lasts until midnight of the following day.",
     item_name_x_defense : "Entire team negates 25 damage when tagged. Only lasts until midnight of the following day.",
     item_name_expshare : "Grants an additional 10 EXP per hit. Can only be held by one player and only affects that one player’s actions. If that player faints, then the EXP share is lost."
@@ -133,27 +133,65 @@ new_player_starting_experience = 0
 max_player_hp = 200
 
 #Alumni Player Initialization
-alumni_player_starting_health = 200
+alumni_player_starting_health = 300
 alumni_player_starting_experience = 0
+alumni_player_bonus_faint_gold = 10
+alumni_player_bonus_faint_exp = 10
+alumni_player_bonus_base_gold = 10
+alumni_player_bonus_base_exp = 10
 
 player_team_dict = {
-    "Aizzer":team_name_bug,
-    "Jimmy":team_name_fighting,
-    "Annie":team_name_dark,
-    "Selina":team_name_ghost,
-    "Derek":team_name_psychic,
-    "Jillian":team_name_rock,
-    "Jessica_Nguyen":team_name_fire,
-    "Kriti":team_name_psychic,
-    "Will":team_name_bug,
-    "Anna":team_name_fire,
-    "Austin":team_name_alumni,
-    "Betsy":team_name_alumni,
-    "Alisa":team_name_dark,
-    "Brian":team_name_fighting,
-    "Christine":team_name_bug,
-    "Nitika":team_name_ghost,
-    "Chaz":team_name_dark,
-    "Ice":team_name_fire,
-    "Vivian":team_name_ghost
+    "Austin":team_name_fire,
+    "Chaztine":team_name_fire,
+    "Christine":team_name_fire,
+    "Jonathan":team_name_fire,
+    "Ronald":team_name_fire,
+    "Sarena":team_name_fire,
+    "Andrew":team_name_bug,
+    "Arnav":team_name_bug,
+    "Brian":team_name_bug,
+    "Cindy":team_name_bug,
+    "Kriti":team_name_bug,
+    "Nitika":team_name_bug,
+    "Vincent":team_name_bug,
+    "Anna":team_name_dark,
+    "Emily":team_name_dark,
+    "Ice":team_name_dark,
+    "Matthew":team_name_dark,
+    "Paul":team_name_dark,
+    "Yukiho":team_name_dark,
+    "Aku":team_name_ghost,
+    "Janica":team_name_ghost,
+    "Jessica":team_name_ghost,
+    "Vivian":team_name_ghost,
+    "Will":team_name_ghost,
+    "Leena":team_name_ghost,
+    "Alisa":team_name_psychic,
+    "Jillian":team_name_psychic,
+    "Joseph":team_name_psychic,
+    "Justin":team_name_psychic,
+    "Kristy":team_name_psychic,
+    "TszWai":team_name_psychic,
+    "Betsy":team_name_fighting,
+    "Demetria":team_name_fighting,
+    "Eric_J":team_name_fighting,
+    "Lara":team_name_fighting,
+    "Nicole":team_name_fighting,
+    "Wilson":team_name_fighting,
+    "Aaron":team_name_rock,
+    "Kevin":team_name_rock,
+    "Nicholas":team_name_rock,
+    "Timothy":team_name_rock,
+    "Tommy":team_name_rock,
+    "Winnie":team_name_rock,
+    "Aimee":team_name_alumni,
+    "Andy":team_name_alumni,
+    "Derek":team_name_alumni,
+    "Eric_C":team_name_alumni,
+    "Kentaro":team_name_alumni,
+    "Khue":team_name_alumni,
+    "Jimmy":team_name_team_rocket,
+    "Annie":team_name_team_rocket,
+    "Aizzer":team_name_team_rocket,
+    "Selina":team_name_team_rocket
 }
