@@ -75,47 +75,55 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 #Items Initialization
-item_name_x_attack = "X-Attack"
-item_name_x_defense = "X-Defense"
-item_name_amulet_coin = "Amulet-Coin"
-item_name_shell_bell = "Shell-Bell"
+#item_name_x_attack = "X-Attack"
+#item_name_x_defense = "X-Defense"
+#item_name_amulet_coin = "Amulet-Coin"
+#item_name_shell_bell = "Shell-Bell"
+item_name_focus_sash = "Focus-Sash"
+item_name_sitrus_berry = "Sitrus-Berry"
+item_name_poke_ball = "Poke-ball"
+item_name_master_ball = "Master-ball"
 item_name_potion = "Potion"
 item_name_revive = "Revive"
 item_name_expshare = "EXP-Share"
 
-item_cost_x_attack = 200
-item_cost_x_defense = 200
-item_cost_amulet_coin = 50
-item_cost_shell_bell = 100
+#item_cost_x_attack = 200
+#item_cost_x_defense = 200
+#item_cost_amulet_coin = 50
+#item_cost_shell_bell = 100
 item_cost_potion = 50
 item_cost_revive = 70
 
 item_list = [
     item_name_potion,
     item_name_revive,
-    item_name_shell_bell,
-    item_name_amulet_coin,
-    item_name_x_attack,
-    item_name_x_defense,
+    #item_name_shell_bell,
+    #item_name_amulet_coin,
+    #item_name_x_attack,
+    #item_name_x_defense,
+    item_name_focus_sash,
+    item_name_sitrus_berry,
+    item_name_poke_ball,
+    item_name_master_ball,
     item_name_expshare
 ]
 
 item_cost_dict = {
     item_name_potion : item_cost_potion,
     item_name_revive : item_cost_revive,
-    item_name_shell_bell : item_cost_shell_bell,
-    item_name_amulet_coin : item_cost_amulet_coin,
-    item_name_x_attack : item_cost_x_attack,
-    item_name_x_defense : item_cost_x_defense
+    #item_name_shell_bell : item_cost_shell_bell,
+    #item_name_amulet_coin : item_cost_amulet_coin,
+    #item_name_x_attack : item_cost_x_attack,
+    #item_name_x_defense : item_cost_x_defense
 }
 
 item_dict = {
     item_name_potion : "Heals 50 HP. Note: you cannot heal a player past their maximum HP",
     item_name_revive : "Revives a player from fainting to 75 HP",
-    item_name_shell_bell : "Heals 15 HP even time you tag someone. Each shell bell can only be held by one player. Does not transfer once you give it to someone",
-    item_name_amulet_coin : "Gain an additional 5 gold each time you tag someone. Each amulet coin can only be held by one player. Does not transfer once you give it to someone",
-    item_name_x_attack : "Entire team deals an extra 25 HP damage each time they tag someone. Only lasts until midnight of the following day.",
-    item_name_x_defense : "Entire team negates 25 damage when tagged. Only lasts until midnight of the following day.",
+    #item_name_shell_bell : "Heals 15 HP even time you tag someone. Each shell bell can only be held by one player. Does not transfer once you give it to someone",
+    #item_name_amulet_coin : "Gain an additional 5 gold each time you tag someone. Each amulet coin can only be held by one player. Does not transfer once you give it to someone",
+    #item_name_x_attack : "Entire team deals an extra 25 HP damage each time they tag someone. Only lasts until midnight of the following day.",
+    #item_name_x_defense : "Entire team negates 25 damage when tagged. Only lasts until midnight of the following day.",
     item_name_expshare : "Grants an additional 10 EXP per hit. Can only be held by one player and only affects that one player’s actions. If that player faints, then the EXP share is lost."
 }
 
