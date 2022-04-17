@@ -49,7 +49,7 @@ def get_team_id_from_team_name(cur, team_name):
 
 def insert_teams( cur, team_list ):
     for team_name in team_list:
-        cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_experience, settings.team_starting_gold))
+        cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_gold))
     cur.connection.commit()
     
 #Give Gold

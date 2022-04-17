@@ -44,7 +44,7 @@ team_list = [
     team_name_rock, team_name_alumni,
     team_name_team_rocket
 ]
-team_starting_experience = 0
+
 team_starting_gold = 0
 
 team_effectiveness = {
