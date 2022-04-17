@@ -466,7 +466,7 @@ async def use(ctx, item_name, player_name):
 
     elif item_name == settings.item_name_master_ball:
         #Check to make sure that the player is on a different team
-        new_team_name = sql.get_player_team_name(curr, init_player_name)
+        new_team_name = sql.get_player_team_name(cur, init_player_name)
         if new_team_name == team_name:
             await ctx.send("The player is already on your team")
             return 
@@ -479,7 +479,7 @@ async def use(ctx, item_name, player_name):
     
     elif item_name == settings.item_name_gacha_ball:
         #Check to make sure that the player is on a different team
-        new_team_name = sql.get_player_team_name(curr, init_player_name)
+        new_team_name = sql.get_player_team_name(cur, init_player_name)
         if new_team_name == team_name:
             await ctx.send("The player is already on your team")
             return 
