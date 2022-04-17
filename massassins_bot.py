@@ -185,6 +185,7 @@ async def game_populate(ctx):
 @bot.command(name="add_player")
 @commands.has_role(settings.admin_role)
 async def add_player(ctx, player_name, team_name):
+    cur = conn.cursor()
     return_code = sql.insert_player(cur, player_name, team_name)
     if return_code == -1:
         await ctx.send("There has been an error, please check team_name is valid")
@@ -263,8 +264,8 @@ async def update_team_gold_exp(ctx, team_name, gold_amount, experience_amount):
     if int(gold_amount) < 0 and int(experience_amount) < 0:
         positive_gold = (0-int(gold_amount))
         positive_EXP = (0-int(experience_amount))
-        sql.update_team_gold(cur, settings.team_name_team_rocket, positive_gold)
-        sql.update_team_experience(cur, settings.team_name_team_rocket, positive_EXP)
+        sql.update_team_gold(cur, settings.team_name_gym_leaders, positive_gold)
+        sql.update_team_experience(cur, settings.team_name_gym_leaders, positive_EXP)
         await ctx.send("Team Rocket has just stolen {} gold and {} EXP from {}".format(positive_gold, positive_EXP, team_name))
     else:
         await ctx.send("{} Gold and {} EXP changed on team {}".format(gold_amount, experience_amount, team_name))
@@ -740,7 +741,7 @@ async def give_team_item_error(ctx, error):
 async def view_all(ctx):
     cur = conn.cursor()
     for team_name in settings.team_list:
-        if team_name is not settings.team_name_team_rocket and team_name is not settings.team_name_alumni:
+        if team_name is not settings.team_name_gym_leaders and team_name is not settings.team_name_alumni:
             await view.view_team(cur, ctx, team_name)
 
 @bot.command(name="v")

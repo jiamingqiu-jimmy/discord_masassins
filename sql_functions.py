@@ -50,7 +50,7 @@ def valid_player_check( cur, player_name ):
 
 def valid_item_check( cur, item_name ):
     try:
-        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [item_name])
+        cur.execute(select_commands.SELECT_ITEM_ID_FROM_ITEM_NAME, [item_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -64,7 +64,7 @@ def insert_player(cur, player_name, team_name ):
         return -1
     team_id = get_team_id_from_team_name(cur, team_name)
     new_player = 0
-    if team_name == settings.team_name_alumni or team_name == settings.team_name_team_rocket:
+    if team_name == settings.team_name_alumni or team_name == settings.team_name_gym_leaders:
         new_player = (player_name, settings.alumni_player_starting_health, settings.alumni_player_starting_experience, team_id)
     else:
         new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_experience, team_id)
