@@ -62,16 +62,6 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
             total_reward_list.append("Fainting Alumni bonus: {} gold".format(settings.alumni_player_bonus_faint_gold))
             total_reward_list.append("Fainting Alumni bonus: {} EXP".format(settings.alumni_player_bonus_faint_exp))
 
-    #Check attacking player for Amulet Coin gold bonus
-    if sql.find_player_item(cur, attacking_player_name, settings.item_name_amulet_coin) is not None:
-        total_gold_amount += settings.amulet_coin_gold_bonus
-        total_reward_list.append("=====\nBonus Amulet Coin reward: +{} gold".format(settings.amulet_coin_gold_bonus))
-
-    #Check attacking palyer for Share Exp experience bonus
-    if sql.find_player_item(cur, attacking_player_name, settings.item_name_expshare) is not None:
-        total_experience_amount += settings.exp_share_exp_bonus
-        total_reward_list.append("=====\nBonus exp share reward : +{} EXP".format(settings.item_name_expshare))
-
     total_reward_list.append("--------- Total Rewards ---------")
     total_reward_list.append("Total gold: " + str(total_gold_amount))
     total_reward_list.append("Total EXP: " + str(total_experience_amount))
