@@ -94,12 +94,17 @@ SELECT_TEAM_NAME_FROM_PLAYER_NAME = """
 """
 
 SELECT_TEAM_ITEMS = """
-    SELECT *
-    FROM teams_items
-    WHERE team_id= 
-    (SELECT team_id FROM teams WHERE name=?)
-    AND item_id=
-    (SELECT item_id FROM items WHERE name=?)
+    SELECT name
+    FROM items
+    WHERE item_id IN (
+        SELECT item_id
+        FROM teams_items
+        WHERE team_id=(
+            SELECT team_id
+            FROM teams
+            WHERE name=?
+        )
+    )
 """
 
 SELECT_TEAM_ITEM_COUNT = """

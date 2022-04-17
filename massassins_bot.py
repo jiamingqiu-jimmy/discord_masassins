@@ -475,7 +475,7 @@ async def use(ctx, item_name, player_name):
         sql.update_player_team(cur, player_name, new_team_name)
         await ctx.send("{} has been caught by a master ball".format(player_name))
         #Remove item from team
-        sql.delete_team_item(cur, team_name, item_name)
+        sql.delete_team_item(cur, new_team_name, item_name)
     
     elif item_name == settings.item_name_gacha_ball:
         #Check to make sure that the player is on a different team
@@ -492,7 +492,7 @@ async def use(ctx, item_name, player_name):
             sql.update_player_team(cur, player_name, new_team_name)
             await ctx.send("{} has been caught by a gacha ball".format(player_name))
         #Remove item from team
-        sql.delete_team_item(cur, team_name, item_name)
+        sql.delete_team_item(cur, new_team_name, item_name)
 
     elif item_name == settings.item_name_poke_ball:
         #Check to make sure the player is not already in the game
