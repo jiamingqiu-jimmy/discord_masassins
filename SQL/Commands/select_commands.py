@@ -93,12 +93,6 @@ SELECT_TEAM_NAME_FROM_PLAYER_NAME = """
     )
 """
 
-SELECT_TEAMS = """
-    SELECT gold, experience
-    FROM teams
-    WHERE name=?
-"""
-
 SELECT_TEAM_ITEMS = """
     SELECT name
     FROM items

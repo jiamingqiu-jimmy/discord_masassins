@@ -7,15 +7,12 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
-def get_teams(cur, team_name):
-    return cur.execute(select_commands.SELECT_TEAMS, [team_name]).fetchone()
-
 #Get team gold amount
 def get_team_gold(cur, team_name):
     return cur.execute(select_commands.SELECT_TEAM_GOLD, [team_name]).fetchone()[0]
 
 def get_team_experience(cur, team_name):
-    return cur.execute(select_commands.SELECT_TEAM_EXPERIENCE, [team_name]).fetchall()
+    return cur.execute(select_commands.SELECT_TEAM_EXPERIENCE_FROM_NAME, [team_name]).fetchall()
 
 def get_teams_list(cur):
     cur.execute(select_commands.SELECT_ALL_TEAMS)
