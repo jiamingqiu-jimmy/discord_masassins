@@ -22,7 +22,17 @@ for player_name,team_name in settings.player_team_dict.items():
     sql.update_team_gold(cur, team_name, 30)
     sql.update_player_hp(cur, player_name, -10)
 sql.give_team_item(cur, "Fire", "Potion")
-sql.update_team_experience(cur, "Fire", 100)
+sql.give_team_item(cur,"Psychic","Amulet-Coin")
+sql.update_player_experience(cur, "Aaron", 100)
+sql.update_player_experience(cur,"Tommy",-1)
+sql.update_player_experience(cur,"Nicole",1000)
+sql.update_player_experience(cur,"Ronald",2000)
 
 #Printing list of all the tables
-sql.print_all_list(cur)
+for team_name in cur.execute(sql.find_all_teams_sql).fetchall():
+    print("Team name: ", team_name[1], ", Scores: ", sql.get_team_experience(cur,team_name[1]))
+
+sql.update_player_team(cur,"Ronald","Rock")
+
+for team_name in cur.execute(sql.find_all_teams_sql).fetchall():
+    print("Team name: ", team_name[1], ", Scores: ", sql.get_team_experience(cur,team_name[1]))
