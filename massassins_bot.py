@@ -426,10 +426,11 @@ async def use(ctx, item_name, player_name):
         #Remove item from team
         sql.delete_team_item(cur, team_name, item_name)
 
-    elif item_name == settings.item_name_shell_bell:
-        #Check to make sure that the player does not already have the item
-        if sql.get_player_item(cur, player_name, item_name) is not None:
-            await ctx.send("The player already has that item")
+    elif item_name == settings.item_name_master_ball:
+        #Check to make sure that the player is on a different team
+        new_team_name = sql.get_player_team_name(curr, init_player_name)
+        if new_team_name == team_name:
+            await ctx.send("The player is already on your team")
             return 
 
         #Master ball, throw master ball at a player.
@@ -445,13 +446,12 @@ async def use(ctx, item_name, player_name):
             return
         
         #Poke ball, throw poke ball at a new player
-        #add player sql function
+        sql.insert_player(cur, player_name)
         await ctx.send("{} has been caught by a poke ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_focus_sash:
-
         #Check to make sure the player does not already have the item
         if sql.get_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
