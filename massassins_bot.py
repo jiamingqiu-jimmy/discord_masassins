@@ -428,24 +428,39 @@ async def use(ctx, item_name, player_name):
 
     elif item_name == settings.item_name_master_ball:
         #Check to make sure that the player is on a different team
-        if sql.find_team_name_from_player(cur, player_name) == team_name:
+        new_team_name = sql.find_team_name_from_player(cur, init_player_name)
+        if new_team_name == team_name:
             await ctx.send("The player is already on your team")
             return 
+
         #Master ball, throw master ball at a player.
-        sql.update_player_team(cur, player_name, team_name)
+        sql.update_player_team(cur, player_name, new_team_name)
         await ctx.send("{} has been caught by a master ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
     
     elif item_name == settings.item_name_poke_ball:
         #Check to make sure the player is not already in the game
-        if sql.valid_player_check(cur, player_name) == 0: #search player
+        if sql.valid_player_check(cur, player_name) == 0:
             await ctx.send("The player is already in the game)
             return
         
         #Poke ball, throw poke ball at a new player
-        sql.give_player_item(cur, player_name, item_name)
+        #add player sql function
         await ctx.send("{} has been caught by a poke ball".format(player_name))
+        #Remove item from team
+        sql.delete_item_from_team(cur, team_name, item_name)
+
+    elif item_name == settings.item_name_focus_sash:
+
+        #Check to make sure the player does not already have the item
+        if sql.find_player_item(cur, player_name, item_name) is not None:
+            await ctx.send("The player already has that item")
+            return
+
+        #Focus sash, give focus sash to a player
+        sql.give_player_item(cur, player_name, item_name)
+        await ctx.send("{} has been given focus sash".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
