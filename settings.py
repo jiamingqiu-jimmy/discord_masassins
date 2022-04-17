@@ -74,46 +74,44 @@ bonus_gold_reward = 30
 team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
+master_ball_catch_chance = 1
+gacha_ball_catch_chance = 0.3
+
 #Items Initialization
 item_name_potion = "Potion"
 item_name_revive = "Revive"
-item_name_sitrus_berry = "Sitrus-Berry"
-item_name_master_ball = "Master_Ball"
-item_name_poke_ball = "Poke_Ball"
-item_name_focus_sash = "Focus_Sash"
+item_name_master_ball = "Master Ball"
+item_name_gacha_ball = "Gacha Ball"
+item_name_poke_ball = "Poke Ball"
 
 item_cost_potion = 30
 item_cost_revive = 60
-item_cost_sitrus_berry = 10
 item_cost_master_ball = 300
+item_cost_gacha_ball = 3
 item_cost_poke_ball = 100
-item_cost_focus_sash = 50
 
 item_list = [
     item_name_potion,
     item_name_revive,
-    item_name_sitrus_berry,
     item_name_master_ball,
+    item_name_gacha_ball,
     item_name_poke_ball,
-    item_name_focus_sash
 ]
 
 item_cost_dict = {
     item_name_potion : item_cost_potion,
     item_name_revive : item_cost_revive,
-    item_name_sitrus_berry : item_cost_sitrus_berry,
     item_name_master_ball : item_cost_master_ball,
-    item_name_poke_ball : item_cost_poke_ball,
-    item_name_focus_sash : item_cost_focus_sash
+    item_name_gacha_ball : item_cost_gacha_ball,
+    item_name_poke_ball : item_cost_poke_ball
 }
 
 item_dict = {
     item_name_potion : "Heals 40 HP. Note: you cannot heal a player past their maximum HP",
     item_name_revive : "Revives a player from fainting to 75 HP",
-    item_name_sitrus_berry : "Invulnerability for 1 hr",
     item_name_master_ball : "Add one person of your choice from another team to your team",
-    item_name_poke_ball : "Add one person (not currently signed up for the game) to your team",
-    item_name_focus_sash : "Give to one player to hold. If a player takes lethal damage, survive with 1 HP. Sash breaks upon a single hit. Lasts for 24 hours.",
+    item_name_gacha_ball : "Add a player of choice to your team 0.3% of the time",
+    item_name_poke_ball : "Add one person (not currently signed up for the game) to your team"
 }
 
 potion_healing = 40
