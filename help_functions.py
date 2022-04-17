@@ -12,7 +12,7 @@ help_trade = "Trade : !trade <team_name> <gold_amount>"
 help_join = "Join the game! : !join"
 
 help_help_description = "Gives a list of useful commands and how to use them"
-help_use_description = "Use an item on the player or give it to them to hold (for shell-bell/amulet coin)"
+help_use_description = "Use an item on the player or give it to them to hold (for sitrus berry/focus sash)"
 help_buy_description = "Buy an item for your team, make sure you have enough gold for it"
 help_shop_description = "Shows you the shop and the items for sale"
 help_view_all_description = "Shows you a list of all the teams"
