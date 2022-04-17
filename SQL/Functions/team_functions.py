@@ -47,11 +47,6 @@ def get_team_id_from_team_name(cur, team_name):
     r = cur.fetchone()
     return r[0]
 
-#Returns total of team's player's experience
-def get_team_experience(cur, team_name):
-    exp = [i[2] for i in get_players_from_team(cur, team_name)]
-    return sum(exp)
-    
 def insert_teams( cur, team_list ):
     for team_name in team_list:
         cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_experience, settings.team_starting_gold))

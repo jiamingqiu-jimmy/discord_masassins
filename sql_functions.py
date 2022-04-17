@@ -8,25 +8,24 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
+from SQL.Functions.table_functions import *
 from SQL.Functions.player_functions import * 
 from SQL.Functions.team_functions import *
 from SQL.Functions.item_functions import *
 
 def drop_tables(cur):
-    cur.execute(drop_commands.DROP_TABLE_PLAYERS)
-    cur.execute(drop_commands.DROP_TABLE_TEAMS)
-    cur.execute(drop_commands.DROP_TABLE_ITEMS)
-    cur.execute(drop_commands.DROP_TABLE_TEAMS_ITEMS)
-    cur.execute(drop_commands.DROP_TABLE_PLAYERS_ITEMS)
-    cur.connection.commit()
-
+    drop_players_table(cur)
+    drop_teams_table(cur)
+    drop_items_table(cur)
+    drop_teams_items_table(cur)
+    drop_players_items_table(cur)
+    
 def create_tables(cur):
-    cur.execute(create_commands.CREATE_TEAM_TABLES)
-    cur.execute(create_commands.CREATE_PLAYERS_TABLE)
-    cur.execute(create_commands.CREATE_ITEMS_TABLE)
-    cur.execute(create_commands.CREATE_PLAYERS_ITEMS_TABLE)
-    cur.execute(create_commands.CREATE_TEAMS_ITEMS_TABLE)
-    cur.connection.commit()
+    create_teams_table(cur)
+    create_players_table(cur)
+    create_items_table(cur)
+    create_players_items_table(cur)
+    create_teams_items_table(cur)
 
 def valid_team_check( cur, team_name ):
     try:
@@ -85,6 +84,11 @@ def give_player_item(cur, player_name, item_name):
     item_id = get_item_id_from_item_name(cur, item_name)
     cur.execute(insert_commands.INSERT_PLAYER_ITEM, (player_id, item_id))
     cur.connection.commit()
+
+#Returns total of team's player's experience
+def get_team_experience(cur, team_name):
+    exp = [i[2] for i in get_players_from_team(cur, team_name)]
+    return sum(exp)
 
 def update_player_team(cur,player_name,team_name):
     if valid_team_check(cur,team_name)!=0:
