@@ -92,14 +92,10 @@ def get_team_experience(cur, team_name):
     return sum(exp)
 
 def update_player_team(cur,player_name,team_name):
-    print("HELLO!")
-    print(valid_team_check(cur,team_name))
-    print(valid_player_check(cur,player_name))
     if valid_team_check(cur,team_name)!=0:
         return -1
     if valid_player_check(cur,player_name)!=0:
         return -2
     team_id = get_team_id_from_team_name(cur, team_name)
-    print(f'Team Name {team_name}')
     cur.execute(update_commands.UPDATE_PLAYER_TEAM,(team_id,player_name))
     cur.connection.commit()

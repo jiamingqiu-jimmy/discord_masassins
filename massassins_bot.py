@@ -633,7 +633,8 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
     sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
 
-    attacking_team_gold, attacking_team_exp = sql.get_teams(cur, attacking_player_team)
+    attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
+    attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
     attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
     embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 

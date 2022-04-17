@@ -7,14 +7,12 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
-def get_teams(cur, team_name):
-    return cur.execute(select_commands.SELECT_TEAMS, [team_name]).fetchone()
-
 #Get team gold amount
 def get_team_gold(cur, team_name):
-    cur.execute(select_commands.SELECT_TEAM_GOLD, [team_name])
-    r = cur.fetchone()
-    return r[0]
+    return cur.execute(select_commands.SELECT_TEAM_GOLD, [team_name]).fetchone()[0]
+
+def get_team_experience(cur, team_name):
+    return cur.execute(select_commands.SELECT_TEAM_EXPERIENCE_FROM_NAME, [team_name]).fetchall()
 
 def get_teams_list(cur):
     cur.execute(select_commands.SELECT_ALL_TEAMS)
@@ -33,7 +31,7 @@ def get_team_items(cur, team_name):
     return cur.execute(select_commands.SELECT_TEAM_ITEMS, [team_name]).fetchall()
 
 def get_team_item_count(cur, team_name, item_name):
-    return cur.execute(select_commands.SELECT_TEAM_ITEM_COUNT, (team_name, item_name)).fetchone()
+    return cur.execute(select_commands.SELECT_TEAM_ITEM_COUNT, (team_name, item_name)).fetchone()[0]
 
 def get_team_item(cur, team_name, item_name):
     cur.execute(select_commands.SELECT_TEAM_ITEMS, (team_name, item_name))
@@ -51,7 +49,7 @@ def get_team_id_from_team_name(cur, team_name):
 
 def insert_teams( cur, team_list ):
     for team_name in team_list:
-        cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_experience, settings.team_starting_gold))
+        cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_gold))
     cur.connection.commit()
     
 #Give Gold
