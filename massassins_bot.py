@@ -487,7 +487,7 @@ async def use(ctx, item_name, player_name):
         #gacha ball, throw gacha ball at a player.
         catch = random.uniform(0,1)
         if catch >= settings.gacha_ball_catch_chance:
-            ctx.send("{} got away...".format(player_name))
+            await ctx.send("{} got away...".format(player_name))
         else:
             sql.update_player_team(cur, player_name, new_team_name)
             await ctx.send("{} has been caught by a gacha ball".format(player_name))
