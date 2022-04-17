@@ -8,24 +8,25 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
-from SQL.Functions.table_functions import *
 from SQL.Functions.player_functions import * 
 from SQL.Functions.team_functions import *
 from SQL.Functions.item_functions import *
 
 def drop_tables(cur):
-    drop_players_table(cur)
-    drop_teams_table(cur)
-    drop_items_table(cur)
-    drop_teams_items_table(cur)
-    drop_players_items_table(cur)
+    cur.execute(drop_commands.DROP_TABLE_PLAYERS)
+    cur.execute(drop_commands.DROP_TABLE_TEAMS)
+    cur.execute(drop_commands.DROP_TABLE_ITEMS)
+    cur.execute(drop_commands.DROP_TABLE_TEAMS_ITEMS)
+    cur.execute(drop_commands.DROP_TABLE_PLAYERS_ITEMS)
+    cur.connection.commit()
     
 def create_tables(cur):
-    create_teams_table(cur)
-    create_players_table(cur)
-    create_items_table(cur)
-    create_players_items_table(cur)
-    create_teams_items_table(cur)
+    cur.execute(create_commands.CREATE_TEAM_TABLES)
+    cur.execute(create_commands.CREATE_PLAYERS_TABLE)
+    cur.execute(create_commands.CREATE_ITEMS_TABLE)
+    cur.execute(create_commands.CREATE_PLAYERS_ITEMS_TABLE)
+    cur.execute(create_commands.CREATE_TEAMS_ITEMS_TABLE)
+    cur.connection.commit()
 
 def valid_team_check( cur, team_name ):
     try:
@@ -39,7 +40,7 @@ def valid_team_check( cur, team_name ):
 
 def valid_player_check( cur, player_name ):
     try:
-        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [player_name])
+        cur.execute(select_commands.SELECT_PLAYER_WITH_NAME, [player_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2

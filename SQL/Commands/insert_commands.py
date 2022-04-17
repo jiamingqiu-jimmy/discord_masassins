@@ -3,7 +3,7 @@ INSERT_ITEM = """
 """
 
 INSERT_TEAM = """
-    INSERT INTO teams (name, experience, gold) VALUES (?, ?, ?)
+    INSERT INTO teams (name, gold) VALUES (?, ?)
 """
 
 INSERT_PLAYER = """

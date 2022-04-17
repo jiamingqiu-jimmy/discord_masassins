@@ -2,7 +2,6 @@ CREATE_TEAM_TABLES="""
     CREATE TABLE teams (
         team_id INTEGER PRIMARY KEY,
         name text NOT NULL UNIQUE,
-        experience INTEGER NOT NULL,
         gold INTEGER NOT NULL
     )
     """

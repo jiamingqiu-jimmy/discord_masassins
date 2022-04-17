@@ -5,6 +5,9 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
+def player_with_name(cur, player_name):
+    return cur.execute(select_commands.SELECT_PLAYER_WITH_NAME)
+
 def get_players_from_team(cur, team_name):
     return cur.execute(select_commands.SELECT_PLAYERS, [team_name]).fetchall()
 
@@ -36,9 +39,7 @@ def delete_player_items(cur, player_name):
     cur.connection.commit()
     
 def get_player_id_from_player_name(cur, player_name):
-    cur.execute(select_commands.SELECT_PLAYER_ID_FROM_PLAYER_NAME, [player_name])
-    r = cur.fetchone()
-    return r[0]
+    return cur.execute(select_commands.SELECT_PLAYER_ID_FROM_PLAYER_NAME, [player_name]).fetchone()[0]
 
 #Update Player Experience
 def update_player_experience(cur, player_name, experience_increase_decrease_amount):
@@ -49,3 +50,7 @@ def update_player_experience(cur, player_name, experience_increase_decrease_amou
 def update_player_hp(cur, player_name, hp_increase_decrease_amount):
     cur.execute(update_commands.UPDATE_PLAYER_HEALTH, (hp_increase_decrease_amount, player_name))
     cur.connection.commit()
+
+def get_player_experience(cur, player_name):
+    return cur.execute(select_commands.SELECT_PLAYER_EXPERIENCE_FROM_NAME, [player_name]).fetchone()[0]
+    
