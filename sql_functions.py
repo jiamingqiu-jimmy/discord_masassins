@@ -39,7 +39,7 @@ def valid_team_check( cur, team_name ):
 
 def valid_player_check( cur, player_name ):
     try:
-        cur.execute(select_commands.SELECT_PLAYER_ITEMS, [player_name])
+        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [player_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -49,7 +49,7 @@ def valid_player_check( cur, player_name ):
 
 def valid_item_check( cur, item_name ):
     try:
-        cur.execute(select_commands.SELECT_ALL_ITEMS_WITH_NAME, [item_name])
+        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [item_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
