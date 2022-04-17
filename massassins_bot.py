@@ -411,7 +411,7 @@ async def use(ctx, item_name, player_name):
         masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
         await target_player.add_roles(masassins_alive_role)       
         sql.update_player_hp(cur, player_name, settings.revive_healing)
-        await ctx.send("{} has been given revive. He has been revived!".format(player_name))
+        await ctx.send("{} has been given revive. They have been revived!".format(player_name))
         sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_sitrus_berry:
@@ -422,30 +422,30 @@ async def use(ctx, item_name, player_name):
 
         #Sitrus berry, give sitrus berry to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given sitrus berry".format(player_name))
+        await ctx.send("{} has been given sitrus berry. They are invulnerable for 1 hour!".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
     elif item_name == settings.item_name_master_ball:
-        #Check to make sure that the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) is not None:
-            await ctx.send("The player already has that item")
+        #Check to make sure that the player is on a different team
+        if sql.find_team_name_from_player(cur, player_name) == team_name:
+            await ctx.send("The player is already on your team")
             return 
-        #Master ball, give master ball to a player
-        sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given master ball".format(player_name))
+        #Master ball, throw master ball at a player.
+        sql.update_player_team(cur, player_name, team_name)
+        await ctx.send("{} has been caught by a master ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
     
     elif item_name == settings.item_name_poke_ball:
-        #Check to make sure the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) is not None:
-            await ctx.send("The player already has that item")
+        #Check to make sure the player is not already in the game
+        if sql.valid_player_check(cur, player_name) == 0: #search player
+            await ctx.send("The player is already in the game)
             return
         
-        #Poke ball, give poke ball to a player
+        #Poke ball, throw poke ball at a new player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given poke ball".format(player_name))
+        await ctx.send("{} has been caught by a poke ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
