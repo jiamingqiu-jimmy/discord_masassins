@@ -35,7 +35,7 @@ team_name_psychic = "Psychic"
 team_name_fighting = "Fighting"
 team_name_rock = "Rock"
 team_name_alumni = "Alumni"
-team_name_gym_leaders = "Gym Leaders"
+team_name_gym_leaders = "Gym-Leaders"
 
 team_list = [
     team_name_fire, team_name_bug,
