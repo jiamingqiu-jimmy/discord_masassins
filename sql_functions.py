@@ -6,6 +6,7 @@ import SQL.select_commands as select_commands
 import SQL.delete_commands as delete_commands
 import SQL.drop_commands as drop_commands
 import SQL.insert_commands as insert_commands
+import SQL.update_commands as update_commands
 
 def view_players(cur, team_name):
     return cur.execute(select_commands.SELECT_PLAYERS, [team_name]).fetchall()
@@ -140,86 +141,43 @@ def populate_players_table( cur, player_name, team_name ):
 
 #Give Gold
 def update_team_gold(cur, team_name, gold_increase_decrease_amount):
-   update_team_gold = """
-   UPDATE teams
-   SET gold = gold+?
-   WHERE name=?
-   """
-   cur.execute(update_team_gold, (gold_increase_decrease_amount, team_name))
+   cur.execute(update_commands.UPDATE_TEAM_GOLD, (gold_increase_decrease_amount, team_name))
    cur.connection.commit()
-
-#Update Team Experience
-#def update_team_experience(cur, team_name, experience_increase_decrease_amount):
-#    update_team_experience = """
-#    UPDATE teams
-#    SET experience = experience+?
-#    WHERE name=?
-#    """
-#    cur.execute(update_team_experience, (experience_increase_decrease_amount, team_name))
-#    cur.connection.commit()
 
 #Update Player Experience
 def update_player_experience(cur, player_name, experience_increase_decrease_amount):
-    update_player_experience = """
-    UPDATE players
-    SET experience = experience+?
-    WHERE name=?
-    """
-    cur.execute(update_player_experience, (experience_increase_decrease_amount, player_name))
+    cur.execute(update_commands.UPDATE_PLAYER_EXPERIENCE, (experience_increase_decrease_amount, player_name))
     cur.connection.commit()
 
 #Give HP
 def update_player_hp(cur, player_name, hp_increase_decrease_amount):
-    update_player_hp = """
-    UPDATE players
-    SET health = health+?
-    WHERE name=?
-    """
-    cur.execute(update_player_hp, (hp_increase_decrease_amount, player_name))
+    cur.execute(update_commands.UPDATE_PLAYER_HEALTH, (hp_increase_decrease_amount, player_name))
     cur.connection.commit()
 
 #Get player HP
 def get_player_hp(cur, player_name):
-    get_player_hp = """
-    SELECT health
-    FROM players
-    WHERE name=?
-    """
-    cur.execute(get_player_hp, [player_name])
+    cur.execute(select_commands.SELECT_PLAYER_HEALTH, [player_name])
     r = cur.fetchone()
     return r[0]
 
 #Get team gold amount
 def get_team_gold(cur, team_name):
-    get_team_gold = """
-    SELECT gold
-    FROM teams
-    WHERE name=?
-    """
-    cur.execute(get_team_gold, [team_name])
+    cur.execute(select_commands.SELECT_TEAM_GOLD, [team_name])
     r = cur.fetchone()
     return r[0]
 
 #Give Item to Team 
 def give_team_item(cur, team_name, item_name):
-    give_team_item = """
-    INSERT INTO teams_items (team_id, item_id) 
-    VALUES (?,?)
-    """
     team_id = find_team_id(cur, team_name)
     item_id = find_item_id(cur, item_name)
-    cur.execute(give_team_item, (team_id, item_id))
+    cur.execute(insert_commands.INSERT_TEAM_ITEM, (team_id, item_id))
     cur.connection.commit()
 
 #Give Item to Player
-def give_player_item(cur, player_name, item_name):
-    give_player_item = """
-    INSERT INTO players_items (player_id, item_id)
-    VALUES (?,?)
-    """
+def give_player_item(cur, player_name, item_name): 
     player_id = find_player_id(cur, player_name)
     item_id = find_item_id(cur, item_name)
-    cur.execute(give_player_item, (player_id, item_id))
+    cur.execute(insert_commands.INSERT_PLAYER_ITEM, (player_id, item_id))
     cur.connection.commit()
 
 #Returns total of team's player's experience
@@ -232,22 +190,12 @@ def update_player_team(cur,player_name,team_name):
         return -1
     if valid_player_check(cur,player_name)!=0:
         return -2
-    update_player_team = """
-    UPDATE players
-    SET team_id = ?
-    WHERE name = ?
-    """
     team_id = find_team_id(cur, team_name)
-    cur.execute(update_player_team,(team_id,player_name))
+    cur.execute(update_commands.UPDATE_PLAYER_TEAM,(team_id,player_name))
     cur.connection.commit()
 
-find_all_teams_sql = """ SELECT * FROM teams """
-find_all_players_sql = """ SELECT * FROM players """
-find_all_items_sql = """ SELECT * FROM items """
-find_all_teams_items_sql = """ SELECT * FROM teams_items """
-
 def view_teams_list(cur, team_list):
-    cur.execute(find_all_teams_sql)
+    cur.execute(select_commands.SELECT_ALL_TEAMS)
     rows = cur.fetchall()
     for row in rows:
         team_list.append(row)
