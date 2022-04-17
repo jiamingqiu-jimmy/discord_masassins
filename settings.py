@@ -75,7 +75,7 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 master_ball_catch_chance = 1
-gacha_ball_catch_chance = 0.3
+gacha_ball_catch_chance = 0.003
 
 #Items Initialization
 item_name_potion = "Potion"

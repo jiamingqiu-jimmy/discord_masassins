@@ -409,11 +409,6 @@ async def use(ctx, item_name, player_name):
     #Get the player's current team
     team_name = sql.get_player_team_name(cur, player_name)
 
-    #Check to see if the team listed is the player's team
-    if (init_player_team_name != team_name):
-        await ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
-        return
-
     #Check to see if it is a valid item
     if (sql.valid_item_check(cur, item_name) != 0):
         await ctx.send("Please check that the item name is correct")
@@ -432,6 +427,10 @@ async def use(ctx, item_name, player_name):
 
     #Map the item to a specific item and effect
     if item_name == settings.item_name_potion:
+        #Check to see if the team listed is the player's team
+        if (init_player_team_name != team_name):
+            await ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
+            return
         player_health = sql.get_player_hp(cur, player_name)
 
         max_player_hp = settings.max_player_hp
@@ -448,6 +447,10 @@ async def use(ctx, item_name, player_name):
         sql.delete_team_item(cur, team_name, item_name)
 
     elif item_name == settings.item_name_revive:
+        #Check to see if the team listed is the player's team
+        if (init_player_team_name != team_name):
+            await ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
+            return
         #Check that the target_player is dead
         masassins_dead_role = get(target_player.roles, name=settings.masassins_dead_role)
         if masassins_dead_role is None:
