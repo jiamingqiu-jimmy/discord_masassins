@@ -16,11 +16,13 @@ def get_team_gold(cur, team_name):
     r = cur.fetchone()
     return r[0]
 
-def view_teams_list(cur, team_list):
+def get_teams_list(cur):
     cur.execute(select_commands.SELECT_ALL_TEAMS)
     rows = cur.fetchall()
+    team_list = list()
     for row in rows:
         team_list.append(row)
+    return team_list
 
 def get_team_name_from_team_id(cur, team_id):
     cur.execute(select_commands.SELECT_TEAM_NAME_FROM_TEAM_ID, [team_id])

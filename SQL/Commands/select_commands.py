@@ -6,7 +6,7 @@ SELECT_PLAYERS = """
     ORDER BY experience DESC, health DESC
 """
 
-SELECT_ALL_PLAYERS_WITH_NAME = """
+SELECT_PLAYER_WITH_NAME = """
     SELECT * FROM players WHERE name=?
 """
 

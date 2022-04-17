@@ -8,7 +8,6 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
-from SQL.Functions.table_functions import *
 from SQL.Functions.player_functions import * 
 from SQL.Functions.team_functions import *
 from SQL.Functions.item_functions import *
@@ -41,7 +40,7 @@ def valid_team_check( cur, team_name ):
 
 def valid_player_check( cur, player_name ):
     try:
-        cur.execute(select_commands.SELECT_PLAYER_ITEMS, [player_name])
+        cur.execute(select_commands.SELECT_PLAYER_WITH_NAME, [player_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -93,10 +92,14 @@ def get_team_experience(cur, team_name):
     return sum(exp)
 
 def update_player_team(cur,player_name,team_name):
+    print("HELLO!")
+    print(valid_team_check(cur,team_name))
+    print(valid_player_check(cur,player_name))
     if valid_team_check(cur,team_name)!=0:
         return -1
     if valid_player_check(cur,player_name)!=0:
         return -2
     team_id = get_team_id_from_team_name(cur, team_name)
+    print(f'Team Name {team_name}')
     cur.execute(update_commands.UPDATE_PLAYER_TEAM,(team_id,player_name))
     cur.connection.commit()

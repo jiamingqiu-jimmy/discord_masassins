@@ -1,12 +1,16 @@
 import sqlite3
 import settings
-import pytest
 import sql_functions as sql
+import importlib
+import pytest
+
 
 
 def test_simple():
+    importlib.reload(sql)
     conn = sqlite3.connect('SQLTEST.db')
     cur = conn.cursor()
+    sql.drop_tables(cur)
     sql.create_tables(cur)
     sql.insert_items( cur, settings.item_dict )
     sql.insert_teams( cur, settings.team_list )
@@ -17,22 +21,16 @@ def test_simple():
         sql.insert_player(cur, player_name, team_name)
         print("Player Name :", player_name, " : ", "Team Name : ", team_name)
     sql.update_team_gold(cur, team_name, 30)
+    assert sql.get_team_gold(cur, team_name) == 30
     sql.update_player_hp(cur, player_name, -10)
     sql.give_team_item(cur, "Fire", "Potion")
-    sql.give_team_item(cur,"Psychic","Amulet-Coin")
     sql.update_player_experience(cur, "Aaron", 100)
     sql.update_player_experience(cur,"Tommy",-1)
     sql.update_player_experience(cur,"Nicole",1000)
     sql.update_player_experience(cur,"Ronald",2000)
 
-    #Printing list of all the tables
-    for team_name in cur.execute(sql.find_all_teams_sql).fetchall():
-        print("Team name: ", team_name[1], ", Scores: ", sql.get_team_experience(cur,team_name[1]))
-
+    print("--------------")
     sql.update_player_team(cur,"Ronald","Rock")
 
-    for team_name in cur.execute(sql.find_all_teams_sql).fetchall():
-        print("Team name: ", team_name[1], ", Scores: ", sql.get_team_experience(cur,team_name[1]))
-
-    
-    sql.drop_tables()
+    print(f'Team_name for Ronald: {sql.get_player_team_name(cur, "Ronald")}')
+    assert sql.get_player_team_name(cur, "Ronald") == "Rock"
