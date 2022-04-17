@@ -10,6 +10,7 @@ from discord.ext import commands
 from discord.utils import get
 
 #Local Files import
+import random
 import settings
 import sql_functions as sql
 import battle_functions as battle
@@ -459,18 +460,6 @@ async def use(ctx, item_name, player_name):
         await ctx.send("{} has been given revive. He has been revived!".format(player_name))
         sql.delete_team_item(cur, team_name, item_name)
 
-    elif item_name == settings.item_name_sitrus_berry:
-        #Check to make sure the player does not already have the item
-        if sql.get_player_item(cur, player_name, item_name) is not None:
-            await ctx.send("The player already has that item")
-            return
-
-        #Sitrus berry, give sitrus berry to a player
-        sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given sitrus berry. They are invulnerable for 1 hour!".format(player_name))
-        #Remove item from team
-        sql.delete_team_item(cur, team_name, item_name)
-
     elif item_name == settings.item_name_master_ball:
         #Check to make sure that the player is on a different team
         new_team_name = sql.get_player_team_name(curr, init_player_name)
@@ -484,6 +473,23 @@ async def use(ctx, item_name, player_name):
         #Remove item from team
         sql.delete_team_item(cur, team_name, item_name)
     
+    elif item_name == settings.item_name_gacha_ball:
+        #Check to make sure that the player is on a different team
+        new_team_name = sql.get_player_team_name(curr, init_player_name)
+        if new_team_name == team_name:
+            await ctx.send("The player is already on your team")
+            return 
+
+        #gacha ball, throw gacha ball at a player.
+        catch = random.uniform(0,1)
+        if catch >= settings.gacha_ball_catch_chance:
+            ctx.send("{} got away...".format(player_name))
+        else:
+            sql.update_player_team(cur, player_name, new_team_name)
+            await ctx.send("{} has been caught by a gacha ball".format(player_name))
+        #Remove item from team
+        sql.delete_team_item(cur, team_name, item_name)
+
     elif item_name == settings.item_name_poke_ball:
         #Check to make sure the player is not already in the game
         if sql.valid_player_check(cur, player_name) == 0:
@@ -495,18 +501,6 @@ async def use(ctx, item_name, player_name):
         await ctx.send("{} has been caught by a poke ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
-
-    elif item_name == settings.item_name_focus_sash:
-        #Check to make sure the player does not already have the item
-        if sql.get_player_item(cur, player_name, item_name) is not None:
-            await ctx.send("The player already has that item")
-            return
-
-        #Focus sash, give focus sash to a player
-        sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given focus sash".format(player_name))
-        #Remove item from team
-        sql.delete_team_item(cur, team_name, item_name)
 
     else:
         await ctx.send("You cannot give that item to a player")
@@ -686,11 +680,8 @@ async def pokemart(ctx):
         item_cost = 0
         title_name = 0
 
-        if item_name == settings.item_name_expshare:
-            title_name = item_name + " - Out of Stock "
-        else:
-            item_cost = " - {} gold".format(settings.item_cost_dict[item_name])
-            title_name = item_name + item_cost
+        item_cost = " - {} gold".format(settings.item_cost_dict[item_name])
+        title_name = item_name + item_cost
         
         embed.add_field(name=title_name,value=settings.item_dict[item_name],inline=False)
 
