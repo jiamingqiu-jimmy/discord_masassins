@@ -14,6 +14,9 @@ import sql_functions as sql
 import battle_functions as battle
 import view_functions as view
 import help_functions as f_help
+import desc_functions as f_desc
+import rule_functions as f_rule
+import safe_zones_functions as f_safe
 
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
@@ -40,6 +43,45 @@ async def help(ctx):
 
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
+
+    await ctx.send(embed=embed)
+
+@bot.command(name="desc")
+async def rules(ctx):
+    embed = discord.Embed(
+        title = "Descriptions",
+        description = "Details on important aspects of the game!",
+        color = discord.Colour.teal()
+    )
+
+    for desc_command in f_desc.desc_list:
+        embed.add_field(name=desc_command, value=f_desc.desc_dict[desc_command], inline=False)
+
+    await ctx.send(embed=embed)
+
+@bot.command(name="rule")
+async def rules(ctx):
+    embed = discord.Embed(
+        title = "Rules",
+        description = "Cheating of any kind is not permitted. You will be penalized if caught",
+        color = discord.Colour.teal()
+    )
+
+    for rule_command in f_rule.rule_list:
+        embed.add_field(name=rule_command, value=f_rule.rule_dict[rule_command], inline=False)
+
+    await ctx.send(embed=embed)
+
+@bot.command(name="safezones")
+async def rules(ctx):
+    embed = discord.Embed(
+        title = "Safe Zones",
+        description = "You can still have your privacy",
+        color = discord.Colour.teal()
+    )
+
+    for safe_command in f_safe.safezone_list:
+        embed.add_field(name=safe_command, value=f_safe.safezone_dict[safe_command], inline=False)
 
     await ctx.send(embed=embed)
 
