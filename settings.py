@@ -75,56 +75,48 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 #Items Initialization
-item_name_x_attack = "X-Attack"
-item_name_x_defense = "X-Defense"
-item_name_amulet_coin = "Amulet-Coin"
-item_name_shell_bell = "Shell-Bell"
 item_name_potion = "Potion"
 item_name_revive = "Revive"
-item_name_expshare = "EXP-Share"
+item_name_citrus_berry = "Citrus-Berry"
+item_name_master_ball = "Master_Ball"
+item_name_poke_ball = "Poke_Ball"
+item_name_focus_sash = "Focus_Sash"
 
-item_cost_x_attack = 200
-item_cost_x_defense = 200
-item_cost_amulet_coin = 50
-item_cost_shell_bell = 100
-item_cost_potion = 50
-item_cost_revive = 70
+item_cost_potion = 30
+item_cost_revive = 60
+item_cost_citrus_berry = 10
+item_cost_master_ball = 300
+item_cost_poke_ball = 100
+item_cost_focus_sash = 50
 
 item_list = [
     item_name_potion,
     item_name_revive,
-    item_name_shell_bell,
-    item_name_amulet_coin,
-    item_name_x_attack,
-    item_name_x_defense,
-    item_name_expshare
+    item_name_citrus_berry,
+    item_name_master_ball,
+    item_name_poke_ball,
+    item_name_focus_sash
 ]
 
 item_cost_dict = {
     item_name_potion : item_cost_potion,
     item_name_revive : item_cost_revive,
-    item_name_shell_bell : item_cost_shell_bell,
-    item_name_amulet_coin : item_cost_amulet_coin,
-    item_name_x_attack : item_cost_x_attack,
-    item_name_x_defense : item_cost_x_defense
+    item_name_citrus_berry : item_cost_citrus_berry,
+    item_name_master_ball : item_cost_master_ball,
+    item_name_poke_ball : item_cost_poke_ball,
+    item_name_focus_sash : item_cost_focus_sash
 }
 
 item_dict = {
-    item_name_potion : "Heals 50 HP. Note: you cannot heal a player past their maximum HP",
+    item_name_potion : "Heals 40 HP. Note: you cannot heal a player past their maximum HP",
     item_name_revive : "Revives a player from fainting to 75 HP",
-    item_name_shell_bell : "Heals 15 HP even time you tag someone. Each shell bell can only be held by one player. Does not transfer once you give it to someone",
-    item_name_amulet_coin : "Gain an additional 5 gold each time you tag someone. Each amulet coin can only be held by one player. Does not transfer once you give it to someone",
-    item_name_x_attack : "Entire team deals an extra 25 HP damage each time they tag someone. Only lasts until midnight of the following day.",
-    item_name_x_defense : "Entire team negates 25 damage when tagged. Only lasts until midnight of the following day.",
-    item_name_expshare : "Grants an additional 10 EXP per hit. Can only be held by one player and only affects that one player’s actions. If that player faints, then the EXP share is lost."
+    item_name_citrus_berry : "Invulnerability for 1 hr",
+    item_name_master_ball : "Add one person of your choice from another team to your team",
+    item_name_poke_ball : "Add one person (not currently signed up for the game) to your team",
+    item_name_focus_sash : "Give to one player to hold. If a player takes lethal damage, survive with 1 HP. Sash breaks upon a single hit. Lasts for 24 hours.",
 }
 
-x_attack_damage_bonus = 25
-x_defense_damage_negation = 25
-shell_bell_hit_healing = 15
-amulet_coin_gold_bonus = 5
-exp_share_exp_bonus = 10
-potion_healing = 50
+potion_healing = 40
 revive_healing = 75
 
 #New Player Initialization
