@@ -5,6 +5,9 @@ import SQL.Commands.drop_commands as drop_commands
 import SQL.Commands.insert_commands as insert_commands
 import SQL.Commands.update_commands as update_commands
 
+def player_with_name(cur, player_name):
+    return cur.execute(select_commands.SELECT_PLAYER_WITH_NAME)
+
 def get_players_from_team(cur, team_name):
     return cur.execute(select_commands.SELECT_PLAYERS, [team_name]).fetchall()
 
