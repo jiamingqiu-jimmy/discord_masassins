@@ -507,12 +507,15 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     attacking_player = ctx.author
     attacking_player_name = ctx.author.display_name
     defending_player = get(ctx.guild.members, display_name=player_name)
-    defending_player_name = defending_player.display_name
+    defending_player_name = ""
 
     #Check for a valid player in the database
     if defending_player is None or sql.valid_player_check(cur, defending_player_name) != 0 :
         await ctx.send("Please check that you have the right player (capitalization matters), the command is !attack <player_name>")
-        return 
+        return
+    else:
+        defending_player_name = get(ctx.guild.members, display_name=player_name).display_name
+
 
     #Send message into the player's team channel asking for confirmation use @mention
     defending_player_team = sql.get_player_team_name(cur, defending_player_name)
@@ -542,7 +545,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     message = message.format(defending_player_team, attacking_player_name, defending_player_name, defending_player.mention)
     await defending_player_channel.send(message)
     def check(m):
-        return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.display_name == defending_player_name
+        return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.username == defending_player_name
     try:
         msg = await bot.wait_for('message', check=check, timeout=25)
     except asyncio.TimeoutError:
