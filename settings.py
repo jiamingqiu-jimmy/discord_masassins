@@ -62,14 +62,14 @@ team_effectiveness = {
 #Battle Calculations
 effective_string = "Effectiveness"
 total_damage_string = "Total Damage"
-super_effective_damage = 75
-normal_damage = 50
+super_effective_damage = 60
+normal_damage = 40
 not_very_effective_damage = 25
 
 base_experience_reward = 10
 base_gold_reward = 10
-bonus_experience_reward = 20
-bonus_gold_reward = 20
+bonus_experience_reward = 30
+bonus_gold_reward = 30
 
 team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
