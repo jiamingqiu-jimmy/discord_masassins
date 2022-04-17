@@ -442,7 +442,7 @@ async def use(ctx, item_name, player_name):
     elif item_name == settings.item_name_poke_ball:
         #Check to make sure the player is not already in the game
         if sql.valid_player_check(cur, player_name) == 0:
-            await ctx.send("The player is already in the game)
+            await ctx.send("The player is already in the game")
             return
         
         #Poke ball, throw poke ball at a new player
