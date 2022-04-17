@@ -130,8 +130,8 @@ async def game_populate(ctx):
 
     #Populating pre-set items and teams
     await ctx.send("Processing teams and items...")
-    sql.populate_teams_table(cur, settings.team_list)
-    sql.populate_items_table(cur, settings.item_dict)
+    sql.insert_teams(cur, settings.team_list)
+    sql.insert_items(cur, settings.item_dict)
 
     guild = ctx.guild
     masassins_dead_role = get(guild.roles, name=settings.masassins_dead_role)
@@ -172,7 +172,7 @@ async def game_populate(ctx):
     #Processing the players
     await ctx.send("Finished processing teams and items, now processing players")
     for player_name,player_team_name in settings.player_team_dict.items():
-        return_code = sql.populate_players_table(cur, player_name, player_team_name)
+        return_code = sql.insert_player(cur, player_name, player_team_name)
         if return_code == -1:
             await ctx.send('There has been an error processing team_name, double-check hard-coded team names in player-team-dict')
         else:
@@ -182,7 +182,7 @@ async def game_populate(ctx):
 @bot.command(name="add_player")
 @commands.has_role(settings.admin_role)
 async def add_player(ctx, player_name, team_name):
-    return_code = sql.populate_players_table(cur, player_name, team_name)
+    return_code = sql.insert_player(cur, player_name, team_name)
     if return_code == -1:
         await ctx.send("There has been an error, please check team_name is valid")
         return
@@ -204,7 +204,7 @@ async def trade_gold(ctx, team_name, gold_amount):
         return
 
     #Init_player_team_name
-    init_player_team_name = sql.find_team_name_from_player(cur, player_name)
+    init_player_team_name = sql.get_player_team_name(cur, player_name)
 
     cur = conn.cursor()
     lock = asyncio.Lock()
@@ -232,7 +232,7 @@ async def trade_gold_error(ctx, error):
 @commands.has_role(settings.admin_role)
 async def remove_item(ctx, team_name, item_name):
     cur = conn.cursor()
-    sql.delete_item_from_team(cur, team_name, item_name)
+    sql.delete_team_item(cur, team_name, item_name)
     await ctx.send("{} has been removed from team {}".format(item_name, team_name))
 
 @bot.command(name="give_team_experience")
@@ -364,7 +364,7 @@ async def join(ctx):
     guild = ctx.guild
     await ctx.send("Hello {} please wait while we process your join request".format(player_display_name))
     if sql.valid_player_check(cur, player_display_name) == 0:
-        team_name = sql.find_team_name_from_player(cur, player_display_name)
+        team_name = sql.get_player_team_name(cur, player_display_name)
 
         member = ctx.message.author
         guild = member.guild
@@ -395,14 +395,14 @@ async def use(ctx, item_name, player_name):
     guild = ctx.guild
 
     #Init_player_team_name
-    init_player_team_name = sql.find_team_name_from_player(cur, init_player_name)
+    init_player_team_name = sql.get_player_team_name(cur, init_player_name)
 
     if player_name is None or sql.valid_player_check(cur, player_name) != 0:
         await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
         return
 
     #Get the player's current team
-    team_name = sql.find_team_name_from_player(cur, player_name)
+    team_name = sql.get_player_team_name(cur, player_name)
 
     #Check to see if the team listed is the player's team
     if (init_player_team_name != team_name):
@@ -416,7 +416,7 @@ async def use(ctx, item_name, player_name):
 
 
     #Check to see if the current team owns the item
-    if sql.find_team_item(cur, init_player_team_name, item_name) is None:
+    if sql.get_team_item(cur, init_player_team_name, item_name) is None:
         await ctx.send("Your team does not currently own this item")
         return
 
@@ -440,7 +440,7 @@ async def use(ctx, item_name, player_name):
             sql.update_player_hp(cur, player_name, settings.potion_healing)
             await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
     
-        sql.delete_item_from_team(cur, team_name, item_name)
+        sql.delete_team_item(cur, team_name, item_name)
 
     elif item_name == settings.item_name_revive:
         #Check that the target_player is dead
@@ -454,11 +454,11 @@ async def use(ctx, item_name, player_name):
         await target_player.add_roles(masassins_alive_role)       
         sql.update_player_hp(cur, player_name, settings.revive_healing)
         await ctx.send("{} has been given revive. He has been revived!".format(player_name))
-        sql.delete_item_from_team(cur, team_name, item_name)
+        sql.delete_team_item(cur, team_name, item_name)
 
     elif item_name == settings.item_name_amulet_coin:
         #Check to make sure the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) is not None:
+        if sql.get_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
 
@@ -466,22 +466,22 @@ async def use(ctx, item_name, player_name):
         sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given amulet coin".format(player_name))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, item_name)
+        sql.delete_team_item(cur, team_name, item_name)
 
     elif item_name == settings.item_name_shell_bell:
         #Check to make sure that the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) is not None:
+        if sql.get_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return 
         #Shell bell, give shell bell to a player
         sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given shell bell".format(player_name))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, item_name)
+        sql.delete_team_item(cur, team_name, item_name)
     
     elif item_name == settings.item_name_expshare:
         #Check to make sure the player does not already have the item
-        if sql.find_player_item(cur, player_name, item_name) is not None:
+        if sql.get_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
         
@@ -489,7 +489,7 @@ async def use(ctx, item_name, player_name):
         sql.give_player_item(cur, player_name, item_name)
         await ctx.send("{} has been given EXP-Share".format(player_name))
         #Remove item from team
-        sql.delete_item_from_team(cur, team_name, item_name)
+        sql.delete_team_item(cur, team_name, item_name)
 
     else:
         await ctx.send("You cannot give that item to a player")
@@ -515,8 +515,8 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         return 
 
     #Send message into the player's team channel asking for confirmation use @mention
-    defending_player_team = sql.find_team_name_from_player(cur, defending_player_name)
-    attacking_player_team = sql.find_team_name_from_player(cur, attacking_player_name)
+    defending_player_team = sql.get_player_team_name(cur, defending_player_name)
+    attacking_player_team = sql.get_player_team_name(cur, attacking_player_name)
 
     defending_player_channel = get(guild.text_channels, name=defending_player_team.lower())
 
@@ -585,7 +585,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         masassins_dead_role = get(guild.roles, name=settings.masassins_dead_role)
         await defending_player.add_roles(masassins_dead_role)
 
-        sql.delete_items_from_player(cur, defending_player_name)
+        sql.delete_player_items(cur, defending_player_name)
         #Set their health to zero
         sql.update_player_hp(cur, defending_player_name, (0-defending_player_health))
     else:
@@ -633,7 +633,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     sql.update_team_experience(cur, attacking_player_team, total_experience_reward)
     sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
 
-    attacking_team_gold, attacking_team_exp = sql.view_teams(cur, attacking_player_team)
+    attacking_team_gold, attacking_team_exp = sql.get_teams(cur, attacking_player_team)
     attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
     embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
@@ -690,7 +690,7 @@ async def buy(ctx, *args):
     player = ctx.author
     guild = ctx.guild
     player_name = ctx.author.display_name
-    team_name = sql.find_team_name_from_player(cur, player_name)
+    team_name = sql.get_player_team_name(cur, player_name)
     item_name = " ".join(args[:])
     print(item_name)
 
@@ -705,7 +705,7 @@ async def buy(ctx, *args):
         await ctx.send("Your team does not have enough gold")
         return
 
-    if sql.find_team_item(cur,team_name,item_name) is not None:
+    if sql.get_team_item(cur,team_name,item_name) is not None:
         await ctx.send("Your team can only hold one of this item!")
         return
 

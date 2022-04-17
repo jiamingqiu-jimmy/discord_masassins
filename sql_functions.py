@@ -1,304 +1,35 @@
 import sqlite3
 import settings
-#define SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-def view_players(cur, team_name):
-    view_players = """
-        SELECT name, health, experience
-        FROM players
-        WHERE team_id=
-        (SELECT team_id FROM teams WHERE name=?)
-        ORDER BY experience DESC, health DESC
-    """
-    return cur.execute(view_players, [team_name]).fetchall()
 
-def view_teams(cur, team_name):
-    view_teams = """
-        SELECT gold
-        FROM teams
-        WHERE name=?
-    """
-    return cur.execute(view_teams, [team_name]).fetchone()
+import SQL.Commands.create_commands as create_commands
+import SQL.Commands.select_commands as select_commands
+import SQL.Commands.delete_commands as delete_commands
+import SQL.Commands.drop_commands as drop_commands
+import SQL.Commands.insert_commands as insert_commands
+import SQL.Commands.update_commands as update_commands
 
-def view_team_items(cur, team_name):
-    view_team_items = """
-        SELECT name
-        FROM items
-        WHERE item_id IN (
-            SELECT item_id
-            FROM teams_items
-            WHERE team_id=(
-                SELECT team_id
-                FROM teams
-                WHERE name=?
-            )
-        )
-    """
-    return cur.execute(view_team_items, [team_name]).fetchall()
-
-def view_team_item_count(cur, team_name, item_name):
-    view_team_item_count = """
-        SELECT COUNT(*)
-        FROM (
-            SELECT item_id
-            FROM teams_items
-            WHERE team_id = (
-                SELECT team_id
-                FROM teams
-                WHERE name=?
-            )
-            AND item_id = (
-                SELECT item_id
-                FROM items
-                WHERE name=?
-            )
-        )
-    """
-    return cur.execute(view_team_item_count, (team_name, item_name)).fetchone()
-
-def view_player_items(cur, player_name):
-    view_player_items = """
-        SELECT name
-        FROM items
-        WHERE item_id = (
-            SELECT item_id
-            FROM players_items
-            WHERE player_id = (
-                SELECT player_id
-                FROM players
-                WHERE name=?
-            )
-        )
-    """
-    return cur.execute(view_player_items, [player_name]).fetchall()
-
-def find_team_item(cur, team_name, item_name):
-    find_team_item = """
-        SELECT *
-        FROM teams_items
-        WHERE team_id= 
-        (SELECT team_id FROM teams WHERE name=?)
-        AND item_id=
-        (SELECT item_id FROM items WHERE name=?)
-    """
-    cur.execute(find_team_item, (team_name, item_name))
-    r = cur.fetchone()
-    return r
-
-def find_player_item(cur, player_name, item_name):
-    find_player_item = """
-        SELECT *
-        FROM players_items
-        WHERE player_id=
-        (SELECT player_id FROM players WHERE name=?)
-        AND item_id=
-        (SELECT item_id FROM items WHERE name=?)
-    """
-    cur.execute(find_player_item, (player_name, item_name))
-    r = cur.fetchone()
-    return r
-
-def delete_item_from_team(cur, team_name, item_name):
-    delete_item_from_team = """
-    DELETE from teams_items
-    WHERE team_id=
-    (
-        SELECT team_id
-        FROM teams
-        WHERE name=?
-        LIMIT 1
-    )
-    AND item_id=
-    (
-        SELECT item_id
-        FROM items
-        WHERE name=?
-        LIMIT 1
-    )
-    """
-    cur.execute(delete_item_from_team, (team_name, item_name))
-    cur.connection.commit()
-
-def delete_player(cur, player_name):
-    delete_player = """
-    DELETE from players
-    WHERE name=?
-    """
-    cur.execute(delete_player, [player_name])
-    cur.connection.commit()
-
-def delete_items_from_player(cur, player_name):
-    delete_item_player = """
-    DELETE from players_items
-    WHERE player_id =
-    (
-        SELECT player_id
-        FROM players
-        WHERE name=?
-    )
-    """
-    cur.execute(delete_item_player, [player_name])
-    cur.connection.commit()
-
-def team_name_from_team_id(cur, team_id):
-    team_name_from_team_id = """
-        SELECT name
-        FROM teams
-        WHERE team_id=?
-    """
-    cur.execute(team_name_from_team_id, [team_id])
-    r = cur.fetchone()
-    return r[0]
-
-def find_team_name_from_player(cur, player_name):
-    find_team_name_from_player = """
-    SELECT name FROM teams where team_id=(
-        SELECT team_id FROM players where name=?
-    )
-    """
-    cur.execute(find_team_name_from_player, [player_name])
-    r = cur.fetchone()
-    return r[0]
-
-def find_team_id(cur, team_name):
-    find_team_id = """
-    SELECT team_id FROM teams WHERE name=? 
-    """
-    cur.execute(find_team_id, [team_name])
-    r = cur.fetchone()
-    return r[0]
-
-def find_player_id(cur, player_name):
-    find_player_id = """
-    SELECT player_id
-    FROM players
-    WHERE name=?
-    """
-    cur.execute(find_player_id, [player_name])
-    r = cur.fetchone()
-    return r[0]
-
-def find_item_id(cur, item_name):
-    find_item_id = """
-    SELECT item_id FROM items where name=?
-    """
-    cur.execute(find_item_id, [item_name])
-    r = cur.fetchone()
-    return r[0]
+from SQL.Functions.table_functions import *
+from SQL.Functions.player_functions import * 
+from SQL.Functions.team_functions import *
+from SQL.Functions.item_functions import *
 
 def drop_tables(cur):
-    drop_table_players = """
-    DROP TABLE IF EXISTS players
-    """
-    cur.execute(drop_table_players)
-
-    drop_table_teams = """
-    DROP TABLE IF EXISTS teams
-    """
-    cur.execute(drop_table_teams)
-
-    drop_table_items = """
-    DROP TABLE IF EXISTS items
-    """
-    cur.execute(drop_table_items)
+    drop_players_table(cur)
+    drop_teams_table(cur)
+    drop_items_table(cur)
+    drop_teams_items_table(cur)
+    drop_players_items_table(cur)
     
-    drop_table_teams_items = """
-    DROP TABLE IF EXISTS teams_items
-    """
-    cur.execute(drop_table_teams_items)
-
-    drop_table_players_items = """
-    DROP TABLE IF EXISTS players_items
-    """
-    cur.execute(drop_table_players_items)
-
-    cur.connection.commit()
-
 def create_tables(cur):
-    create_teams_table = """
-    CREATE TABLE teams (
-        team_id INTEGER PRIMARY KEY,
-        name text NOT NULL UNIQUE,
-        gold INTEGER NOT NULL
-    )"""
-    cur.execute(create_teams_table)
-
-    create_items_table = """
-    CREATE TABLE items (
-        item_id INTEGER PRIMARY KEY,
-        name text NOT NULL UNIQUE,
-        description text NOT NULL
-    )"""
-    cur.execute(create_items_table)
-
-    create_players_table = """
-    CREATE TABLE players (
-        player_id INTEGER PRIMARY KEY,
-        name text NOT NULL UNIQUE,
-        health INTEGER NOT NULL,
-        experience INTEGER NOT NULL,
-        team_id INTEGER NOT NULL,
-        discord_id INTEGER UNIQUE,
-        FOREIGN KEY (team_id)
-            REFERENCES teams (team_id)
-    )"""
-    cur.execute(create_players_table)
-
-    create_players_items_table = """
-    CREATE TABLE players_items (
-        player_item_id PRIMARY KEY,
-        player_id INTEGER,
-        item_id INTEGER,
-        FOREIGN KEY (player_id)
-            REFERENCES players (player_id)
-                ON DELETE CASCADE
-                ON UPDATE NO ACTION,
-        FOREIGN KEY (item_id)
-            REFERENCES items (item_id)
-                ON DELETE CASCADE
-                ON UPDATE NO ACTION
-    )
-    """
-    cur.execute(create_players_items_table)
-
-    create_teams_items_table = """
-    CREATE TABLE teams_items (
-        team_item_id PRIMARY KEY,
-        team_id INTEGER NOT NULL,
-        item_id INTEGER NOT NULL,
-        FOREIGN KEY (team_id)
-            REFERENCES teams (team_id)
-                ON DELETE CASCADE
-                ON UPDATE NO ACTION,
-        FOREIGN KEY (item_id)
-            REFERENCES items (item_id)
-                ON DELETE CASCADE
-                ON UPDATE NO ACTION
-    )"""
-    cur.execute(create_teams_items_table)
-    cur.connection.commit()
-
-def populate_items_table( cur, item_dict ):
-    populate_items_table = """
-    INSERT INTO items (name, description) VALUES (?,?)
-    """
-    for item in item_dict.items():
-        cur.execute(populate_items_table,item)
-    cur.connection.commit()
-    
-def populate_teams_table( cur, team_list ):
-    populate_teams_table = """
-    INSERT INTO teams (name, gold) VALUES (?, ?)
-    """
-    for team_name in team_list:
-        cur.execute(populate_teams_table, (team_name, settings.team_starting_gold))
-    cur.connection.commit()
+    create_teams_table(cur)
+    create_players_table(cur)
+    create_items_table(cur)
+    create_players_items_table(cur)
+    create_teams_items_table(cur)
 
 def valid_team_check( cur, team_name ):
-    valid_team_check = """
-    SELECT * FROM teams WHERE name=?
-    """
     try:
-        cur.execute(valid_team_check, [team_name])
+        cur.execute(select_commands.SELECT_ALL_FROM_TEAMS_WITH_TEAM_NAME, [team_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -307,11 +38,8 @@ def valid_team_check( cur, team_name ):
     return 0
 
 def valid_player_check( cur, player_name ):
-    valid_player_check = """
-    SELECT * FROM players WHERE name=?
-    """
     try:
-        cur.execute(valid_player_check, [player_name])
+        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [player_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -320,11 +48,8 @@ def valid_player_check( cur, player_name ):
     return 0
 
 def valid_item_check( cur, item_name ):
-    valid_item_check = """
-    SELECT * FROM items WHERE name=?
-    """
     try:
-        cur.execute(valid_item_check, [item_name])
+        cur.execute(select_commands.SELECT_ALL_PLAYERS_WITH_NAME, [item_name])
         rows = cur.fetchall()
         if len(rows) == 0:
             return -2
@@ -332,110 +57,37 @@ def valid_item_check( cur, item_name ):
         return -1
     return 0
 
-def populate_players_table( cur, player_name, team_name ):
-    populate_players_table = """
-    INSERT INTO players (name, health, experience, team_id) VALUES (?,?,?,?)
-    """
+def insert_player(cur, player_name, team_name ):
     valid_team_code = valid_team_check(cur, team_name)
     if valid_team_code != 0:
         return -1
-    team_id = find_team_id(cur, team_name)
+    team_id = get_team_id_from_team_name(cur, team_name)
     new_player = 0
     if team_name == settings.team_name_alumni or team_name == settings.team_name_team_rocket:
         new_player = (player_name, settings.alumni_player_starting_health, settings.alumni_player_starting_experience, team_id)
     else:
         new_player = (player_name, settings.new_player_starting_health, settings.new_player_starting_experience, team_id)
-    cur.execute(populate_players_table, new_player)
+    cur.execute(insert_commands.INSERT_PLAYER, new_player)
     cur.connection.commit()
     return 0
 
-#Give Gold
-def update_team_gold(cur, team_name, gold_increase_decrease_amount):
-   update_team_gold = """
-   UPDATE teams
-   SET gold = gold+?
-   WHERE name=?
-   """
-   cur.execute(update_team_gold, (gold_increase_decrease_amount, team_name))
-   cur.connection.commit()
-
-#Update Team Experience
-#def update_team_experience(cur, team_name, experience_increase_decrease_amount):
-#    update_team_experience = """
-#    UPDATE teams
-#    SET experience = experience+?
-#    WHERE name=?
-#    """
-#    cur.execute(update_team_experience, (experience_increase_decrease_amount, team_name))
-#    cur.connection.commit()
-
-#Update Player Experience
-def update_player_experience(cur, player_name, experience_increase_decrease_amount):
-    update_player_experience = """
-    UPDATE players
-    SET experience = experience+?
-    WHERE name=?
-    """
-    cur.execute(update_player_experience, (experience_increase_decrease_amount, player_name))
-    cur.connection.commit()
-
-#Give HP
-def update_player_hp(cur, player_name, hp_increase_decrease_amount):
-    update_player_hp = """
-    UPDATE players
-    SET health = health+?
-    WHERE name=?
-    """
-    cur.execute(update_player_hp, (hp_increase_decrease_amount, player_name))
-    cur.connection.commit()
-
-#Get player HP
-def get_player_hp(cur, player_name):
-    get_player_hp = """
-    SELECT health
-    FROM players
-    WHERE name=?
-    """
-    cur.execute(get_player_hp, [player_name])
-    r = cur.fetchone()
-    return r[0]
-
-#Get team gold amount
-def get_team_gold(cur, team_name):
-    get_team_gold = """
-    SELECT gold
-    FROM teams
-    WHERE name=?
-    """
-    cur.execute(get_team_gold, [team_name])
-    r = cur.fetchone()
-    return r[0]
-
 #Give Item to Team 
 def give_team_item(cur, team_name, item_name):
-    give_team_item = """
-    INSERT INTO teams_items (team_id, item_id) 
-    VALUES (?,?)
-    """
-    team_id = find_team_id(cur, team_name)
-    item_id = find_item_id(cur, item_name)
-    cur.execute(give_team_item, (team_id, item_id))
+    team_id = get_team_id_from_team_name(cur, team_name)
+    item_id = get_item_id_from_item_name(cur, item_name)
+    cur.execute(insert_commands.INSERT_TEAM_ITEM, (team_id, item_id))
     cur.connection.commit()
 
 #Give Item to Player
-def give_player_item(cur, player_name, item_name):
-    give_player_item = """
-    INSERT INTO players_items (player_id, item_id)
-    VALUES (?,?)
-    """
-    player_id = find_player_id(cur, player_name)
-    item_id = find_item_id(cur, item_name)
-    cur.execute(give_player_item, (player_id, item_id))
+def give_player_item(cur, player_name, item_name): 
+    player_id = get_player_id_from_player_name(cur, player_name)
+    item_id = get_item_id_from_item_name(cur, item_name)
+    cur.execute(insert_commands.INSERT_PLAYER_ITEM, (player_id, item_id))
     cur.connection.commit()
 
 #Returns total of team's player's experience
 def get_team_experience(cur, team_name):
-    exp = [i[2] for i in view_players(cur, team_name)]
+    exp = [i[2] for i in get_players_from_team(cur, team_name)]
     return sum(exp)
 
 def update_player_team(cur,player_name,team_name):
@@ -443,22 +95,6 @@ def update_player_team(cur,player_name,team_name):
         return -1
     if valid_player_check(cur,player_name)!=0:
         return -2
-    update_player_team = """
-    UPDATE players
-    SET team_id = ?
-    WHERE name = ?
-    """
-    team_id = find_team_id(cur, team_name)
-    cur.execute(update_player_team,(team_id,player_name))
+    team_id = get_team_id_from_team_name(cur, team_name)
+    cur.execute(update_commands.UPDATE_PLAYER_TEAM,(team_id,player_name))
     cur.connection.commit()
-
-find_all_teams_sql = """ SELECT * FROM teams """
-find_all_players_sql = """ SELECT * FROM players """
-find_all_items_sql = """ SELECT * FROM items """
-find_all_teams_items_sql = """ SELECT * FROM teams_items """
-
-def view_teams_list(cur, team_list):
-    cur.execute(find_all_teams_sql)
-    rows = cur.fetchall()
-    for row in rows:
-        team_list.append(row)
