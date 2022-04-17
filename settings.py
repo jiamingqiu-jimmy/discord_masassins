@@ -35,14 +35,14 @@ team_name_psychic = "Psychic"
 team_name_fighting = "Fighting"
 team_name_rock = "Rock"
 team_name_alumni = "Alumni"
-team_name_team_rocket = "Team-Rocket"
+team_name_gym_leaders = "Gym Leaders"
 
 team_list = [
     team_name_fire, team_name_bug,
     team_name_dark, team_name_ghost,
     team_name_psychic, team_name_fighting,
     team_name_rock, team_name_alumni,
-    team_name_team_rocket
+    team_name_gym_leaders
 ]
 
 team_starting_gold = 0
@@ -56,7 +56,7 @@ team_effectiveness = {
     team_name_fighting : team_name_rock,
     team_name_rock : team_name_fire,
     team_name_alumni : "Normal",
-    team_name_team_rocket : "Normal"
+    team_name_gym_leaders : "Normal"
 }
 
 #Battle Calculations
@@ -182,8 +182,8 @@ player_team_dict = {
     "Eric_C":team_name_alumni,
     "Kentaro":team_name_alumni,
     "Khue":team_name_alumni,
-    "Jimmy":team_name_team_rocket,
-    "Annie":team_name_team_rocket,
-    "Aizzer":team_name_team_rocket,
-    "Selina":team_name_team_rocket
+    "Jimmy":team_name_gym_leaders,
+    "Annie":team_name_gym_leaders,
+    "Aizzer":team_name_gym_leaders,
+    "Selina":team_name_gym_leaders
 }
