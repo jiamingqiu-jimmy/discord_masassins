@@ -57,7 +57,7 @@ def valid_item_check( cur, item_name ):
         return -1
     return 0
 
-def insert_player( cur, player_name, team_name ):
+def insert_player(cur, player_name, team_name ):
     valid_team_code = valid_team_check(cur, team_name)
     if valid_team_code != 0:
         return -1
