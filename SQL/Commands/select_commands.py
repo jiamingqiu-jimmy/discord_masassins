@@ -6,8 +6,19 @@ SELECT_PLAYERS = """
     ORDER BY experience DESC, health DESC
 """
 
-SELECT_ALL_PLAYERS_WITH_NAME = """
+SELECT_PLAYER_WITH_NAME = """
     SELECT * FROM players WHERE name=?
+"""
+
+SELECT_PLAYER_EXPERIENCE_FROM_NAME = """
+    SELECT experience FROM players WHERE name=? 
+"""
+
+SELECT_TEAM_EXPERIENCE_FROM_NAME = """
+    SELECT experience
+    FROM players
+    WHERE team_id=
+    (SELECT team_id FROM teams WHERE name=?)
 """
 
 SELECT_PLAYER_ITEMS = """
@@ -80,12 +91,6 @@ SELECT_TEAM_NAME_FROM_PLAYER_NAME = """
     SELECT name FROM teams where team_id=(
         SELECT team_id FROM players where name=?
     )
-"""
-
-SELECT_TEAMS = """
-    SELECT gold, experience
-    FROM teams
-    WHERE name=?
 """
 
 SELECT_TEAM_ITEMS = """
