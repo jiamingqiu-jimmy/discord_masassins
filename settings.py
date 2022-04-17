@@ -17,7 +17,7 @@ base_channels_namelist = [
 masassins_alive_role = "masassins2020-ALIVE"
 masassins_dead_role = "masassins2020-FAINTED"
 admin_role = "masassins-planner"
-MASA_staff_role = "MASA Staff"
+MASA_staff_role = "Puffles"
 base_masassins_roles = [
     masassins_alive_role,
     masassins_dead_role,
@@ -143,5 +143,6 @@ player_team_dict = {
     "Tommy":team_name_rock,
     "Yi":team_name_dark,
     "Jimmy":team_name_gym_leaders,
-    "Ruby":team_name_gym_leaders
+    "Ruby":team_name_gym_leaders,
+    "Cindy":team_name_ghost
 }
