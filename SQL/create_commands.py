@@ -20,6 +20,14 @@ CREATE_PLAYERS_TABLE="""
     )
     """
 
+CREATE_ITEMS_TABLE="""
+    CREATE TABLE items (
+        item_id INTEGER PRIMARY KEY,
+        name text NOT NULL UNIQUE,
+        description text NOT NULL
+    )
+"""
+
 CREATE_PLAYERS_ITEMS_TABLE="""
     CREATE TABLE players_items (
         player_item_id PRIMARY KEY,

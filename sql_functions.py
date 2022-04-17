@@ -81,6 +81,7 @@ def drop_tables(cur):
 def create_tables(cur):
     cur.execute(create_commands.CREATE_TEAM_TABLES)
     cur.execute(create_commands.CREATE_PLAYERS_TABLE)
+    cur.execute(create_commands.CREATE_ITEMS_TABLE)
     cur.execute(create_commands.CREATE_PLAYERS_ITEMS_TABLE)
     cur.execute(create_commands.CREATE_TEAMS_ITEMS_TABLE)
     cur.connection.commit()
