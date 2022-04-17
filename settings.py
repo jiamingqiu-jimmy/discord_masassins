@@ -80,9 +80,9 @@ gacha_ball_catch_chance = 0.3
 #Items Initialization
 item_name_potion = "Potion"
 item_name_revive = "Revive"
-item_name_master_ball = "Master Ball"
-item_name_gacha_ball = "Gacha Ball"
-item_name_poke_ball = "Poke Ball"
+item_name_master_ball = "Master-Ball"
+item_name_gacha_ball = "Gacha-Ball"
+item_name_poke_ball = "Poke-Ball"
 
 item_cost_potion = 30
 item_cost_revive = 60
@@ -131,57 +131,17 @@ alumni_player_bonus_base_gold = 10
 alumni_player_bonus_base_exp = 10
 
 player_team_dict = {
-    "Austin":team_name_fire,
-    "Chaztine":team_name_fire,
-    "Christine":team_name_fire,
-    "Jonathan":team_name_fire,
-    "Ronald":team_name_fire,
-    "Sarena":team_name_fire,
     "Andrew":team_name_bug,
-    "Arnav":team_name_bug,
-    "Brian":team_name_bug,
-    "Cindy":team_name_bug,
-    "Kriti":team_name_bug,
-    "Nitika":team_name_bug,
-    "Vincent":team_name_bug,
-    "Anna":team_name_dark,
-    "Emily":team_name_dark,
-    "Ice":team_name_dark,
-    "Matthew":team_name_dark,
-    "Paul":team_name_dark,
-    "Yukiho":team_name_dark,
-    "Aku":team_name_ghost,
-    "Janica":team_name_ghost,
-    "Jessica":team_name_ghost,
-    "Vivian":team_name_ghost,
-    "Will":team_name_ghost,
-    "Leena":team_name_ghost,
-    "Alisa":team_name_psychic,
-    "Jillian":team_name_psychic,
-    "Joseph":team_name_psychic,
-    "Justin":team_name_psychic,
-    "Kristy":team_name_psychic,
-    "TszWai":team_name_psychic,
-    "Betsy":team_name_fighting,
-    "Demetria":team_name_fighting,
-    "Eric_J":team_name_fighting,
-    "Lara":team_name_fighting,
+    "Brian":team_name_psychic,
+    "Brianna":team_name_psychic,
+    "Johnny":team_name_bug,
+    "jsutin":team_name_fighting,
+    "Nathan":team_name_fire,
     "Nicole":team_name_fighting,
-    "Wilson":team_name_fighting,
-    "Aaron":team_name_rock,
-    "Kevin":team_name_rock,
-    "Nicholas":team_name_rock,
-    "Timothy":team_name_rock,
+    "Selina":team_name_fire,
+    "soph920":team_name_ghost,
     "Tommy":team_name_rock,
-    "Winnie":team_name_rock,
-    "Aimee":team_name_alumni,
-    "Andy":team_name_alumni,
-    "Derek":team_name_alumni,
-    "Eric_C":team_name_alumni,
-    "Kentaro":team_name_alumni,
-    "Khue":team_name_alumni,
+    "Yi":team_name_dark,
     "Jimmy":team_name_gym_leaders,
-    "Annie":team_name_gym_leaders,
-    "Aizzer":team_name_gym_leaders,
-    "Selina":team_name_gym_leaders
+    "Ruby":team_name_gym_leaders
 }
