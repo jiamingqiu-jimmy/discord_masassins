@@ -28,13 +28,15 @@ def get_team_name_from_team_id(cur, team_id):
     return r[0]
 
 def get_team_items(cur, team_name):
+    print("TEAM_ITEMSSSSSSSS")
     return cur.execute(select_commands.SELECT_TEAM_ITEMS, [team_name]).fetchall()
 
 def get_team_item_count(cur, team_name, item_name):
     return cur.execute(select_commands.SELECT_TEAM_ITEM_COUNT, (team_name, item_name)).fetchone()[0]
 
 def get_team_item(cur, team_name, item_name):
-    cur.execute(select_commands.SELECT_TEAM_ITEMS, (team_name, item_name))
+    print("TEAM_ITEM", team_name, item_name)
+    cur.execute(select_commands.SELECT_TEAM_ITEM, (team_name, item_name))
     r = cur.fetchone()
     return r
 

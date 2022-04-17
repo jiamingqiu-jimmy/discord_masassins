@@ -710,10 +710,12 @@ async def buy(ctx, *args):
         await ctx.send("Your team does not have enough gold")
         return
 
+    print("TEST")
+    print(team_name)
     if sql.get_team_item(cur,team_name,item_name) is not None:
         await ctx.send("Your team can only hold one of this item!")
         return
-
+    print("HELLO")
     #Give item to team
     await ctx.send("You have bought a {}".format(item_name))
     
