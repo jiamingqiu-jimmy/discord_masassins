@@ -414,38 +414,38 @@ async def use(ctx, item_name, player_name):
         await ctx.send("{} has been given revive. He has been revived!".format(player_name))
         sql.delete_item_from_team(cur, team_name, item_name)
 
-    elif item_name == settings.item_name_amulet_coin:
+    elif item_name == settings.item_name_sitrus_berry:
         #Check to make sure the player does not already have the item
         if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
 
-        #Amulet coin, give amulet coin to a player
+        #Sitrus berry, give sitrus berry to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given amulet coin".format(player_name))
+        await ctx.send("{} has been given sitrus berry".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
-    elif item_name == settings.item_name_shell_bell:
+    elif item_name == settings.item_name_master_ball:
         #Check to make sure that the player does not already have the item
         if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return 
-        #Shell bell, give shell bell to a player
+        #Master ball, give master ball to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given shell bell".format(player_name))
+        await ctx.send("{} has been given master ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
     
-    elif item_name == settings.item_name_expshare:
+    elif item_name == settings.item_name_poke_ball:
         #Check to make sure the player does not already have the item
         if sql.find_player_item(cur, player_name, item_name) is not None:
             await ctx.send("The player already has that item")
             return
         
-        #Exp share, give exp share to a player
+        #Poke ball, give poke ball to a player
         sql.give_player_item(cur, player_name, item_name)
-        await ctx.send("{} has been given EXP-Share".format(player_name))
+        await ctx.send("{} has been given poke ball".format(player_name))
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
