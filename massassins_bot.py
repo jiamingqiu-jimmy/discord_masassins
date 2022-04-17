@@ -473,6 +473,15 @@ async def use(ctx, item_name, player_name):
 
         #Master ball, throw master ball at a player.
         sql.update_player_team(cur, player_name, new_team_name)
+        await ctx.guild.fetch_members()
+    
+        player = get(ctx.guild.members, display_name = player_name)
+        #Remove Old Team
+        team = get(guild.roles, name=team_name)
+        await player.remove_roles(team)
+        #Adding Faint Role
+        new_team = get(guild.roles, name=new_team_name)
+        await player.add_roles(new_team)
         await ctx.send("{} has been caught by a master ball".format(player_name))
         #Remove item from team
         sql.delete_team_item(cur, new_team_name, item_name)
@@ -490,6 +499,15 @@ async def use(ctx, item_name, player_name):
             await ctx.send("{} got away...".format(player_name))
         else:
             sql.update_player_team(cur, player_name, new_team_name)
+            await ctx.guild.fetch_members()
+    
+            player = get(ctx.guild.members, display_name = player_name)
+            #Remove Old Team
+            team = get(guild.roles, name=team_name)
+            await player.remove_roles(team)
+            #Adding Faint Role
+            new_team = get(guild.roles, name=new_team_name)
+            await player.add_roles(new_team)
             await ctx.send("{} has been caught by a gacha ball".format(player_name))
         #Remove item from team
         sql.delete_team_item(cur, new_team_name, item_name)
@@ -502,7 +520,16 @@ async def use(ctx, item_name, player_name):
         
         #Poke ball, throw poke ball at a new player
         sql.insert_player(cur, player_name)
+        team_name = sql.get_player_team_name(ctx.author.display_name)
+        await ctx.guild.fetch_members()
+    
+        player = get(ctx.guild.members, display_name = player_name)
+        #Add to team
+        team = get(guild.roles, name=team_name)
+        await player.add_roles(team)
         await ctx.send("{} has been caught by a poke ball".format(player_name))
+        sql.update_player_team(cur,player_name,team_name)
+        
         #Remove item from team
         sql.delete_item_from_team(cur, team_name, item_name)
 
@@ -521,6 +548,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     guild = ctx.guild
     attacking_player = ctx.author
     attacking_player_name = ctx.author.display_name
+    ctx.guild.fetch_members()
     
     defending_player = get(ctx.guild.members, display_name = player_name)
     
