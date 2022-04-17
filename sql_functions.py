@@ -13,7 +13,7 @@ def view_players(cur, team_name):
 
 def view_teams(cur, team_name):
     view_teams = """
-        SELECT gold, experience
+        SELECT gold
         FROM teams
         WHERE name=?
     """
@@ -218,7 +218,6 @@ def create_tables(cur):
     CREATE TABLE teams (
         team_id INTEGER PRIMARY KEY,
         name text NOT NULL UNIQUE,
-        experience INTEGER NOT NULL,
         gold INTEGER NOT NULL
     )"""
     cur.execute(create_teams_table)
@@ -271,7 +270,7 @@ def create_tables(cur):
                 ON DELETE CASCADE
                 ON UPDATE NO ACTION,
         FOREIGN KEY (item_id)
-            REFERENCES items(item_id)
+            REFERENCES items (item_id)
                 ON DELETE CASCADE
                 ON UPDATE NO ACTION
     )"""
@@ -288,10 +287,10 @@ def populate_items_table( cur, item_dict ):
     
 def populate_teams_table( cur, team_list ):
     populate_teams_table = """
-    INSERT INTO teams (name, experience, gold) VALUES (?, ?, ?)
+    INSERT INTO teams (name, gold) VALUES (?, ?)
     """
     for team_name in team_list:
-        cur.execute(populate_teams_table, (team_name, settings.team_starting_experience, settings.team_starting_gold))
+        cur.execute(populate_teams_table, (team_name, settings.team_starting_gold))
     cur.connection.commit()
 
 def valid_team_check( cur, team_name ):
@@ -361,14 +360,14 @@ def update_team_gold(cur, team_name, gold_increase_decrease_amount):
    cur.connection.commit()
 
 #Update Team Experience
-def update_team_experience(cur, team_name, experience_increase_decrease_amount):
-    update_team_experience = """
-    UPDATE teams
-    SET experience = experience+?
-    WHERE name=?
-    """
-    cur.execute(update_team_experience, (experience_increase_decrease_amount, team_name))
-    cur.connection.commit()
+#def update_team_experience(cur, team_name, experience_increase_decrease_amount):
+#    update_team_experience = """
+#    UPDATE teams
+#    SET experience = experience+?
+#    WHERE name=?
+#    """
+#    cur.execute(update_team_experience, (experience_increase_decrease_amount, team_name))
+#    cur.connection.commit()
 
 #Update Player Experience
 def update_player_experience(cur, player_name, experience_increase_decrease_amount):
@@ -432,6 +431,25 @@ def give_player_item(cur, player_name, item_name):
     player_id = find_player_id(cur, player_name)
     item_id = find_item_id(cur, item_name)
     cur.execute(give_player_item, (player_id, item_id))
+    cur.connection.commit()
+
+#Returns total of team's player's experience
+def get_team_experience(cur, team_name):
+    exp = [i[2] for i in view_players(cur, team_name)]
+    return sum(exp)
+
+def update_player_team(cur,player_name,team_name):
+    if valid_team_check(cur,team_name)!=0:
+        return -1
+    if valid_player_check(cur,player_name)!=0:
+        return -2
+    update_player_team = """
+    UPDATE players
+    SET team_id = ?
+    WHERE name = ?
+    """
+    team_id = find_team_id(cur, team_name)
+    cur.execute(update_player_team,(team_id,player_name))
     cur.connection.commit()
 
 find_all_teams_sql = """ SELECT * FROM teams """
