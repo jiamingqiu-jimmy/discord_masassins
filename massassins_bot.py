@@ -139,7 +139,6 @@ async def game_populate(ctx):
     if masassins_dead_role is None:
         await ctx.send("Creating masassins-fainted role...")
         masassins_dead_role = await guild.create_role(name=settings.masassins_dead_role, colour=discord.Color.dark_orange())
-    #    masassins_dead_role.color = discord.Color.dark_orange()
         await ctx.send("The Masassins-fainted role is created")
 
     masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
@@ -147,7 +146,6 @@ async def game_populate(ctx):
     if masassins_alive_role is None:
         await ctx.send("Creating masassins-alive role...")
         masassins_alive_role = await guild.create_role(name=settings.masassins_alive_role, colour=discord.Color.dark_green())
-    #    masassins_alive_role.color = discord.Color.dark_green()
         await ctx.send("The Massassins-alive role is created")
 
     masassins_admin_role = get(guild.roles, name=settings.admin_role)
