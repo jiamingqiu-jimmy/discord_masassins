@@ -473,7 +473,6 @@ async def use(ctx, item_name, player_name):
 
         #Master ball, throw master ball at a player.
         sql.update_player_team(cur, player_name, new_team_name)
-        await ctx.guild.fetch_members()
     
         player = get(ctx.guild.members, display_name = player_name)
         #Remove Old Team
@@ -499,8 +498,7 @@ async def use(ctx, item_name, player_name):
             await ctx.send("{} got away...".format(player_name))
         else:
             sql.update_player_team(cur, player_name, new_team_name)
-            await ctx.guild.fetch_members()
-    
+            
             player = get(ctx.guild.members, display_name = player_name)
             #Remove Old Team
             team = get(guild.roles, name=team_name)
@@ -521,7 +519,6 @@ async def use(ctx, item_name, player_name):
         #Poke ball, throw poke ball at a new player
         sql.insert_player(cur, player_name)
         team_name = sql.get_player_team_name(ctx.author.display_name)
-        await ctx.guild.fetch_members()
     
         player = get(ctx.guild.members, display_name = player_name)
         #Add to team
