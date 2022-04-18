@@ -45,6 +45,7 @@ async def help(ctx):
         title = "Functions Academy",
         description = "List of functions and their use",
         color = discord.Colour.teal()
+        emoji = ":slight_smile:"
     )
 
     for help_command in f_help.list_of_help:
