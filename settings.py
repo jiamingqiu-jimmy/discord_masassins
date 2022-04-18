@@ -1,5 +1,8 @@
 # settings.py
 
+#MASASSINS Database Name
+MASASSINS_DB_NAME = "masassins.db"
+
 #Channels
 #Channels MUST NOT have spaces and spaces must have -
 masassins_category_channel_name = "Masassins-Team-Channels"
