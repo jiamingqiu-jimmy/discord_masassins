@@ -75,7 +75,7 @@ class PlayerAttackCog(commands.Cog):
         buttons = [[Button(label="CONFIRM",custom_id="confirm",style=3),Button(label="DENY",custom_id="deny",style=4)]]
         msg = await defending_player_channel.send(message,embed = embed, components = buttons)
         try:
-            interaction = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player,timeout = 25)
+            interaction = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player and i.message == msg,timeout = 25)
             await interaction.respond(type=6)
         except asyncio.TimeoutError:
             embedcolor=discord.Colour.red()
@@ -87,7 +87,7 @@ class PlayerAttackCog(commands.Cog):
             await ctxmsg.edit(embed=ctxembed)
             return
         else:
-            if(msg.custom_id == "confirm"):
+            if(interaction.custom_id == "confirm"):
                 embedcolor = discord.Colour.green()
                 embed.color=embedcolor
                 ctxembed.color=embedcolor
