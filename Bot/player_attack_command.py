@@ -7,6 +7,7 @@ import asyncio
 import settings
 import sql_functions as sql
 import battle_functions as battle
+from discord_components import DiscordComponents, ComponentsBot, Button
 
 import Global.Locks
 
@@ -61,22 +62,48 @@ class PlayerAttackCog(commands.Cog):
 
         #Wait for confirmation, 25 second deadline or auto-cancel
         message = """
-            Hello team {}, {} has just initiated a hit on {}. 
-            {} you have 25 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
-        message = message.format(defending_player_team, attacking_player_name, defending_player_name, defending_player.mention)
-        await defending_player_channel.send(message)
-        def check(m):
-            return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.display_name == defending_player_name
+            {} has been hit!!
+            """
+        embedname = "{} is attacking {}".format(attacking_player_name,defending_player_name)
+        embedcolor = discord.Colour.dark_gray()
+        ctxembed = discord.Embed(color=embedcolor)
+        ctxembed.add_field(name=embedname,value = "Waiting for confirmation...")
+        embed = discord.Embed(color=discord.Colour.dark_gray())
+        embed.add_field(name=embedname,value="Please confirm or deny. This message will time out after 25 seconds.")
+        ctxmsg = await ctx.send(embed=ctxembed)
+        message = message.format(defending_player.mention)
+        buttons = [[Button(label="CONFIRM",custom_id="confirm",style=3),Button(label="DENY",custom_id="deny",style=4)]]
+        msg = await defending_player_channel.send(message,embed = embed, components = buttons)
         try:
-            msg = await self.bot.wait_for('message', check=check, timeout=25)
+            interaction = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player,timeout = 25)
+            await interaction.respond(type=6)
         except asyncio.TimeoutError:
-            await defending_player_channel.send("Confirmation time has expired")
-            await ctx.send("Confirmation time has expired")
+            embedcolor=discord.Colour.red()
+            embed.color=embedcolor
+            ctxembed.color=embedcolor
+            embed.set_field_at(index=0,name=embedname,value="Confirmation time has expired")
+            ctxembed.set_field_at(index=0,name=embedname,value="Confirmation time has expired")
+            await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+            await ctxmsg.edit(embed=ctxembed)
             return
         else:
-            await defending_player_channel.send("Thank you for confirming, proceeding...")
-            await ctx.send("Player {} has confirmed, proceeding...".format(defending_player_name))
-
+            if(msg.custom_id == "confirm"):
+                embedcolor = discord.Colour.green()
+                embed.color=embedcolor
+                ctxembed.color=embedcolor
+                embed.set_field_at(index=0,name=embedname,value="Thank you for confirming, proceeding...")
+                ctxembed.set_field_at(index=0,name=embedname,value="Player {} has confirmed, proceeding...".format(defending_player_name))
+                await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+                await ctxmsg.edit(embed=ctxembed)
+            else:
+                embedcolor=discord.Colour.red()
+                embed.color=embedcolor
+                ctxembed.color=embedcolor
+                embed.set_field_at(index=0,name=embedname,value="Hit has been denied")
+                ctxembed.set_field_at(index=0,name=embedname,value="Player {} has denied the hit".format(defending_player_name))
+                await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+                await ctxmsg.edit(embed=ctxembed)
+                return
 
         #If confirmed: Calculate damage based on team effectiveness and items
         hit_damage, damage_output_list = battle.damage_check_team(
