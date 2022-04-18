@@ -5,7 +5,7 @@
         "id" : "965400111544934430",
         "name" : "pokemon_bulbabruh"
 }
-emoji_test = "<:965400111544934430:pokemon_bulbabruh>"
+emoji_test = "<:pokemon_bulbabruh:965400111544934430>"
 
 emoji_help = "Help : !help"
 emoji_desc = "Description : !desc"
