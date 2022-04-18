@@ -42,10 +42,13 @@ async def on_ready():
 @bot.command(name="help")
 async def help(ctx):
     slight_smile = "\U0001f642"
-    bruh_emoji = {
+    {
         "id" : "965400111544934430",
         "name" : "pokemon_bulbabruh"
     }
+    bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
+    msg = await ctx.send(f"Sorry! {bruh_emoji}")
+    await msg.add_reaction(bruh_emoji)
     embed = discord.Embed(
         title = "Functions Academy {slight_smile}",
         description = "List of functions and their use",
