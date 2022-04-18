@@ -64,26 +64,45 @@ class PlayerAttackCog(commands.Cog):
         message = """
             {} has been hit!!
             """
+        embedname = "{} is attacking {}".format(attacking_player_name,defending_player_name)
+        embedcolor = discord.Colour.dark_gray()
+        ctxembed = discord.Embed(color=embedcolor)
+        ctxembed.add_field(name=embedname,value = "Waiting for confirmation...")
         embed = discord.Embed(color=discord.Colour.dark_gray())
-        embed.add_field(name = "{} is attacking {}".format(attacking_player_name,defending_player_name),value="Please confirm or deny. This message times out in 25 seconds.")
-
+        embed.add_field(name=embedname,value="Please confirm or deny. This message will time out after 25 seconds.")
+        ctxmsg = await ctx.send(embed=ctxembed)
         message = message.format(defending_player.mention)
-        buttons = [Button(label="CONFIRM",custom_id="confirm",style=3),Button(label="DENY",custom_id="deny",style=4)]
-        await defending_player_channel.send(message,embed = embed, components = buttons)
+        buttons = [[Button(label="CONFIRM",custom_id="confirm",style=3),Button(label="DENY",custom_id="deny",style=4)]]
+        msg = await defending_player_channel.send(message,embed = embed, components = buttons)
         try:
-            msg = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player,timeout = 25)
-            await msg.respond(type=6)
+            interaction = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player,timeout = 25)
+            await interaction.respond(type=6)
         except asyncio.TimeoutError:
-            await defending_player_channel.send("Confirmation time has expired")
-            await ctx.send("Confirmation time has expired")
+            embedcolor=discord.Colour.red()
+            embed.color=embedcolor
+            ctxembed.color=embedcolor
+            embed.set_field_at(index=0,name=embedname,value="Confirmation time has expired")
+            ctxembed.set_field_at(index=0,name=embedname,value="Confirmation time has expired")
+            await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+            await ctxmsg.edit(embed=ctxembed)
             return
         else:
             if(msg.custom_id == "confirm"):
-                await defending_player_channel.send("Thank you for confirming, proceeding...")
-                await ctx.send("Player {} has confirmed, proceeding...".format(defending_player_name))
+                embedcolor = discord.Colour.green()
+                embed.color=embedcolor
+                ctxembed.color=embedcolor
+                embed.set_field_at(index=0,name=embedname,value="Thank you for confirming, proceeding...")
+                ctxembed.set_field_at(index=0,name=embedname,value="Player {} has confirmed, proceeding...".format(defending_player_name))
+                await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+                await ctxmsg.edit(embed=ctxembed)
             else:
-                await defending_player_channel.send("Hit has been denied")
-                await ctx.send("Player {} has denied the hit".format(defending_player_name))
+                embedcolor=discord.Colour.red()
+                embed.color=embedcolor
+                ctxembed.color=embedcolor
+                embed.set_field_at(index=0,name=embedname,value="Hit has been denied")
+                ctxembed.set_field_at(index=0,name=embedname,value="Player {} has denied the hit".format(defending_player_name))
+                await msg.edit(embed=embed,components=[[Button(label="CONFIRM",custom_id="confirm",style=3,disabled=True),Button(label="DENY",custom_id="deny",style=4,disabled=True)]])
+                await ctxmsg.edit(embed=ctxembed)
                 return
 
         #If confirmed: Calculate damage based on team effectiveness and items
