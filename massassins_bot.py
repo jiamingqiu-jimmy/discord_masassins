@@ -58,7 +58,7 @@ async def help(ctx):
 
     
     await ctx.send(f"Hi {bruh_emoji}")
-    await ctx.send(f"hello {bruh_emoji2})
+    await ctx.send(f"hello {bruh_emoji2}")
 
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
