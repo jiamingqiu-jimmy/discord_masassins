@@ -471,6 +471,14 @@ async def use(ctx, item_name, player_name):
             await ctx.send("The player is already on your team")
             return 
 
+        if team_name == settings.team_name_alumni:
+            await ctx.send("You cannot capture an alumni with the Master Ball!")
+            return
+        
+        if team_name == settings.team_name_gym_leaders:
+            await ctx.send("You cannot capture a gym leader with the Master Ball!")
+            return   
+        
         #Master ball, throw master ball at a player.
         sql.update_player_team(cur, player_name, new_team_name)
     
@@ -490,6 +498,14 @@ async def use(ctx, item_name, player_name):
         new_team_name = sql.get_player_team_name(cur, init_player_name)
         if new_team_name == team_name:
             await ctx.send("The player is already on your team")
+            return 
+        
+        if team_name == settings.team_name_alumni:
+            await ctx.send("You cannot capture an alumni with the Gacha Ball!")
+            return
+        
+        if team_name == settings.team_name_gym_leaders:
+            await ctx.send("You cannot capture a gym leader with the Gacha Ball!")
             return 
 
         #gacha ball, throw gacha ball at a player.
@@ -535,6 +551,7 @@ async def use(ctx, item_name, player_name):
 
 @use.error
 async def use_an_item_error(ctx,error):
+    await ctx.send("The use command is : use <item-name> <player-name>")
     await ctx.send(error)
     
 @bot.command(name="attack")
@@ -671,7 +688,7 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
     attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
     attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
-    embed.add_field(name="{} Resulting Team Gold".format(attacking_player_team), value=attacking_team_values, inline=False)
+    embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
     attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))
     embed.add_field(name="{}'s Resulting EXP".format(attacking_player_name), value=attacking_player_values, inline=False)
