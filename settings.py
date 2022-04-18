@@ -78,7 +78,7 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 master_ball_catch_chance = 1
-gacha_ball_catch_chance = 0.003
+gacha_ball_catch_chance = 0.005
 
 #Items Initialization
 item_name_potion = "Potion"
@@ -90,7 +90,7 @@ item_name_poke_ball = "Poke-Ball"
 item_cost_potion = 30
 item_cost_revive = 60
 item_cost_master_ball = 300
-item_cost_gacha_ball = 3
+item_cost_gacha_ball = 5
 item_cost_poke_ball = 100
 
 item_list = [
@@ -146,7 +146,7 @@ player_team_dict = {
     "Tommy":team_name_rock,
     "Yi":team_name_dark,
     "Jimmy":team_name_gym_leaders,
-    "Ruby":team_name_gym_leaders,
     "Cindy":team_name_ghost,
-    "Nick":team_name_fire
+    "Nick":team_name_fire,
+    "Ruby":team_name_gym_leaders
 }

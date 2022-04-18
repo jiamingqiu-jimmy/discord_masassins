@@ -52,5 +52,5 @@ class PlayerCog(commands.Cog):
             Global.Locks.gold_lock.release()
 
     @trade_gold.error
-    async def trade_gold_error(ctx, error):
+    async def trade_gold_error(self, ctx, error):
         await ctx.send(error)

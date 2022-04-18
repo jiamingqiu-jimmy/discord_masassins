@@ -29,13 +29,21 @@ class PlayerUseCog(commands.Cog):
 
         #Init_player_team_name
         init_player_team_name = sql.get_player_team_name(cur, init_player_name)
-
-        if player_name is None or sql.valid_player_check(cur, player_name) != 0:
+        
+        team_name = str
+        player_name = str
+        
+        if player_name is None:
             await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
             return
+        
+        if item_name != settings.item_name_poke_ball:
+            if player_name is None or sql.valid_player_check(cur, player_name) != 0:
+                await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
+                return
 
-        #Get the player's current team
-        team_name = sql.get_player_team_name(cur, player_name)
+            #Get the player's current team
+            team_name = sql.get_player_team_name(cur, player_name)
 
         await Global.Locks.items_lock.acquire()
         #Check to see if it is a valid item
@@ -43,15 +51,9 @@ class PlayerUseCog(commands.Cog):
             await ctx.send("Please check that the item name is correct")
             return
 
-
         #Check to see if the current team owns the item
         if sql.get_team_item(cur, init_player_team_name, item_name) is None:
             await ctx.send("Your team does not currently own this item")
-            return
-
-        target_player = get(guild.members, display_name=player_name)
-        if target_player is None:
-            await ctx.send("This player is not part of the game")
             return
 
         #Map the item to a specific item and effect
@@ -76,6 +78,12 @@ class PlayerUseCog(commands.Cog):
             sql.delete_team_item(cur, team_name, item_name)
 
         elif item_name == settings.item_name_revive:
+            target_player = get(guild.members, display_name=player_name)
+
+            if target_player is None:
+                await ctx.send("This player is not part of the game")
+                return
+        
             #Check to see if the team listed is the player's team
             if (init_player_team_name != team_name):
                 await ctx.send("Item must be used on a player in the same team. Function is !use <item_name> <player_name>")
@@ -154,8 +162,8 @@ class PlayerUseCog(commands.Cog):
                 await ctx.send("{} has been caught by a gacha ball".format(player_name))
             #Remove item from team
             sql.delete_team_item(cur, new_team_name, item_name)
-
         elif item_name == settings.item_name_poke_ball:
+            print("Pokeball!")
             #Check to make sure the player is not already in the game
             if sql.valid_player_check(cur, player_name) == 0:
                 await ctx.send("The player is already in the game")
@@ -180,6 +188,6 @@ class PlayerUseCog(commands.Cog):
         Global.Locks.items_lock.release()
 
     @use.error
-    async def use_an_item_error(ctx,error):
+    async def use_an_item_error(self, ctx, error):
         await ctx.send("The use command is : use <item-name> <player-name>")
         await ctx.send(error)

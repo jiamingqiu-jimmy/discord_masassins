@@ -48,7 +48,7 @@ class OwnerCog(commands.Cog):
         await ctx.send("All resetting procedures are done!")
     
     @reset.error
-    async def reset_error(ctx, error):
+    async def reset_error(self, ctx, error):
         await ctx.send(error)
 
     @commands.command(name='populate')
@@ -107,57 +107,57 @@ class OwnerCog(commands.Cog):
         await ctx.send("All players has been processed, waiting for players to join...")
         
 
-        @commands.command(name="create_channels")
-        @commands.is_owner()
-        async def create_channels(ctx):
-            await ctx.send("Creating all necessary channels...")
-            guild = ctx.guild
-            masassins_announcements_channel = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)
+    @commands.command(name="create_channels")
+    @commands.is_owner()
+    async def create_channels(ctx):
+        await ctx.send("Creating all necessary channels...")
+        guild = ctx.guild
+        masassins_announcements_channel = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)
+        }
+        announcements_channel_name = await guild.create_text_channel(name=settings.masassins_announcements_channel_name, overwrites=masassins_announcements_channel, position=0)
+        await ctx.send("Created Announcements Channel")
+
+        masassins_channel = await guild.create_category_channel(settings.masassins_category_channel_name)
+        await ctx.send("Created Category Channel")
+
+        all_team_channel_overwrite = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=True)
+        }
+        await masassins_channel.create_text_channel(name=settings.masassins_all_team_channel_name, overwrites=all_team_channel_overwrite, position=0)
+        await ctx.send("Created All-Team Discussion Channel")
+
+        for team_name in settings.team_list:
+            team_role = get(guild.roles, name=team_name)
+            admin_role = get(guild.roles, name=settings.admin_role)
+            staff_role = get(guild.roles, name=settings.MASA_staff_role)
+            team_channel_overwrite = {
+                admin_role: discord.PermissionOverwrite(read_messages=True),
+                team_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                staff_role: discord.PermissionOverwrite(read_messages=False)
             }
-            announcements_channel_name = await guild.create_text_channel(name=settings.masassins_announcements_channel_name, overwrites=masassins_announcements_channel, position=0)
-            await ctx.send("Created Announcements Channel")
+            await masassins_channel.create_text_channel(name=team_name, overwrites=team_channel_overwrite)
+            await ctx.send("Created {} Discussion Channel".format(team_name))
+        
+        await ctx.send("All Done!")
 
-            masassins_channel = await guild.create_category_channel(settings.masassins_category_channel_name)
-            await ctx.send("Created Category Channel")
+    @commands.command(name="delete_channels")
+    @commands.is_owner()
+    async def delete_channels(ctx):
+        guild = ctx.guild
 
-            all_team_channel_overwrite = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=True)
-            }
-            await masassins_channel.create_text_channel(name=settings.masassins_all_team_channel_name, overwrites=all_team_channel_overwrite, position=0)
-            await ctx.send("Created All-Team Discussion Channel")
-
+        channels_list = guild.channels
+        for channel in channels_list:
+            for base_channel_name in settings.base_channels_namelist:
+                if base_channel_name.lower() == channel.name.lower():
+                    await ctx.send("Deleting {}...".format(base_channel_name))
+                    await channel.delete()
+                    await ctx.send("Deleted {}".format(base_channel_name))
             for team_name in settings.team_list:
-                team_role = get(guild.roles, name=team_name)
-                admin_role = get(guild.roles, name=settings.admin_role)
-                staff_role = get(guild.roles, name=settings.MASA_staff_role)
-                team_channel_overwrite = {
-                    admin_role: discord.PermissionOverwrite(read_messages=True),
-                    team_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-                    guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                    staff_role: discord.PermissionOverwrite(read_messages=False)
-                }
-                await masassins_channel.create_text_channel(name=team_name, overwrites=team_channel_overwrite)
-                await ctx.send("Created {} Discussion Channel".format(team_name))
-            
-            await ctx.send("All Done!")
+                if channel.name.lower() == team_name.lower():
+                    await ctx.send("Deleting {} channel...".format(team_name))
+                    await channel.delete()
+                    await ctx.send("Deleted {} channel".format(team_name))
 
-        @commands.command(name="delete_channels")
-        @commands.is_owner()
-        async def delete_channels(ctx):
-            guild = ctx.guild
-
-            channels_list = guild.channels
-            for channel in channels_list:
-                for base_channel_name in settings.base_channels_namelist:
-                    if base_channel_name.lower() == channel.name.lower():
-                        await ctx.send("Deleting {}...".format(base_channel_name))
-                        await channel.delete()
-                        await ctx.send("Deleted {}".format(base_channel_name))
-                for team_name in settings.team_list:
-                    if channel.name.lower() == team_name.lower():
-                        await ctx.send("Deleting {} channel...".format(team_name))
-                        await channel.delete()
-                        await ctx.send("Deleted {} channel".format(team_name))
-
-            await ctx.send("Complete!")
+        await ctx.send("Complete!")

@@ -34,7 +34,7 @@ class AdminCog(commands.Cog):
         await ctx.send("{} has been removed from the game".format(player_name))
 
     @delete_player.error
-    async def delete_player_error(ctx, error):
+    async def delete_player_error(self, ctx, error):
         await ctx.send(error)
         
     @commands.command(name="give_player_hp")
@@ -55,7 +55,7 @@ class AdminCog(commands.Cog):
         await ctx.send("{} HP has been given to player {}".format(hp_amount, player_name))
 
     @give_player_hp.error
-    async def give_player_hp_error(ctx, error):
+    async def give_player_hp_error(self, ctx, error):
         await ctx.send(error)
         
     @commands.command(name="update_team_gold_exp")
@@ -79,7 +79,7 @@ class AdminCog(commands.Cog):
             await ctx.send("{} Gold and {} EXP changed on team {}".format(gold_amount, experience_amount, team_name))
 
     @update_team_gold_exp.error
-    async def update_team_gold_exp_error(ctx, error):
+    async def update_team_gold_exp_error(self, ctx, error):
         await ctx.send(error)
 
     @commands.command(name="remove_item")
@@ -116,5 +116,5 @@ class AdminCog(commands.Cog):
         await ctx.send("Team {} has been given {}".format(team_name, item_name))
 
     @give_team_item.error
-    async def give_team_item_error(ctx, error):
+    async def give_team_item_error(self, ctx, error):
         await ctx.send(error)
