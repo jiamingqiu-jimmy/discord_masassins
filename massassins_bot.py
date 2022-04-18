@@ -671,8 +671,11 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
     attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
     attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
     attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
-    embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
+    embed.add_field(name="{} Resulting Team Gold".format(attacking_player_team), value=attacking_team_values, inline=False)
 
+    attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))
+    embed.add_field(name="{}'s Resulting EXP".format(attacking_player_name), value=attacking_player_values, inline=False)
+    
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
     await announcements_channel.send(embed=embed)
     await ctx.send(embed=embed)
