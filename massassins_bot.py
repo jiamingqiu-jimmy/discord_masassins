@@ -59,8 +59,9 @@ async def help(ctx):
 
 @bot.command(name="desc")
 async def rules(ctx):
+    slight_smile = "\U0001f642"
     embed = discord.Embed(
-        title = "Descriptions",
+        title = "Descriptions {slight_smile}",
         description = "Details on important aspects of the game!",
         color = discord.Colour.teal()
     )
