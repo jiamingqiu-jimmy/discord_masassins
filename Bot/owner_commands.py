@@ -10,7 +10,7 @@ def setup(bot):
     bot.add_cog(OwnerCog(bot))
     
 class OwnerCog(commands.Cog):
-    def __init__(self, bot, conn):
+    def __init__(self, bot):
         self.bot = bot
         self.conn = sqlite3.connect(settings.MASASSINS_DB_NAME)
         
