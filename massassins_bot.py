@@ -42,10 +42,9 @@ async def on_ready():
 @bot.command(name="help")
 async def help(ctx):
     embed = discord.Embed(
-        title = "Functions Academy",
+        title = "Functions Academy :slight_smile:",
         description = "List of functions and their use",
-        color = discord.Colour.teal(),
-        emoji = ":slight_smile:"
+        color = discord.Colour.teal()
     )
 
     for help_command in f_help.list_of_help:
