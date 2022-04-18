@@ -48,8 +48,8 @@ async def help(ctx):
     bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
     await ctx.send(f"Sorry! {bruh_emoji}")
     embed = discord.Embed(
-        title = "Functions Academy",
-        description = "List of functions and their use",
+        title = f"Functions Academy" {bruh_emoji},
+        description = "List of functions and their use <:pokemon_bulbabruh:965400111544934430>",
         color = discord.Colour.teal(),
         thumbnail = {
             url: 'https://cdn.discordapp.com/emojis/965400111544934430.webp?size=240&quality=lossless'
