@@ -29,6 +29,8 @@ token = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.default()
 intents.members = True
+gold_lock = asyncio.Lock()
+items_lock = asyncio.Lock()
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -212,8 +214,7 @@ async def trade_gold(ctx, team_name, gold_amount):
     init_player_team_name = sql.get_player_team_name(cur, player_name)
 
     cur = conn.cursor()
-    lock = asyncio.Lock()
-    await lock.acquire()
+    await gold_lock.acquire()
     try:
         team_gold_amount = sql.get_team_gold(cur, init_player_team_name)
         if int(team_gold_amount) < int(gold_amount):
@@ -227,7 +228,7 @@ async def trade_gold(ctx, team_name, gold_amount):
     except:
         await ctx.send("An error has occured! Please check to make sure nothing changed and try again!")
     finally:
-        lock.release()
+        gold_lock.release()
 
 @trade_gold.error
 async def trade_gold_error(ctx, error):
@@ -237,7 +238,9 @@ async def trade_gold_error(ctx, error):
 @commands.has_role(settings.admin_role)
 async def remove_item(ctx, team_name, item_name):
     cur = conn.cursor()
+    await items_lock.acquire()
     sql.delete_team_item(cur, team_name, item_name)
+    items_lock.release()
     await ctx.send("{} has been removed from team {}".format(item_name, team_name))
 
 @bot.command(name="give_team_experience")
@@ -250,9 +253,10 @@ async def give_team_experience(ctx, team_name, experience_amount):
 @bot.command(name="give_gold")
 @commands.has_role(settings.admin_role)
 async def give_gold(ctx, team_name, gold_amount):
-
+    await gold_lock.acquire()
     cur = conn.cursor()
     sql.update_team_gold(cur, team_name, gold_amount)
+    gold_lock.release()
     await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
 
 @bot.command(name="update_team_gold_exp")
@@ -260,12 +264,16 @@ async def give_gold(ctx, team_name, gold_amount):
 async def update_team_gold_exp(ctx, team_name, gold_amount, experience_amount):
     cur = conn.cursor()
     sql.update_team_experience(cur, team_name, experience_amount)
+    await gold_lock.acquire()
     sql.update_team_gold(cur, team_name, gold_amount)
-    
+    gold_lock.release()
+
     if int(gold_amount) < 0 and int(experience_amount) < 0:
         positive_gold = (0-int(gold_amount))
         positive_EXP = (0-int(experience_amount))
+        await gold_lock.acquire()
         sql.update_team_gold(cur, settings.team_name_gym_leaders, positive_gold)
+        gold_lock.release()
         sql.update_team_experience(cur, settings.team_name_gym_leaders, positive_EXP)
         await ctx.send("Team Rocket has just stolen {} gold and {} EXP from {}".format(positive_gold, positive_EXP, team_name))
     else:
@@ -409,6 +417,7 @@ async def use(ctx, item_name, player_name):
     #Get the player's current team
     team_name = sql.get_player_team_name(cur, player_name)
 
+    await items_lock.acquire()
     #Check to see if it is a valid item
     if (sql.valid_item_check(cur, item_name) != 0):
         await ctx.send("Please check that the item name is correct")
@@ -486,7 +495,7 @@ async def use(ctx, item_name, player_name):
         #Remove Old Team
         team = get(guild.roles, name=team_name)
         await player.remove_roles(team)
-        #Adding Faint Role
+        #Adding New Team
         new_team = get(guild.roles, name=new_team_name)
         await player.add_roles(new_team)
         await ctx.send("{} has been caught by a master ball".format(player_name))
@@ -519,7 +528,7 @@ async def use(ctx, item_name, player_name):
             #Remove Old Team
             team = get(guild.roles, name=team_name)
             await player.remove_roles(team)
-            #Adding Faint Role
+            #Adding New Team
             new_team = get(guild.roles, name=new_team_name)
             await player.add_roles(new_team)
             await ctx.send("{} has been caught by a gacha ball".format(player_name))
@@ -548,6 +557,7 @@ async def use(ctx, item_name, player_name):
 
     else:
         await ctx.send("You cannot give that item to a player")
+    items_lock.release()
 
 @use.error
 async def use_an_item_error(ctx,error):
@@ -637,8 +647,9 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
         #Adding Faint Role
         masassins_dead_role = get(guild.roles, name=settings.masassins_dead_role)
         await defending_player.add_roles(masassins_dead_role)
-
+        await items_lock.acquire()
         sql.delete_player_items(cur, defending_player_name)
+        items_lock.release()
         #Set their health to zero
         sql.update_player_hp(cur, defending_player_name, (0-defending_player_health))
     else:
@@ -683,11 +694,13 @@ async def attack(ctx, player_name): #Maybe consider instead of inputting names, 
 
     #Distributing rewards
     sql.update_player_experience(cur, attacking_player_name, total_experience_reward)
+    await gold_lock.acquire()
     sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
 
     attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
     attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
     attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
+    gold_lock.release()
     embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
     attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))
@@ -753,24 +766,29 @@ async def buy(ctx, *args):
         return
 
     #Check if the team has enough gold to buy it
+    await gold_lock.acquire()
     team_gold_amount = sql.get_team_gold(cur, team_name)
+    gold_lock.release()
     if team_gold_amount < settings.item_cost_dict[item_name]:
         await ctx.send("Your team does not have enough gold")
         return
 
-    print("TEST")
     print(team_name)
+    await items_lock.acquire()
     if sql.get_team_item(cur,team_name,item_name) is not None:
         await ctx.send("Your team can only hold one of this item!")
         return
-    print("HELLO")
+    items_lock.release()
     #Give item to team
     await ctx.send("You have bought a {}".format(item_name))
     
     #Subtract their gold
+    await gold_lock.acquire()
     sql.update_team_gold(cur, team_name, (0-settings.item_cost_dict[item_name]))
-
+    gold_lock.release()
+    await items_lock.acquire()
     sql.give_team_item(cur, team_name, item_name)
+    items_lock.release()
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
 
     await announcements_channel.send("Team {} has just bought a {}".format(team_name, item_name))
