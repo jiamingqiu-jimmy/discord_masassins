@@ -21,7 +21,7 @@ def damage_check_team(cur, attacking_player_name, attacking_player_team, defendi
         total_damage_dealt += settings.normal_damage
         damage_output_list.append("Normal attack : {} DMG".format(settings.normal_damage))
 
-    damage_output_list.append("Total Damage Dealt : " + str(total_damage_dealt))
+    damage_output_list.append(f'Total Damage Dealt : {total_damage_dealt} HP')
     
     return total_damage_dealt, damage_output_list
 
@@ -41,14 +41,6 @@ def reward_check_player(cur, defending_player_death, attacking_player_name, atta
         total_experience_amount += settings.alumni_player_bonus_base_exp
         total_reward_list.append("Bonus Alumni gold reward: {} gold".format(settings.alumni_player_bonus_base_gold))
         total_reward_list.append("Bonus Alumni EXP reward: {} EXP".format(settings.alumni_player_bonus_base_exp))
-    if defending_player_team == settings.team_name_fire:
-        total_gold_amount += 20
-        total_experience_amount += 20
-        total_reward_list.append("Bonus gold/exp for hitting fire : 20")
-    elif defending_player_team == settings.team_name_psychic:
-        total_gold_amount += 10
-        total_experience_amount += 10
-        total_reward_list.append("Bonus gold/exp for hitting psychic : 10")
     #If death is true add extra experience and gold amounts
     if defending_player_death:
         total_gold_amount += settings.bonus_gold_reward
