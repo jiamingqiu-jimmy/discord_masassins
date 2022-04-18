@@ -19,6 +19,7 @@ import help_functions as f_help
 import desc_functions as f_desc
 import rule_functions as f_rule
 import safe_zones_functions as f_safe
+import help_emojis as e_help
 
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
@@ -41,15 +42,9 @@ async def on_ready():
 
 @bot.command(name="help")
 async def help(ctx):
-    {
-        "id" : "965400111544934430",
-        "name" : "pokemon_bulbabruh"
-    }
-    bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
-    await ctx.send(f"Sorry! {bruh_emoji}")
     embed = discord.Embed(
-        title = f"Functions Academy {bruh_emoji}",
-        description = "List of functions and their use <:pokemon_bulbabruh:965400111544934430>",
+        title = f"Functions Academy e_help.{emoji_test}",
+        description = "List of functions and their use",
         color = discord.Colour.teal(),
     )
 
