@@ -144,5 +144,6 @@ player_team_dict = {
     "Yi":team_name_dark,
     "Jimmy":team_name_gym_leaders,
     "Ruby":team_name_gym_leaders,
-    "Cindy":team_name_ghost
+    "Cindy":team_name_ghost,
+    "Nick":team_name_fire
 }
