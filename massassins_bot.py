@@ -41,22 +41,20 @@ async def on_ready():
 
 @bot.command(name="help")
 async def help(ctx):
-    slight_smile = "\U0001f642"
     {
         "id" : "965400111544934430",
         "name" : "pokemon_bulbabruh"
     }
     bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
-    msg = await ctx.send(f"Sorry! {bruh_emoji}")
-    await msg.add_reaction(bruh_emoji)
+    await ctx.send(f"Sorry! {bruh_emoji}")
     embed = discord.Embed(
-        title = "Functions Academy {slight_smile}",
+        title = "Functions Academy",
         description = "List of functions and their use",
-        color = discord.Colour.teal()
+        color = discord.Colour.teal(),
+        thumbnail = {
+            url: 'https://cdn.discordapp.com/emojis/965400111544934430.webp?size=240&quality=lossless'
+        }
     )
-
-    
-    await ctx.send(f"Hi {bruh_emoji}")
 
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
