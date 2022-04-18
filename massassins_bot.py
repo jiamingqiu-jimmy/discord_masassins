@@ -49,7 +49,7 @@ async def help(ctx):
     )
 
     slight_smile = "\U0001f642"
-    await ctx.send(f"Hi {slight_smile}")
+    await ctx.send(f"Hi {bruh_emoji}")
 
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
