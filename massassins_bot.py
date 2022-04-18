@@ -44,7 +44,7 @@ async def help(ctx):
     embed = discord.Embed(
         title = "Functions Academy",
         description = "List of functions and their use",
-        color = discord.Colour.teal()
+        color = discord.Colour.teal(),
         emoji = ":slight_smile:"
     )
 
