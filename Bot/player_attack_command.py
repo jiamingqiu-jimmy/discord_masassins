@@ -165,5 +165,5 @@ class PlayerAttackCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @attack.error
-    async def attack_error(ctx, error):
+    async def attack_error(self, ctx, error):
         await ctx.send(error)

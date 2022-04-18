@@ -38,7 +38,6 @@ bot.load_extension("Bot.admin_commands")
 bot.load_extension("Bot.player_attack_command")
 bot.load_extension("Bot.player_use_command")
 
-client = discord.Client()
 bot.remove_command('help')
 
 @bot.event
