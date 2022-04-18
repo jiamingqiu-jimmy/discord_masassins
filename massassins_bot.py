@@ -47,11 +47,13 @@ async def help(ctx):
         color = discord.Colour.teal()
     )
 
+    slight_smile = "\U0001f642"
+
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
 
     await ctx.send(embed=embed)
-    await ctx.send("Hi :slight_smile:")
+    await ctx.send({slight_smile})
 
 @bot.command(name="desc")
 async def rules(ctx):
