@@ -42,7 +42,7 @@ async def on_ready():
 @bot.command(name="help")
 async def help(ctx):
     embed = discord.Embed(
-        title = "Functions Academy :slight_smile:",
+        title = "Functions Academy",
         description = "List of functions and their use",
         color = discord.Colour.teal()
     )
@@ -51,6 +51,7 @@ async def help(ctx):
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
 
     await ctx.send(embed=embed)
+    await ctx.send("Hi :slight_smile:")
 
 @bot.command(name="desc")
 async def rules(ctx):
