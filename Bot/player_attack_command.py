@@ -7,6 +7,7 @@ import asyncio
 import settings
 import sql_functions as sql
 import battle_functions as battle
+from discord_components import DiscordComponents, ComponentsBot, Button
 
 import Global.Locks
 
@@ -61,22 +62,29 @@ class PlayerAttackCog(commands.Cog):
 
         #Wait for confirmation, 25 second deadline or auto-cancel
         message = """
-            Hello team {}, {} has just initiated a hit on {}. 
-            {} you have 25 seconds to confirm otherwise hit will be cancelled. Type in CONFIRM to confirm the hit """
-        message = message.format(defending_player_team, attacking_player_name, defending_player_name, defending_player.mention)
-        await defending_player_channel.send(message)
-        def check(m):
-            return m.content.lower() == "confirm" and m.channel == defending_player_channel and m.author.display_name == defending_player_name
+            {} has been hit!!
+            """
+        embed = discord.Embed(color=discord.Colour.dark_gray())
+        embed.add_field(name = "{} is attacking {}".format(attacking_player_name,defending_player_name),value="Please confirm or deny. This message times out in 25 seconds.")
+
+        message = message.format(defending_player.mention)
+        buttons = [Button(label="CONFIRM",custom_id="confirm",style=3),Button(label="DENY",custom_id="deny",style=4)]
+        await defending_player_channel.send(message,embed = embed, components = buttons)
         try:
-            msg = await self.bot.wait_for('message', check=check, timeout=25)
+            msg = await self.bot.wait_for("button_click", check=lambda i:i.user == defending_player,timeout = 25)
+            await msg.respond(type=6)
         except asyncio.TimeoutError:
             await defending_player_channel.send("Confirmation time has expired")
             await ctx.send("Confirmation time has expired")
             return
         else:
-            await defending_player_channel.send("Thank you for confirming, proceeding...")
-            await ctx.send("Player {} has confirmed, proceeding...".format(defending_player_name))
-
+            if(msg.custom_id == "confirm"):
+                await defending_player_channel.send("Thank you for confirming, proceeding...")
+                await ctx.send("Player {} has confirmed, proceeding...".format(defending_player_name))
+            else:
+                await defending_player_channel.send("Hit has been denied")
+                await ctx.send("Player {} has denied the hit".format(defending_player_name))
+                return
 
         #If confirmed: Calculate damage based on team effectiveness and items
         hit_damage, damage_output_list = battle.damage_check_team(

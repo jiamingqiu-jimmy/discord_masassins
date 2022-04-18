@@ -20,6 +20,8 @@ import desc_functions as f_desc
 import rule_functions as f_rule
 import safe_zones_functions as f_safe
 
+from discord_components import DiscordComponents, ComponentsBot, Button
+
 import Global.Locks
 
 #Sqlite3 DB connection
@@ -37,6 +39,8 @@ bot.load_extension("Bot.owner_commands")
 bot.load_extension("Bot.admin_commands")
 bot.load_extension("Bot.player_attack_command")
 bot.load_extension("Bot.player_use_command")
+
+DiscordComponents(bot)
 
 client = discord.Client()
 bot.remove_command('help')
