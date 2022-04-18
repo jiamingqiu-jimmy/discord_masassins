@@ -42,7 +42,7 @@ async def on_ready():
 
 @bot.command(name="help")
 async def help(ctx):
-    emoji = e_help.{emoji_test}
+    emoji = e_help.emoji_test
     embed = discord.Embed(
         title = f"Functions Academyc{emoji}",
         description = "List of functions and their use",
