@@ -177,11 +177,11 @@ class PlayerAttackCog(commands.Cog):
         sql.update_player_experience(cur, attacking_player_name, total_experience_reward)
         await Global.Locks.gold_lock.acquire()
         sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
-
+        Global.Locks.gold_lock.release()
+        
         attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
         attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
         attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
-        Global.Locks.gold_lock.release()
         embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
         attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))

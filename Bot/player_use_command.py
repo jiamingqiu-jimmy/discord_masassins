@@ -31,7 +31,6 @@ class PlayerUseCog(commands.Cog):
         init_player_team_name = sql.get_player_team_name(cur, init_player_name)
         
         team_name = str
-        player_name = str
         
         if player_name is None:
             await ctx.send("Please check to make sure the player name is correct, capitalization does matter")
@@ -45,7 +44,6 @@ class PlayerUseCog(commands.Cog):
             #Get the player's current team
             team_name = sql.get_player_team_name(cur, player_name)
 
-        await Global.Locks.items_lock.acquire()
         #Check to see if it is a valid item
         if (sql.valid_item_check(cur, item_name) != 0):
             await ctx.send("Please check that the item name is correct")
@@ -74,9 +72,11 @@ class PlayerUseCog(commands.Cog):
             else:
                 sql.update_player_hp(cur, player_name, settings.potion_healing)
                 await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
-        
+            
+            await Global.Locks.items_lock.acquire()
             sql.delete_team_item(cur, team_name, item_name)
-
+            Global.Locks.items_lock.release()
+            
         elif item_name == settings.item_name_revive:
             target_player = get(guild.members, display_name=player_name)
 
@@ -99,7 +99,10 @@ class PlayerUseCog(commands.Cog):
             await target_player.add_roles(masassins_alive_role)       
             sql.update_player_hp(cur, player_name, settings.revive_healing)
             await ctx.send("{} has been given revive. He has been revived!".format(player_name))
+            
+            await Global.Locks.items_lock.acquire()
             sql.delete_team_item(cur, team_name, item_name)
+            Global.Locks.items_lock.release()
 
         elif item_name == settings.item_name_master_ball:
             #Check to make sure that the player is on a different team
@@ -128,7 +131,9 @@ class PlayerUseCog(commands.Cog):
             await player.add_roles(new_team)
             await ctx.send("{} has been caught by a master ball".format(player_name))
             #Remove item from team
+            await Global.Locks.items_lock.acquire()
             sql.delete_team_item(cur, new_team_name, item_name)
+            Global.Locks.items_lock.release()
         
         elif item_name == settings.item_name_gacha_ball:
             #Check to make sure that the player is on a different team
@@ -161,7 +166,9 @@ class PlayerUseCog(commands.Cog):
                 await player.add_roles(new_team)
                 await ctx.send("{} has been caught by a gacha ball".format(player_name))
             #Remove item from team
+            await Global.Locks.items_lock.acquire()
             sql.delete_team_item(cur, new_team_name, item_name)
+            Global.Locks.items_lock.release()
         elif item_name == settings.item_name_poke_ball:
             print("Pokeball!")
             #Check to make sure the player is not already in the game
@@ -170,22 +177,28 @@ class PlayerUseCog(commands.Cog):
                 return
             
             #Poke ball, throw poke ball at a new player
-            sql.insert_player(cur, player_name)
-            team_name = sql.get_player_team_name(ctx.author.display_name)
-        
-            player = get(ctx.guild.members, display_name = player_name)
-            #Add to team
-            team = get(guild.roles, name=team_name)
-            await player.add_roles(team)
-            await ctx.send("{} has been caught by a poke ball".format(player_name))
-            sql.update_player_team(cur,player_name,team_name)
+            sql.insert_player(cur, player_name, init_player_team_name)
             
+            player = get(ctx.guild.members, display_name = player_name)
+            
+            #Add to team
+            team = get(guild.roles, name=init_player_team_name)
+            masassins_alive_role = get(guild.roles, name=settings.masassins_alive_role)
+            await player.add_roles(team)
+            await player.add_roles(masassins_alive_role)
+            await ctx.send("{} has been caught by a poke ball".format(player_name))
+            await ctx.send("{} is joining Team {}".format(player_name, init_player_team_name))
+            
+            announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+            await announcements_channel.send("{} has been caught by a pokeball from Team {}".format(player_name, init_player_team_name))
+            
+            await Global.Locks.items_lock.acquire()
             #Remove item from team
-            sql.delete_item_from_team(cur, team_name, item_name)
+            sql.delete_team_item(cur, init_player_team_name, item_name)
+            Global.Locks.items_lock.release()
 
         else:
             await ctx.send("You cannot give that item to a player")
-        Global.Locks.items_lock.release()
 
     @use.error
     async def use_an_item_error(self, ctx, error):

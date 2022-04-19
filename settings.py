@@ -132,7 +132,6 @@ player_team_dict = {
     "Nathan":team_name_fire,
     "Nicole":team_name_fire,
     "Selina":team_name_fire,
-    "soph920":team_name_dragon,
     "Tommy":team_name_dragon,
     "Yi":team_name_dragon,
     "Jimmy":team_name_gym_leaders,

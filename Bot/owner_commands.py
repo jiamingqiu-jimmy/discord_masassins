@@ -109,7 +109,7 @@ class OwnerCog(commands.Cog):
 
     @commands.command(name="create_channels")
     @commands.is_owner()
-    async def create_channels(ctx):
+    async def create_channels(self, ctx):
         await ctx.send("Creating all necessary channels...")
         guild = ctx.guild
         masassins_announcements_channel = {
@@ -144,7 +144,7 @@ class OwnerCog(commands.Cog):
 
     @commands.command(name="delete_channels")
     @commands.is_owner()
-    async def delete_channels(ctx):
+    async def delete_channels(self, ctx):
         guild = ctx.guild
 
         channels_list = guild.channels

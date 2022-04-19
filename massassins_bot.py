@@ -182,19 +182,15 @@ async def buy(ctx, *args):
         return
 
     #Check if the team has enough gold to buy it
-    await Global.Locks.gold_lock.acquire()
     team_gold_amount = sql.get_team_gold(cur, team_name)
-    Global.Locks.gold_lock.release()
     if team_gold_amount < settings.item_cost_dict[item_name]:
         await ctx.send("Your team does not have enough gold")
         return
 
     print(team_name)
-    await Global.Locks.items_lock.acquire()
     if sql.get_team_item(cur,team_name,item_name) is not None:
         await ctx.send("Your team can only hold one of this item!")
         return
-    Global.Locks.items_lock.release()
     #Give item to team
     await ctx.send("You have bought a {}".format(item_name))
     
