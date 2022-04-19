@@ -26,38 +26,28 @@ base_masassins_roles = [
     masassins_dead_role,
     admin_role
 ]
-admins_list = ["Jimmy", "Selina", "Annie", "Aizzer"]
+admins_list = ["Jimmy", "Selina", "Ruby", "Sophia", "Brian", "Brianna"]
 
 
 #Team Initialization
 team_name_fire = "Fire"
-team_name_bug = "Bug"
-team_name_dark = "Dark"
-team_name_ghost = "Ghost"
-team_name_psychic = "Psychic"
-team_name_fighting = "Fighting"
-team_name_rock = "Rock"
+team_name_ice = "Ice"
+team_name_dragon = "Dragon"
 team_name_alumni = "Alumni"
 team_name_gym_leaders = "Gym-Leaders"
 
 team_list = [
-    team_name_fire, team_name_bug,
-    team_name_dark, team_name_ghost,
-    team_name_psychic, team_name_fighting,
-    team_name_rock, team_name_alumni,
+    team_name_fire, team_name_ice,
+    team_name_dragon, team_name_alumni,
     team_name_gym_leaders
 ]
 
 team_starting_gold = 0
 
 team_effectiveness = {
-    team_name_fire : team_name_bug,
-    team_name_bug : team_name_dark,
-    team_name_dark : team_name_ghost,
-    team_name_ghost : team_name_psychic,
-    team_name_psychic : team_name_fighting,
-    team_name_fighting : team_name_rock,
-    team_name_rock : team_name_fire,
+    team_name_fire : team_name_ice,
+    team_name_ice : team_name_dragon,
+    team_name_dragon : team_name_fire,
     team_name_alumni : "Normal",
     team_name_gym_leaders : "Normal"
 }
@@ -134,19 +124,19 @@ alumni_player_bonus_base_gold = 10
 alumni_player_bonus_base_exp = 10
 
 player_team_dict = {
-    "Andrew":team_name_bug,
-    "Brian":team_name_psychic,
-    "Brianna":team_name_psychic,
-    "Johnny":team_name_bug,
-    "jsutin":team_name_fighting,
+    "Andrew":team_name_ice,
+    "Brian":team_name_ice,
+    "Brianna":team_name_ice,
+    "Johnny":team_name_ice,
+    "jsutin":team_name_fire,
     "Nathan":team_name_fire,
-    "Nicole":team_name_fighting,
+    "Nicole":team_name_fire,
     "Selina":team_name_fire,
-    "soph920":team_name_ghost,
-    "Tommy":team_name_rock,
-    "Yi":team_name_dark,
+    "soph920":team_name_dragon,
+    "Tommy":team_name_dragon,
+    "Yi":team_name_dragon,
     "Jimmy":team_name_gym_leaders,
-    "Cindy":team_name_ghost,
+    "Cindy":team_name_dragon,
     "Nick":team_name_fire,
     "Ruby":team_name_gym_leaders
 }
