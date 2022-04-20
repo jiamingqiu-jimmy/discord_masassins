@@ -26,9 +26,10 @@ async def view_team(cur, ctx, team_name):
         team_gold = sql.get_team_gold(cur, team_name)
         team_experience = sql.get_team_experience(cur, team_name)
         team_items = sql.get_team_items(cur, team_name)
+        
         for item_row in team_items:
             item_count = sql.get_team_item_count(cur, team_name, item_row[0])
-            team_items_string += item_row[0] + "({})".format(item_count[0]) + " "
+            team_items_string += item_row[0] + "({})".format(item_count) + " "
         
         embed = discord.Embed(
             title = team_name,

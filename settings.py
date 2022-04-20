@@ -1,5 +1,8 @@
 # settings.py
 
+#MASASSINS Database Name
+MASASSINS_DB_NAME = "masassins.db"
+
 #Channels
 #Channels MUST NOT have spaces and spaces must have -
 masassins_category_channel_name = "Masassins-Team-Channels"
@@ -17,44 +20,34 @@ base_channels_namelist = [
 masassins_alive_role = "masassins2020-ALIVE"
 masassins_dead_role = "masassins2020-FAINTED"
 admin_role = "masassins-planner"
-MASA_staff_role = "MASA Staff"
+MASA_staff_role = "Puffles"
 base_masassins_roles = [
     masassins_alive_role,
     masassins_dead_role,
     admin_role
 ]
-admins_list = ["Jimmy", "Selina", "Annie", "Aizzer"]
+admins_list = ["Jimmy", "Selina", "Ruby", "Sophia", "Brian", "Brianna"]
 
 
 #Team Initialization
 team_name_fire = "Fire"
-team_name_bug = "Bug"
-team_name_dark = "Dark"
-team_name_ghost = "Ghost"
-team_name_psychic = "Psychic"
-team_name_fighting = "Fighting"
-team_name_rock = "Rock"
+team_name_ice = "Ice"
+team_name_dragon = "Dragon"
 team_name_alumni = "Alumni"
 team_name_gym_leaders = "Gym-Leaders"
 
 team_list = [
-    team_name_fire, team_name_bug,
-    team_name_dark, team_name_ghost,
-    team_name_psychic, team_name_fighting,
-    team_name_rock, team_name_alumni,
+    team_name_fire, team_name_ice,
+    team_name_dragon, team_name_alumni,
     team_name_gym_leaders
 ]
 
 team_starting_gold = 0
 
 team_effectiveness = {
-    team_name_fire : team_name_bug,
-    team_name_bug : team_name_dark,
-    team_name_dark : team_name_ghost,
-    team_name_ghost : team_name_psychic,
-    team_name_psychic : team_name_fighting,
-    team_name_fighting : team_name_rock,
-    team_name_rock : team_name_fire,
+    team_name_fire : team_name_ice,
+    team_name_ice : team_name_dragon,
+    team_name_dragon : team_name_fire,
     team_name_alumni : "Normal",
     team_name_gym_leaders : "Normal"
 }
@@ -75,7 +68,7 @@ team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
 
 master_ball_catch_chance = 1
-gacha_ball_catch_chance = 0.3
+gacha_ball_catch_chance = 0.005
 
 #Items Initialization
 item_name_potion = "Potion"
@@ -87,7 +80,7 @@ item_name_poke_ball = "Poke-Ball"
 item_cost_potion = 30
 item_cost_revive = 60
 item_cost_master_ball = 300
-item_cost_gacha_ball = 3
+item_cost_gacha_ball = 5
 item_cost_poke_ball = 100
 
 item_list = [
@@ -131,17 +124,18 @@ alumni_player_bonus_base_gold = 10
 alumni_player_bonus_base_exp = 10
 
 player_team_dict = {
-    "Andrew":team_name_bug,
-    "Brian":team_name_psychic,
-    "Brianna":team_name_psychic,
-    "Johnny":team_name_bug,
-    "jsutin":team_name_fighting,
+    "Andrew":team_name_ice,
+    "Brian":team_name_ice,
+    "Brianna":team_name_ice,
+    "Johnny":team_name_ice,
+    "jsutin":team_name_fire,
     "Nathan":team_name_fire,
-    "Nicole":team_name_fighting,
+    "Nicole":team_name_fire,
     "Selina":team_name_fire,
-    "soph920":team_name_ghost,
-    "Tommy":team_name_rock,
-    "Yi":team_name_dark,
+    "Tommy":team_name_dragon,
+    "Yi":team_name_dragon,
     "Jimmy":team_name_gym_leaders,
+    "Cindy":team_name_dragon,
+    "Nick":team_name_fire,
     "Ruby":team_name_gym_leaders
 }
