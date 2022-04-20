@@ -56,7 +56,7 @@ async def help(ctx):
     await ctx.send("https://cdn.discordapp.com/emojis/966238840689942558.gif")
     embed = discord.Embed(
         title = f"{e_functions} Functions Academy",
-        description = f"{e_animated} List of functions and their use",
+        description = "List of functions and their use",
         color = discord.Colour.teal(),
     )
 
