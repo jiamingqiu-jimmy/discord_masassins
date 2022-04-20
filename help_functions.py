@@ -2,7 +2,7 @@ import help_emojis as e_help
 
 #Help Emojis
 e_help = e_help.emoji_help
-#e_desc = e_help.emoji_desc
+e_desc = e_help.emoji_desc
 e_rule = e_help.emoji_rule
 e_safezone = e_help.emoji_safezone
 e_use = e_help.emoji_use
@@ -18,7 +18,7 @@ e_join = e_help.emoji_join
 
 
 help_help = f"{e_help} Help : !help"
-help_desc = " Description : !desc"
+help_desc = f"{e_desc} Description : !desc"
 help_rule = f"{e_rule} Rules : !rule"
 help_safezone = f"{e_safezone} Safe zones : !safezones"
 help_use = f"{e_use} Use : !use <item_name> <player_name>"
