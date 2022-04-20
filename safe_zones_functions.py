@@ -37,7 +37,7 @@ safezone_gym_desc = """
 Players cannot be tagged if they're in the weight room or on a treadmill.
 """
 safezone_bathroom_desc = """
-You are only safe within the stall/urinal. Once you leave the stall/urinal, you may be tagged.
+You are safe within public restrooms. Once you leave the restroom, you may be tagged.
 """
 safezone_nametags_desc = """
 You are only safe while receiving name tags from Gym Leaders. You are not safe on route to obtain tags. After the tags have changed hands, you are no longer safe.
