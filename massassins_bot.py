@@ -66,8 +66,9 @@ async def help(ctx):
 
 @bot.command(name="desc")
 async def rules(ctx):
+    e_desc = e_help.emoji_desc
     embed = discord.Embed(
-        title = "Descriptions",
+        title = f"{e_desc} Descriptions",
         description = "Details on important aspects of the game!",
         color = discord.Colour.teal()
     )
@@ -79,8 +80,9 @@ async def rules(ctx):
 
 @bot.command(name="rule")
 async def rules(ctx):
+    e_rule = e_help.emoji_rule
     embed = discord.Embed(
-        title = "Rules",
+        title = f"{e_rule} Rules",
         description = "Cheating of any kind is not permitted. You will be penalized if caught",
         color = discord.Colour.teal()
     )
@@ -92,8 +94,9 @@ async def rules(ctx):
 
 @bot.command(name="safezones")
 async def rules(ctx):
+    e_safe = e_help.emoji_safezone
     embed = discord.Embed(
-        title = "Safe Zones",
+        title = f"{e_safe} Safe Zones",
         description = "You can still have your privacy",
         color = discord.Colour.teal()
     )
@@ -150,8 +153,9 @@ async def hello(ctx):
 @bot.command(name="shop")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
 async def pokemart(ctx):
+    e_shop = e_help.emoji_shop
     embed = discord.Embed(
-        title="Poke Mart",
+        title = f"{e_shop} Poke Mart",
         description = "You can buy items here!",
         colour = discord.Colour.blue()
     )
