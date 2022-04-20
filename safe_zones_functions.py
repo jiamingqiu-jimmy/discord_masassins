@@ -40,14 +40,14 @@ safezone_bathroom_desc = """
 You are only safe within the stall/urinal. Once you leave the stall/urinal, you may be tagged.
 """
 safezone_nametags_desc = """
-You are only safe while receiving name tags from Team Rocket. You are not safe on route to obtain tags. After the tags have changed hands, you are no longer safe.
+You are only safe while receiving name tags from Gym Leaders. You are not safe on route to obtain tags. After the tags have changed hands, you are no longer safe.
 """
 safezone_masa_event_desc = """
 MASA Staff/Fusion Meetings
 Deco/Fusion-related work parties
 Fusion-related Sponsorship/Marketing outreach
 kF practice
-**Staff-approved MoMASA events. Such events must: 1) have agreement from staff, and 2) be planned and executed like any other MoMASA. The Team Rocket have the right to remove this safety opportunity if it is abused.
+**Staff-approved MoMASA events. Such events must: 1) have agreement from staff, and 2) be planned and executed like any other MoMASA. The Gym Leaders have the right to remove this safety opportunity if it is abused.
 """
 
 safezone_list = [
