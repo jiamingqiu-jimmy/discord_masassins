@@ -1,7 +1,7 @@
 import help_emojis as e_help
 
 #Help Emojis
-e_h3lp = e_help.emoji_help
+e_h3lp = "<a:pokemon_question:966238840689942558>"
 e_desc = e_help.emoji_desc
 e_rule = e_help.emoji_rule
 e_safezone = e_help.emoji_safezone
@@ -17,7 +17,7 @@ e_join = e_help.emoji_join
 #Help Name and descriptions
 
 
-help_help = "<a:pokemon_question:966238840689942558> Help : !help"
+help_help = f"{e_h3lp} Help : !help"
 help_desc = f"{e_desc} Description : !desc"
 help_rule = f"{e_rule} Rules : !rule"
 help_safezone = f"{e_safezone} Safe zones : !safezones"
