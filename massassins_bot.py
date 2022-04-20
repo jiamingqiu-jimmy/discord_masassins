@@ -53,6 +53,7 @@ async def on_ready():
 @bot.command(name="help")
 async def help(ctx):
     e_functions = e_help.emoji_functions
+    e_animated = bot.get_emoji(e_help.emoji_help)
     embed = discord.Embed(
         title = f"{e_functions} Functions Academy",
         description = "List of functions and their use",
@@ -62,7 +63,7 @@ async def help(ctx):
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
 
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed.format(e_animated))
 
 @bot.command(name="desc")
 async def rules(ctx):
