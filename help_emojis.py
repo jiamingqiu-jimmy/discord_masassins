@@ -18,7 +18,7 @@ emoji_functions = "<:pokemonprofessoroak:965400111754661968>"
 {
         "id" : "966238840689942558",
         "name" : "pokemon_question",
-        "animated" : true
+        "animated" : True
 }
 emoji_help = "<:pokemon_question:966238840689942558>"
 
@@ -26,7 +26,7 @@ emoji_help = "<:pokemon_question:966238840689942558>"
 {
         "id" : "966238975809433640",
         "name" : "2493notepen",
-        "animated" : true
+        "animated" : True
 }
 emoji_desc = "<:2493notepen:966238975809433640>"
 
@@ -48,7 +48,7 @@ emoji_safezone = "<:safemodeon:965710769176055848>"
 {
         "id" : "966238976128200744",
         "name" : "1394pichubounce",
-        "animated" : true
+        "animated" : True
 }
 emoji_use = "<:1394pichubounce:966238976128200744>"
 
@@ -62,7 +62,7 @@ emoji_buy = "<:Gold_Coin:965710724016009276>"
 {
         "id" : "966238840853516328",
         "name" : "pepeShop",
-        "animated" : true
+        "animated" : True
 }
 emoji_shop = "<:pepeShop:966238840853516328>"
 
@@ -70,7 +70,7 @@ emoji_shop = "<:pepeShop:966238840853516328>"
 {
         "id" : "966238669159690290",
         "name" : "eyesshaking",
-        "animated" : true
+        "animated" : True
 }
 emoji_view_all = "<:eyesshaking:966238669159690290>"
 
@@ -85,7 +85,7 @@ emoji_view_team = "<:pokemon_omg:965400111658188840>"
 {
         "id" : "966238840337596476",
         "name" : "PIKACHUstabmesserkillpokemon",
-        "animated" : true
+        "animated" : True
 }
 emoji_attack = "<:PIKACHUstabmesserkillpokemon:966238840337596476>"
 
@@ -100,6 +100,6 @@ emoji_trade = "<:agenttrade:965710768882466826>"
 {
         "id" : "966238852752736277",
         "name" : "PokemonTrainer",
-        "animated" : true
+        "animated" : True
 }
 emoji_join = "<:PokemonTrainer:966238852752736277>"
