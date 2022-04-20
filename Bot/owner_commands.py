@@ -115,15 +115,16 @@ class OwnerCog(commands.Cog):
         masassins_announcements_channel = {
             guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)
         }
-        announcements_channel_name = await guild.create_text_channel(name=settings.masassins_announcements_channel_name, overwrites=masassins_announcements_channel, position=0)
-        await ctx.send("Created Announcements Channel")
-
+        
         masassins_channel = await guild.create_category_channel(settings.masassins_category_channel_name)
         await ctx.send("Created Category Channel")
 
         all_team_channel_overwrite = {
             guild.default_role: discord.PermissionOverwrite(read_messages=True)
         }
+        announcements_channel_name = await masassins_channel.create_text_channel(name=settings.masassins_announcements_channel_name, overwrites=masassins_announcements_channel, position=0)
+        await ctx.send("Created Announcements Channel")
+        
         await masassins_channel.create_text_channel(name=settings.masassins_all_team_channel_name, overwrites=all_team_channel_overwrite, position=0)
         await ctx.send("Created All-Team Discussion Channel")
 

@@ -5,7 +5,7 @@ MASASSINS_DB_NAME = "masassins.db"
 
 #Channels
 #Channels MUST NOT have spaces and spaces must have -
-masassins_category_channel_name = "Masassins-Team-Channels"
+masassins_category_channel_name = "Masassins-Channels"
 masassins_announcements_channel_name = "masamon-announcements"
 masassins_all_team_channel_name = "All-Team-Discussion"
 

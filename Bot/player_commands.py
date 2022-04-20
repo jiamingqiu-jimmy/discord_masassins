@@ -46,3 +46,21 @@ class PlayerCog(commands.Cog):
     @trade_gold.error
     async def trade_gold_error(self, ctx, error):
         await ctx.send(error)
+        
+    @commands.command(name="smite")
+    @commands.has_role(settings.masassins_alive_role)
+    async def smite(self, ctx, player_name):
+        target_player = get(ctx.guild.members, display_name=player_name)
+        await ctx.send(f'{target_player.mention} has been smited by {ctx.author.display_name} -  Zap Zap!')
+    
+    @commands.command(name="bingbong")
+    @commands.has_role(settings.masassins_alive_role)
+    async def bingbong(self, ctx):
+        await ctx.send(f'FUCK YO LIFE - BING BONG')
+        
+    @commands.command(name="kill")
+    @commands.has_role(settings.masassins_alive_role)
+    async def kill(self, ctx, player_name):
+        target_player = get(ctx.guild.members, display_name=player_name)
+        await ctx.send(f'{ctx.author.mention} has failed to assassinate {target_player.mention}, have you tried tagging them?')
+        
