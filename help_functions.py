@@ -1,7 +1,8 @@
+import massassins_bot as m_bot
 import help_emojis as e_help
 
 #Help Emojis
-e_h3lp = bot.get_emoji(e_help.emoji_help)
+e_h3lp = m_bot.bot.get_emoji(e_help.emoji_help)
 e_desc = e_help.emoji_desc
 e_rule = e_help.emoji_rule
 e_safezone = e_help.emoji_safezone
