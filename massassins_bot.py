@@ -44,7 +44,7 @@ async def on_ready():
 async def help(ctx):
     emoji = e_help.emoji_test
     embed = discord.Embed(
-        title = f"Functions Academyc{emoji}",
+        title = f"Functions Academy {emoji}",
         description = "List of functions and their use",
         color = discord.Colour.teal(),
     )
