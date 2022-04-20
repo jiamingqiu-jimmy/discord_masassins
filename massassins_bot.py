@@ -35,6 +35,7 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 bot.load_extension("Bot.owner_commands")
 bot.load_extension("Bot.admin_commands")
+bot.load_extension("Bot.player_commands")
 bot.load_extension("Bot.player_attack_command")
 bot.load_extension("Bot.player_use_command")
 
