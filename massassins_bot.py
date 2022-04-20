@@ -58,7 +58,6 @@ async def help(ctx):
         description = "List of functions and their use",
         color = discord.Colour.teal(),
     )
-    await ctx.send("https://cdn.discordapp.com/emojis/966238840689942558.gif")
 
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)

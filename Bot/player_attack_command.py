@@ -174,8 +174,8 @@ class PlayerAttackCog(commands.Cog):
         e_reward = e_attack.emoji_reward
         e_result = e_attack.emoji_result
 
-        embed.add_field(name="<:PokemonSwordandShield:965400111746273292> Damage Calculations", value=damage_calculations_string, inline=False)
-        embed.add_field(name="\U0001F911 Reward Calculations", value=rewards_calculations_string, inline=False)
+        embed.add_field(name="Damage Calculations", value=damage_calculations_string, inline=False)
+        embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=False)
 
 
         #Distributing rewards
@@ -187,7 +187,7 @@ class PlayerAttackCog(commands.Cog):
         attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
         attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
         attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
-        embed.add_field(name="<a:3115meowthmoney:966238883543146538> {} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
+        embed.add_field(name="{} Resulting Team Gold/EXP".format(attacking_player_team), value=attacking_team_values, inline=False)
 
         attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))
         embed.add_field(name="{}'s Resulting EXP".format(attacking_player_name), value=attacking_player_values, inline=False)
