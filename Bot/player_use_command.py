@@ -113,9 +113,14 @@ class PlayerUseCog(commands.Cog):
                 await ctx.send("You cannot capture a gym leader with the Master Ball!")
                 return   
             
+            previous_init_team_experience = sql.get_team_experience(cur, team_name)
+            previous_new_team_experience = sql.get_team_experience(cur, new_team_name)
             #Master ball, throw master ball at a player.
             sql.update_player_team(cur, player_name, new_team_name)
-        
+            player_experience = sql.get_player_experience(cur, player_name)
+            new_init_team_experience = sql.get_team_experience(cur, team_name)
+            new_new_team_experience = sql.get_team_experience(cur, new_team_name)
+            
             player = get(ctx.guild.members, display_name = player_name)
             #Remove Old Team
             team = get(guild.roles, name=team_name)
@@ -123,7 +128,17 @@ class PlayerUseCog(commands.Cog):
             #Adding New Team
             new_team = get(guild.roles, name=new_team_name)
             await player.add_roles(new_team)
+            
+            init_team_exp_change = f'Team {team_name} EXP changed from {previous_init_team_experience} EXP to {new_init_team_experience} EXP due to {player_name} being captured by Team {new_team_name}'
+            new_team_exp_change = f'Team {new_team_name} EXP changed from {previous_new_team_experience} EXP to {new_new_team_experience} EXP due to Team {team_name} capturing {player_name}'
             await ctx.send("{} has been caught by a master ball".format(player_name))
+            await ctx.send(init_team_exp_change)
+            await ctx.send(new_team_exp_change)
+            
+            announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+            await announcements_channel.send(f'{player_name} has been caught by a master ball thrown from Team {new_team_name}')
+            await announcements_channel.send(init_team_exp_change)
+            await announcements_channel.send(new_team_exp_change)
             #Remove item from team
             sql.delete_team_item(cur, new_team_name, item_name)
         

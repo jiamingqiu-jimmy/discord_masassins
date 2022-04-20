@@ -106,6 +106,36 @@ class AdminCog(commands.Cog):
         sql.give_team_item(cur, team_name, item_name)
         await ctx.send("Team {} has been given {}".format(team_name, item_name))
 
+    @commands.command(name="change_player_team")
+    @commands.has_any_role(settings.admin_role)
+    async def change_team(self, ctx, player_name, team_name):
+        cur = self.conn.cursor()
+        #Check to make sure that the player is on a different team
+        init_team_name = sql.get_player_team_name(cur, player_name)
+        if team_name == init_team_name:
+            await ctx.send("The player is already on your team")
+            return 
+
+        if team_name == settings.team_name_alumni:
+            await ctx.send("You cannot capture an alumni with the Master Ball!")
+            return
+        
+        if team_name == settings.team_name_gym_leaders:
+            await ctx.send("You cannot capture a gym leader with the Master Ball!")
+            return   
+        
+        #Master ball, throw master ball at a player.
+        sql.update_player_team(cur, player_name, team_name)
+        await ctx.send(f'{player_name}\'s team has been forcibly changed to {team_name}')
+        player = get(ctx.guild.members, display_name = player_name)
+        #Remove Old Team
+        guild = ctx.guild
+        team = get(guild.roles, name=init_team_name)
+        await player.remove_roles(team)
+        #Adding New Team
+        new_team = get(guild.roles, name=team_name)
+        await player.add_roles(new_team)
+        
     @give_team_item.error
     async def give_team_item_error(self, ctx, error):
         await ctx.send(error)
