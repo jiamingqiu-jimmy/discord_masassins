@@ -26,9 +26,9 @@ emoji_help = "<a:pokemon_question:966238840689942558>"
 {
         "id" : "966238975809433640",
         "name" : "2493notepen",
-        "animated" : True
+        #"animated" : True
 }
-emoji_desc = "<a:2493notepen:966238975809433640>"
+emoji_desc = "<:2493notepen:966238975809433640>"
 
 # Rules
 {
