@@ -53,7 +53,7 @@ async def on_ready():
 @bot.command(name="help")
 async def help(ctx):
     e_functions = e_help.emoji_functions
-    e_animated = bot.get_emoji(e_help.emoji_help)
+    e_animated = "<a:pokemon_question:966238840689942558>"
     embed = discord.Embed(
         title = f"{e_functions} Functions Academy",
         description = f"{e_animated} List of functions and their use",
