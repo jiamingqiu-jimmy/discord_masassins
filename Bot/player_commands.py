@@ -54,9 +54,8 @@ class PlayerCog(commands.Cog):
         await ctx.send(f'{target_player.mention} has been smited by {ctx.author.display_name} -  Zap Zap!')
     
     @commands.command(name="bingbong")
-    @commands.has_role(settings.masassins_alive_role)
     async def bingbong(self, ctx):
-        await ctx.send(f'FUCK YO LIFE - BING BONG')
+        await ctx.send(f'BING BONG')
         
     @commands.command(name="kill")
     @commands.has_role(settings.masassins_alive_role)
