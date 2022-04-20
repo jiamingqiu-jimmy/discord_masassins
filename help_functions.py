@@ -1,18 +1,34 @@
+import help_emojis as e_help
+
+#Help Emojis
+e_help = e_help.emoji_help
+e_desc = e_help.emoji_desc
+e_rule = e_help.emoji_rule
+e_safezone = e_help.emoji_safezone
+e_use = e_help.emoji_use
+e_buy = e_help.emoji_buy
+e_shop = e_help.emoji_shop
+e_viewall = e_help.emoji_view_all
+e_viewteam = e_help.emoji_view_team
+e_attack = e_help.emoji_attack
+e_trade = e_help.emoji_trade
+e_join = e_help.emoji_join
+
 #Help Name and descriptions
 
 
-help_help = "Help : !help"
-help_desc = "Description : !desc"
-help_rule = "Rules : !rule"
-help_safezone = "Safe zones : !safezones"
-help_use = "Use : !use <item_name> <player_name>"
-help_buy = "Buy : !buy <item_name>"
-help_shop = "Shop : !shop"
-help_view_all = "View All : !view_all"
-help_view_team = "v : !v <team_name>"
-help_attack = "Attack : !attack <player_name>"
-help_trade = "Trade : !trade <team_name> <gold_amount>"
-help_join = "Join the game! : !join"
+help_help = f"{e_help} Help : !help"
+help_desc = f"{e_desc} Description : !desc"
+help_rule = f"{e_rule} Rules : !rule"
+help_safezone = f"{e_safezone} Safe zones : !safezones"
+help_use = f"{e_use} Use : !use <item_name> <player_name>"
+help_buy = f"{e_buy} Buy : !buy <item_name>"
+help_shop = f"{e_shop} Shop : !shop"
+help_view_all = f"{e_viewall} View All : !view_all"
+help_view_team = f"{e_viewteam} v : !v <team_name>"
+help_attack = f"{e_attack} Attack : !attack <player_name>"
+help_trade = f"{e_trade} Trade : !trade <team_name> <gold_amount>"
+help_join = f"{e_join} Join the game! : !join"
 
 help_help_description = "Gives a list of useful commands and how to use them"
 help_use_description = "Use an item on the player or give it to them to hold"
