@@ -3,13 +3,12 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 import asyncio
+import time
 
 import settings
 import sql_functions as sql
 import battle_functions as battle
 from discord_components import DiscordComponents, ComponentsBot, Button
-
-import Global.Locks
 
 def setup(bot):
     bot.add_cog(PlayerAttackCog(bot))
@@ -128,9 +127,7 @@ class PlayerAttackCog(commands.Cog):
             #Adding Faint Role
             masassins_dead_role = get(guild.roles, name=settings.masassins_dead_role)
             await defending_player.add_roles(masassins_dead_role)
-            await Global.Locks.items_lock.acquire()
             sql.delete_player_items(cur, defending_player_name)
-            Global.Locks.items_lock.release()
             #Set their health to zero
             sql.update_player_hp(cur, defending_player_name, (0-defending_player_health))
         else:
@@ -143,14 +140,16 @@ class PlayerAttackCog(commands.Cog):
             defending_player_name, defending_player_team
             )
 
-        attack_situation_string = ""
+        attack_situation_string = str
         if defending_player_death:
-            attack_situation_string = "fainted "
+            attack_situation_string = "fainted"
         else:
-            attack_situation_string = "hit "
+            attack_situation_string = "hit"
 
+        t = time.localtime()
+        current_time = time.strftime("%H:%M:%S", t)
         embed = discord.Embed(
-            title = attacking_player_name + " ({}) ".format(attacking_player_team) + attack_situation_string + defending_player_name + " ({}) ".format(defending_player_team),
+            title = f'{attacking_player_name} ({attacking_player_team}) {attack_situation_string} {defending_player_name} ({defending_player_team}) [{current_time}]',
             colour = discord.Colour.orange()
         )
 
@@ -175,9 +174,7 @@ class PlayerAttackCog(commands.Cog):
 
         #Distributing rewards
         sql.update_player_experience(cur, attacking_player_name, total_experience_reward)
-        await Global.Locks.gold_lock.acquire()
         sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
-        Global.Locks.gold_lock.release()
         
         attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
         attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)

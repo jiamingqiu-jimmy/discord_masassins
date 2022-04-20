@@ -6,8 +6,6 @@ from discord.utils import get
 import settings
 import sql_functions as sql
 
-import Global.Locks
-
 def setup(bot):
     bot.add_cog(PlayerCog(bot))
     
@@ -35,21 +33,15 @@ class PlayerCog(commands.Cog):
         init_player_team_name = sql.get_player_team_name(cur, player_name)
 
         cur = self.conn.cursor()
-        await Global.Locks.gold_lock.acquire()
-        try:
-            team_gold_amount = sql.get_team_gold(cur, init_player_team_name)
-            if int(team_gold_amount) < int(gold_amount):
-                await ctx.send("Your team does not have that much gold to trade!")
-                return
-            sql.update_team_gold(cur, init_player_team_name, int(0-int(gold_amount)))
-            sql.update_team_gold(cur, team_name, int(gold_amount))
-            announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
-            await announcements_channel.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
-            await ctx.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
-        except:
-            await ctx.send("An error has occured! Please check to make sure nothing changed and try again!")
-        finally:
-            Global.Locks.gold_lock.release()
+        team_gold_amount = sql.get_team_gold(cur, init_player_team_name)
+        if int(team_gold_amount) < int(gold_amount):
+            await ctx.send("Your team does not have that much gold to trade!")
+            return
+        sql.update_team_gold(cur, init_player_team_name, int(0-int(gold_amount)))
+        sql.update_team_gold(cur, team_name, int(gold_amount))
+        announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+        await announcements_channel.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
+        await ctx.send("{} has given {} gold to {}".format(init_player_team_name, gold_amount, team_name))
 
     @trade_gold.error
     async def trade_gold_error(self, ctx, error):

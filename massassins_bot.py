@@ -22,8 +22,6 @@ import safe_zones_functions as f_safe
 
 from discord_components import DiscordComponents, ComponentsBot, Button
 
-import Global.Locks
-
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
 
@@ -195,12 +193,8 @@ async def buy(ctx, *args):
     await ctx.send("You have bought a {}".format(item_name))
     
     #Subtract their gold
-    await Global.Locks.gold_lock.acquire()
     sql.update_team_gold(cur, team_name, (0-settings.item_cost_dict[item_name]))
-    Global.Locks.gold_lock.release()
-    await Global.Locks.items_lock.acquire()
     sql.give_team_item(cur, team_name, item_name)
-    Global.Locks.items_lock.release()
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
 
     await announcements_channel.send("Team {} has just bought a {}".format(team_name, item_name))

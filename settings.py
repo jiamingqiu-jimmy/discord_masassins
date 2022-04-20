@@ -103,7 +103,7 @@ item_dict = {
     item_name_potion : "Heals 40 HP. Note: you cannot heal a player past their maximum HP",
     item_name_revive : "Revives a player from fainting to 75 HP",
     item_name_master_ball : "Add one person of your choice from another team to your team",
-    item_name_gacha_ball : "Add a player of choice to your team 0.3% of the time",
+    item_name_gacha_ball : "Add a player of choice to your team 0.5% of the time",
     item_name_poke_ball : "Add one person (not currently signed up for the game) to your team"
 }
 
