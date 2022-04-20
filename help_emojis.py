@@ -17,7 +17,7 @@
 {
         "id" : "966238840689942558",
         "name" : "pokemon_question",
-        "animated" : True
+        #"animated" : True
 }
 
 # Description
@@ -93,7 +93,7 @@
 }
 
 emoji_functions = "<:pokemonprofessoroak:965400111754661968>"
-emoji_help = "<a:pokemon_question:966238840689942558>"
+emoji_help = "<:pokemon_question:966238840689942558>"
 emoji_desc = "<a:2493notepen:966238975809433640>"
 emoji_rule = "<:4446peeporules:965400111599456316>"
 emoji_safezone = "<:safemodeon:965710769176055848>"
