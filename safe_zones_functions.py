@@ -9,7 +9,7 @@ e_stairs = e_safe.emoji_stairs
 e_gym = e_safe.emoji_gym
 e_bathroom = e_safe.emoji_bathroom
 e_nametags = e_safe.emoji_nametags
-e_masa = e_safe.emoji_masa_events
+e_masa = e_safe.emoji_masa_event
 
 #Safe Zone Title and Descriptions
 
