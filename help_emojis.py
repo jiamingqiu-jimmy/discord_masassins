@@ -8,16 +8,16 @@
 # emoji_test = "<:pokemon_bulbabruh:965400111544934430>"
 
 # Professor Oak (Functions)
-{
-        "id" : "965400111754661968",
-        "name" : "pokemonprofessoroak"
-}
+# {
+#         "id" : "965400111754661968",
+#         "name" : "pokemonprofessoroak"
+# }
 
 # Help
 {
         "id" : "966238840689942558",
         "name" : "pokemon_question",
-        "animated" : True
+        #"animated" : True
 }
 
 # Description
