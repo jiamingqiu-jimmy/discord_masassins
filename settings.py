@@ -1,3 +1,12 @@
+import shop_emojis as e_shop
+
+#Item Emojis
+e_potion = e_shop.emoji_potion
+e_revive = e_shop.emoji_revive
+e_master = e_shop.emoji_master_ball
+e_gacha = e_shop.emoji_gacha_ball
+e_poke = e_shop.emoji_poke_ball
+
 # settings.py
 
 #MASASSINS Database Name
@@ -71,11 +80,11 @@ master_ball_catch_chance = 1
 gacha_ball_catch_chance = 0.005
 
 #Items Initialization
-item_name_potion = "Potion"
-item_name_revive = "Revive"
-item_name_master_ball = "Master-Ball"
-item_name_gacha_ball = "Gacha-Ball"
-item_name_poke_ball = "Poke-Ball"
+item_name_potion = f"{e_potion} Potion"
+item_name_revive = f"{e_revive} Revive"
+item_name_master_ball = f"{e_master} Master-Ball"
+item_name_gacha_ball = f"{e_gacha} Gacha-Ball"
+item_name_poke_ball = f"{e_poke} Poke-Ball"
 
 item_cost_potion = 30
 item_cost_revive = 60

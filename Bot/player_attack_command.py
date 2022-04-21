@@ -168,6 +168,11 @@ class PlayerAttackCog(commands.Cog):
         for reward in total_rewards_list:
             rewards_calculations_string += reward + "\n"
 
+        #Battle Emojis
+        e_damage = e_attack.emoji_damage
+        e_reward = e_attack.emoji_reward
+        e_result = e_attack.emoji_result
+
         embed.add_field(name="Damage Calculations", value=damage_calculations_string, inline=False)
         embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=False)
 

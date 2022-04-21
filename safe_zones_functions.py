@@ -1,12 +1,28 @@
-safezone_class = "During class"
-safezone_work = "During work"
-safezone_vehicle = "In/On Vehicles"
-safezone_residence = "At Target's Residence"
-safezone_stairs = "Stairs or Other Dangerous Places"
-safezone_gym = "Gym"
-safezone_bathroom = "Public Bathroom"
-safezone_nametags = "Obtaining Nametags"
-safezone_masa_event = "15 minutes before and after ANY MASA-related event*** including:"
+import safezone_emojis as e_safe
+
+#Safe Zone Emojis
+e_class = e_safe.emoji_class
+e_work = e_safe.emoji_work
+e_vehicle = e_safe.emoji_vehicle
+e_residence = e_safe.emoji_residence
+e_stairs = e_safe.emoji_stairs
+e_gym = e_safe.emoji_gym
+e_bathroom = e_safe.emoji_bathroom
+e_nametags = e_safe.emoji_nametags
+e_masa = e_safe.emoji_masa_event
+
+#Safe Zone Title and Descriptions
+
+
+safezone_class = f"{e_class} During class"
+safezone_work = f"{e_work} During work"
+safezone_vehicle = f"{e_vehicle} In/On Vehicles"
+safezone_residence = f"{e_residence} At Target's Residence"
+safezone_stairs = f"{e_stairs} Stairs or Other Dangerous Places"
+safezone_gym = f"{e_gym} Gym"
+safezone_bathroom = f"{e_bathroom} Public Bathroom"
+safezone_nametags = f"{e_nametags} Obtaining Nametags"
+safezone_masa_event = f"{e_masa} 15 minutes before and after ANY MASA-related event*** including:"
 
 safezone_class_desc = """
 Target is safe 5 minutes before class. You may be killed if you are sitting in class 6 minutes before your class. You are NOT safe after class. If you have back to back classes, you are not safe until 5 minutes before your next class. As soon as class is over (the professor ends the class), you are no longer safe, even if you are still in the classroom. **If you are NOT IN A CLASS that is on your schedule (i.e. you have decided to skip lecture), YOU ARE NOT SAFE.
@@ -37,7 +53,7 @@ safezone_gym_desc = """
 Players cannot be tagged if they're in the weight room or on a treadmill.
 """
 safezone_bathroom_desc = """
-You are only safe within the stall/urinal. Once you leave the stall/urinal, you may be tagged.
+You are safe within public restrooms. Once you leave the restroom, you may be tagged.
 """
 safezone_nametags_desc = """
 You are only safe while receiving name tags from Gym Leaders. You are not safe on route to obtain tags. After the tags have changed hands, you are no longer safe.

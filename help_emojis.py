@@ -1,0 +1,15 @@
+# Help emoji Names and IDs
+
+emoji_functions = "<:pokemonprofessoroak:965400111754661968>"
+emoji_help = "<:codinghelp:966311079221264404>"
+emoji_desc = "<:pepethink:966311079540051968>"
+emoji_rule = "<:4446peeporules:965400111599456316>"
+emoji_safezone = "<:safemodeon:965710769176055848>"
+emoji_use = "<:potionace:965710499792695348>"
+emoji_buy = "<:Gold_Coin:965710724016009276>"
+emoji_shop = "<:ridingshoppingcart:966311079422595142>"
+emoji_view_team = "<:PokemonLurk:965710500048551996>"
+emoji_view_all = "<:pokemon_omg:965400111658188840>"
+emoji_attack = "<:pokemon_gun:965710723030339665>"
+emoji_trade = "<:agenttrade:965710768882466826>"
+emoji_join = "<:96968152_pokemontransparentpngst:965710499692048404>"
