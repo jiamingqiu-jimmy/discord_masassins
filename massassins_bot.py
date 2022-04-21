@@ -132,17 +132,17 @@ async def join_error(ctx, error):
 @bot.command(name="hello")
 async def hello(ctx):
     channel = ctx.channel
-    await channel.send("Hello there {}!".format(ctx.author.display_name))
+    await channel.send("Hello there {}!".format(ctx.author.mention))
 
-    def check(m):
-        return m.content == "hello" and m.channel == channel
+    # def check(m):
+    #     return m.content == "hello" and m.channel == channel
 
-    try:
-        msg = await bot.wait_for('message', check=check, timeout=60)
-    except asyncio.TimeoutError:
-        await ctx.send("Timeout")
-    else:
-        await channel.send("Hello {.author.mention}!".format(msg))
+    # try:
+    #     msg = await bot.wait_for('message', check=check, timeout=60)
+    # except asyncio.TimeoutError:
+    #     await ctx.send("Timeout")
+    # else:
+    #     await channel.send("Hello {.author.mention}!".format(msg))
 
 @bot.command(name="shop")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
