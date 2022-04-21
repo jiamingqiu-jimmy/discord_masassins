@@ -6,7 +6,6 @@ from discord.utils import get
 import settings
 import sql_functions as sql
 
-import Global.Locks
 
 def setup(bot):
     bot.add_cog(AdminCog(bot))
@@ -63,18 +62,14 @@ class AdminCog(commands.Cog):
     async def update_team_gold_exp(self, ctx, team_name, gold_amount, experience_amount):
         cur = self.conn.cursor()
         sql.update_team_experience(cur, team_name, experience_amount)
-        await Global.Locks.gold_lock.acquire()
         sql.update_team_gold(cur, team_name, gold_amount)
-        Global.Locks.gold_lock.release()
 
         if int(gold_amount) < 0 and int(experience_amount) < 0:
             positive_gold = (0-int(gold_amount))
             positive_EXP = (0-int(experience_amount))
-            await Global.Locks.gold_lock.acquire()
             sql.update_team_gold(cur, settings.team_name_gym_leaders, positive_gold)
-            Global.Locks.gold_lock.release()
             sql.update_team_experience(cur, settings.team_name_gym_leaders, positive_EXP)
-            await ctx.send("Team Rocket has just stolen {} gold and {} EXP from {}".format(positive_gold, positive_EXP, team_name))
+            await ctx.send("Gym Leaders has just confiscated {} gold and {} EXP from {}".format(positive_gold, positive_EXP, team_name))
         else:
             await ctx.send("{} Gold and {} EXP changed on team {}".format(gold_amount, experience_amount, team_name))
 
@@ -86,9 +81,7 @@ class AdminCog(commands.Cog):
     @commands.has_role(settings.admin_role)
     async def remove_item(self, ctx, team_name, item_name):
         cur = self.conn.cursor()
-        await Global.Locks.items_lock.acquire()
         sql.delete_team_item(cur, team_name, item_name)
-        Global.Locks.items_lock.release()
         await ctx.send("{} has been removed from team {}".format(item_name, team_name))
 
     @commands.command(name="give_team_experience")
@@ -101,10 +94,8 @@ class AdminCog(commands.Cog):
     @commands.command(name="give_gold")
     @commands.has_role(settings.admin_role)
     async def give_gold(self, ctx, team_name, gold_amount):
-        await Global.Locks.gold_lock.acquire()
         cur = self.conn.cursor()
         sql.update_team_gold(cur, team_name, gold_amount)
-        Global.Locks.gold_lock.release()
         await ctx.send("{} Gold has been given to the team {}".format(gold_amount, team_name))
 
     @commands.command(name="give_team_item")
@@ -115,6 +106,36 @@ class AdminCog(commands.Cog):
         sql.give_team_item(cur, team_name, item_name)
         await ctx.send("Team {} has been given {}".format(team_name, item_name))
 
+    @commands.command(name="change_player_team")
+    @commands.has_any_role(settings.admin_role)
+    async def change_team(self, ctx, player_name, team_name):
+        cur = self.conn.cursor()
+        #Check to make sure that the player is on a different team
+        init_team_name = sql.get_player_team_name(cur, player_name)
+        if team_name == init_team_name:
+            await ctx.send("The player is already on your team")
+            return 
+
+        if team_name == settings.team_name_alumni:
+            await ctx.send("You cannot capture an alumni with the Master Ball!")
+            return
+        
+        if team_name == settings.team_name_gym_leaders:
+            await ctx.send("You cannot capture a gym leader with the Master Ball!")
+            return   
+        
+        #Master ball, throw master ball at a player.
+        sql.update_player_team(cur, player_name, team_name)
+        await ctx.send(f'{player_name}\'s team has been forcibly changed to {team_name}')
+        player = get(ctx.guild.members, display_name = player_name)
+        #Remove Old Team
+        guild = ctx.guild
+        team = get(guild.roles, name=init_team_name)
+        await player.remove_roles(team)
+        #Adding New Team
+        new_team = get(guild.roles, name=team_name)
+        await player.add_roles(new_team)
+        
     @give_team_item.error
     async def give_team_item_error(self, ctx, error):
         await ctx.send(error)

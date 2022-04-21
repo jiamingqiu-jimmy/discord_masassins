@@ -23,8 +23,6 @@ import help_emojis as e_help
 
 from discord_components import DiscordComponents, ComponentsBot, Button
 
-import Global.Locks
-
 #Sqlite3 DB connection
 conn = sqlite3.connect('masassins.db')
 
@@ -38,6 +36,7 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 bot.load_extension("Bot.owner_commands")
 bot.load_extension("Bot.admin_commands")
+bot.load_extension("Bot.player_commands")
 bot.load_extension("Bot.player_attack_command")
 bot.load_extension("Bot.player_use_command")
 
@@ -59,16 +58,27 @@ async def help(ctx):
         color = discord.Colour.teal(),
     )
 
+    slight_smile = "\U0001f642"
+    bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
+
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
 
     await ctx.send(embed=embed)
+    await ctx.send({slight_smile})
+    await ctx.send({bruh_emoji})
 
 @bot.command(name="desc")
 async def rules(ctx):
+<<<<<<< HEAD
     e_desc = e_help.emoji_desc
     embed = discord.Embed(
         title = f"{e_desc} Descriptions",
+=======
+    slight_smile = "\U0001f642"
+    embed = discord.Embed(
+        title = "Descriptions {slight_smile}",
+>>>>>>> master
         description = "Details on important aspects of the game!",
         color = discord.Colour.teal()
     )
@@ -138,17 +148,17 @@ async def join_error(ctx, error):
 @bot.command(name="hello")
 async def hello(ctx):
     channel = ctx.channel
-    await channel.send("Hello there {}!".format(ctx.author.display_name))
+    await channel.send("Hello there {}!".format(ctx.author.mention))
 
-    def check(m):
-        return m.content == "hello" and m.channel == channel
+    # def check(m):
+    #     return m.content == "hello" and m.channel == channel
 
-    try:
-        msg = await bot.wait_for('message', check=check, timeout=60)
-    except asyncio.TimeoutError:
-        await ctx.send("Timeout")
-    else:
-        await channel.send("Hello {.author.mention}!".format(msg))
+    # try:
+    #     msg = await bot.wait_for('message', check=check, timeout=60)
+    # except asyncio.TimeoutError:
+    #     await ctx.send("Timeout")
+    # else:
+    #     await channel.send("Hello {.author.mention}!".format(msg))
 
 @bot.command(name="shop")
 @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
@@ -201,12 +211,8 @@ async def buy(ctx, *args):
     await ctx.send("You have bought a {}".format(item_name))
     
     #Subtract their gold
-    await Global.Locks.gold_lock.acquire()
     sql.update_team_gold(cur, team_name, (0-settings.item_cost_dict[item_name]))
-    Global.Locks.gold_lock.release()
-    await Global.Locks.items_lock.acquire()
     sql.give_team_item(cur, team_name, item_name)
-    Global.Locks.items_lock.release()
     announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
 
     await announcements_channel.send("Team {} has just bought a {}".format(team_name, item_name))
