@@ -56,15 +56,21 @@ async def help(ctx):
         color = discord.Colour.teal()
     )
 
+    slight_smile = "\U0001f642"
+    bruh_emoji = "<:pokemon_bulbabruh:965400111544934430>"
+
     for help_command in f_help.list_of_help:
         embed.add_field(name=help_command, value=f_help.help_dict[help_command], inline=False)
 
     await ctx.send(embed=embed)
+    await ctx.send({slight_smile})
+    await ctx.send({bruh_emoji})
 
 @bot.command(name="desc")
 async def rules(ctx):
+    slight_smile = "\U0001f642"
     embed = discord.Embed(
-        title = "Descriptions",
+        title = "Descriptions {slight_smile}",
         description = "Details on important aspects of the game!",
         color = discord.Colour.teal()
     )
