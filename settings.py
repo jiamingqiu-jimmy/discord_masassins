@@ -26,14 +26,14 @@ base_masassins_roles = [
     masassins_dead_role,
     admin_role
 ]
-admins_list = ["Jimmy", "Selina", "Ruby", "Sophia", "Brian", "Brianna"]
+admins_list = ["Jimmy", "Selina", "Ruby", "Sophia"]
 
 
 #Team Initialization
 team_name_fire = "Fire"
 team_name_ice = "Ice"
 team_name_dragon = "Dragon"
-team_name_alumni = "Alumni"
+team_name_alumni = "Legendaries"
 team_name_gym_leaders = "Gym-Leaders"
 
 team_list = [
@@ -124,18 +124,36 @@ alumni_player_bonus_base_gold = 10
 alumni_player_bonus_base_exp = 10
 
 player_team_dict = {
-    "Andrew":team_name_ice,
+    "Tommy":team_name_fire,
+    "Nicole":team_name_fire,
+    "Rachana":team_name_fire,
+    "Jasen":team_name_fire,
+    "Naasik":team_name_fire,
+    "Sherry":team_name_fire,
+    "Jasmeet":team_name_fire,
+    "Alexander":team_name_fire,
     "Brian":team_name_ice,
     "Brianna":team_name_ice,
     "Johnny":team_name_ice,
-    "jsutin":team_name_fire,
-    "Nathan":team_name_fire,
-    "Nicole":team_name_fire,
-    "Selina":team_name_fire,
-    "Tommy":team_name_dragon,
+    "Kelly":team_name_ice,
+    "Derek":team_name_ice,
+    "Alvin":team_name_ice,
+    "Eunice":team_name_ice,
+    "Luis":team_name_ice,
+    "Andrew":team_name_dragon,
     "Yi":team_name_dragon,
+    "Justin":team_name_dragon,
+    "Lucy":team_name_dragon,
+    "William":team_name_dragon,
+    "Anurag":team_name_dragon,
+    "Angela":team_name_dragon,
+    "Ryan":team_name_dragon,
+    "Shelby":team_name_alumni,
+    "Sarena":team_name_alumni,
+    "Aizzer":team_name_alumni,
+    "Matt":team_name_alumni,
     "Jimmy":team_name_gym_leaders,
-    "Cindy":team_name_dragon,
-    "Nick":team_name_fire,
+    "Selina":team_name_gym_leaders,
+    "Sophia":team_name_gym_leaders,
     "Ruby":team_name_gym_leaders
 }
