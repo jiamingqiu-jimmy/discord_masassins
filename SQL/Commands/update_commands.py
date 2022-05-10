@@ -21,3 +21,9 @@ UPDATE_PLAYER_TEAM = """
     SET team_id = ?
     WHERE name = ?
 """
+
+UPDATE_TEAM_NAME = """
+    UPDATE teams
+    SET name = ?
+    WHERE name = ?
+"""

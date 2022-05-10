@@ -36,7 +36,10 @@ base_masassins_roles = [
     admin_role
 ]
 admins_list = ["Jimmy", "Selina", "Ruby", "Sophia"]
-
+admin_player_bonus_faint_gold = 20
+admin_player_bonus_faint_exp = 20
+admin_player_bonus_base_gold = 20
+admin_player_bonus_base_exp = 20
 
 #Team Initialization
 team_name_fire = "Fire"
@@ -44,21 +47,41 @@ team_name_ice = "Ice"
 team_name_dragon = "Dragon"
 team_name_alumni = "Legendaries"
 team_name_gym_leaders = "Gym-Leaders"
+team_name_elite_four = "Elite-Four"
 
 team_list = [
     team_name_fire, team_name_ice,
     team_name_dragon, team_name_alumni,
-    team_name_gym_leaders
+    team_name_gym_leaders, team_name_elite_four
 ]
 
 team_starting_gold = 0
 
+# team_effectiveness = {
+#     team_name_fire : team_name_ice,
+#     team_name_ice : team_name_dragon,
+#     team_name_dragon : team_name_fire,
+#     team_name_alumni : "Normal",
+#     team_name_gym_leaders : "Normal"
+# }
+
+#Reverse
+# team_effectiveness = {
+#     team_name_fire : team_name_dragon,
+#     team_name_ice : team_name_fire,
+#     team_name_dragon : team_name_ice,
+#     team_name_alumni : "Normal",
+#     team_name_gym_leaders : "Normal"
+# }
+
+#ALl_SUPER
 team_effectiveness = {
-    team_name_fire : team_name_ice,
-    team_name_ice : team_name_dragon,
-    team_name_dragon : team_name_fire,
-    team_name_alumni : "Normal",
-    team_name_gym_leaders : "Normal"
+    team_name_fire : "SUPER",
+    team_name_ice : "SUPER",
+    team_name_dragon : "SUPER",
+    team_name_alumni : "SUPER",
+    team_name_gym_leaders : "SUPER",
+    team_name_elite_four : "SUPER"
 }
 
 #Battle Calculations
@@ -70,8 +93,8 @@ not_very_effective_damage = 25
 
 base_experience_reward = 10
 base_gold_reward = 10
-bonus_experience_reward = 30
-bonus_gold_reward = 30
+bonus_experience_reward = 20
+bonus_gold_reward = 20
 
 team_kill_bonus_gold = 50
 team_kill_bonus_experience = 50
@@ -80,11 +103,24 @@ master_ball_catch_chance = 1
 gacha_ball_catch_chance = 0.005
 
 #Items Initialization
-item_name_potion = f"{e_potion} Potion"
-item_name_revive = f"{e_revive} Revive"
-item_name_master_ball = f"{e_master} Master-Ball"
-item_name_gacha_ball = f"{e_gacha} Gacha-Ball"
-item_name_poke_ball = f"{e_poke} Poke-Ball"
+item_name_potion = f"Potion"
+item_name_revive = f"Revive"
+item_name_master_ball = f"Master-Ball"
+item_name_gacha_ball = f"Gacha-Ball"
+item_name_poke_ball = f"Poke-Ball"
+item_name_exp_share = f"Exp-Share"
+item_name_pineapple = f"Pineapple"
+item_name_keyboard = f"Keyboard"
+item_name_boba = f"Boba"
+item_name_gummy_bear = f"Gummy-Bear"
+
+item_emoji_dict = {
+    item_name_potion:e_potion,
+    item_name_revive:e_revive,
+    item_name_master_ball:e_master,
+    item_name_gacha_ball:e_gacha,
+    item_name_poke_ball:e_poke
+}
 
 item_cost_potion = 30
 item_cost_revive = 60
@@ -92,20 +128,41 @@ item_cost_master_ball = 300
 item_cost_gacha_ball = 5
 item_cost_poke_ball = 100
 
+exp_reward_exp_share = 5
+gold_reward_exp_share = 5
+
 item_list = [
     item_name_potion,
     item_name_revive,
     item_name_master_ball,
     item_name_gacha_ball,
     item_name_poke_ball,
+    item_name_exp_share,
+    item_name_keyboard,
+    item_name_boba,
+    item_name_pineapple,
+    item_name_gummy_bear
 ]
+
+DMG_BOOST_ITEMS = [
+    item_name_pineapple,
+    item_name_keyboard,
+    item_name_boba,
+    item_name_gummy_bear
+]
+DMG_BOOST = 40
 
 item_cost_dict = {
     item_name_potion : item_cost_potion,
     item_name_revive : item_cost_revive,
     item_name_master_ball : item_cost_master_ball,
     item_name_gacha_ball : item_cost_gacha_ball,
-    item_name_poke_ball : item_cost_poke_ball
+    item_name_poke_ball : item_cost_poke_ball,
+    item_name_exp_share : "Obtainable through Scavenger Hunt",
+    item_name_pineapple : "Elite-Four Unique",
+    item_name_keyboard : "Elite-Four Unique",
+    item_name_boba : "Elite-Four Unique",
+    item_name_gummy_bear : "Elite-Four Unique"
 }
 
 item_dict = {
@@ -113,7 +170,12 @@ item_dict = {
     item_name_revive : "Revives a player from fainting to 75 HP",
     item_name_master_ball : "Add one person of your choice from another team to your team",
     item_name_gacha_ball : "Add a player of choice to your team 0.5% of the time",
-    item_name_poke_ball : "Add one person (not currently signed up for the game) to your team"
+    item_name_poke_ball : "Add one person (not currently signed up for the game) to your team",
+    item_name_exp_share : "Event-only item. Every time Player tags someone, Player will gain an additional 5 EXP and 5 gold.",
+    item_name_keyboard : "RGB Back-Lit Keyboard +40 DMG",
+    item_name_boba : "Camellia Honey Boba +40 DMG",
+    item_name_pineapple : "Pineapple Squishmallow +40 DMG",
+    item_name_gummy_bear : "Pouch of Gummy Bears +40 DMG"
 }
 
 potion_healing = 40
@@ -166,3 +228,7 @@ player_team_dict = {
     "Sophia":team_name_gym_leaders,
     "Ruby":team_name_gym_leaders
 }
+
+bounty_list = []
+bounty_reward_gold = 10
+bounty_reward_exp = 10

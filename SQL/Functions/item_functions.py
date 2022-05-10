@@ -15,3 +15,7 @@ def insert_items( cur, item_dict ):
     for item in item_dict.items():
         cur.execute(insert_commands.INSERT_ITEM,item)
     cur.connection.commit()
+
+def insert_item(cur, item_name, item_desc):
+    cur.execute(insert_commands.INSERT_ITEM, (item_name, item_desc))
+    cur.connection.commit()

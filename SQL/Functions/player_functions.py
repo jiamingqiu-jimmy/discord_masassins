@@ -23,7 +23,7 @@ def get_player_hp(cur, player_name):
     return r[0]
 
 def get_player_item(cur, player_name, item_name):
-    cur.execute(select_commands.SELECT_PLAYER_ITEMS, (player_name, item_name))
+    cur.execute(select_commands.SELECT_PLAYER_ITEM, (player_name, item_name))
     r = cur.fetchone()
     return r
 

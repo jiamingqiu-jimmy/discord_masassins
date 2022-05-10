@@ -20,7 +20,7 @@ class PlayerAttackCog(commands.Cog):
 
     @commands.command(name="attack")
     @commands.has_any_role(settings.admin_role, settings.masassins_alive_role)
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def attack(self, ctx, player_name): #Maybe consider instead of inputting names, use mention
         cur = self.conn.cursor()
         guild = ctx.guild
@@ -49,6 +49,7 @@ class PlayerAttackCog(commands.Cog):
             return
 
         #Check to make sure that the player has joined the game
+        print(f'Defending Player: {defending_player}')
         defending_player_masassins_role = get(defending_player.roles, name=settings.masassins_alive_role)
         if defending_player_masassins_role is None:
             await ctx.send("You cannot attack this player who hasn't officially joined the game yet!")
@@ -58,6 +59,7 @@ class PlayerAttackCog(commands.Cog):
         attacking_player_masassins_role = get(attacking_player.roles, name=settings.masassins_alive_role)
         if attacking_player_masassins_role is None:
             await ctx.send("You cannot attack this player when you haven't officially joined the game yet!")
+            return
 
         #Wait for confirmation, 25 second deadline or auto-cancel
         message = """
@@ -168,19 +170,18 @@ class PlayerAttackCog(commands.Cog):
         for reward in total_rewards_list:
             rewards_calculations_string += reward + "\n"
 
-        #Battle Emojis
-        e_damage = e_attack.emoji_damage
-        e_reward = e_attack.emoji_reward
-        e_result = e_attack.emoji_result
-
         embed.add_field(name="Damage Calculations", value=damage_calculations_string, inline=False)
         embed.add_field(name="Reward Calculations", value=rewards_calculations_string, inline=False)
-
 
         #Distributing rewards
         sql.update_player_experience(cur, attacking_player_name, total_experience_reward)
         sql.update_team_gold(cur, attacking_player_team, total_gold_reward)
         
+        if attacking_player_team == settings.team_name_gym_leaders:
+            for admin_name in settings.admins_list:
+                sql.update_player_experience(cur, admin_name, total_experience_reward/4)
+            sql.update_team_gold(cur, settings.team_name_elite_four, total_gold_reward)
+            
         attacking_team_gold = sql.get_team_gold(cur, attacking_player_team)
         attacking_team_exp = sql.get_team_experience(cur, attacking_player_team)
         attacking_team_values = "Gold : {} \nEXP: {}".format(attacking_team_gold, attacking_team_exp)
@@ -188,6 +189,12 @@ class PlayerAttackCog(commands.Cog):
 
         attacking_player_values = "EXP: {}".format(sql.get_player_experience(cur, attacking_player_name))
         embed.add_field(name="{}'s Resulting EXP".format(attacking_player_name), value=attacking_player_values, inline=False)
+
+        if attacking_player_team == settings.team_name_gym_leaders:
+            elite_four_gold = sql.get_team_gold(cur, settings.team_name_elite_four)
+            elite_four_exp = sql.get_team_experience(cur, settings.team_name_elite_four)
+            elite_four_values = f"Gold: {elite_four_gold} \nEXP: {elite_four_exp}"
+            embed.add_field(name=f"Elite Four's Resulting Gold/EXP", value=elite_four_values, inline=False)
         
         announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
         await announcements_channel.send(embed=embed)

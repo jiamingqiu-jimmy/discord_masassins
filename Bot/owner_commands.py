@@ -116,17 +116,7 @@ class OwnerCog(commands.Cog):
             guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)
         }
         
-        masassins_channel = await guild.create_category_channel(settings.masassins_category_channel_name)
-        await ctx.send("Created Category Channel")
-
-        all_team_channel_overwrite = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=True)
-        }
-        announcements_channel_name = await masassins_channel.create_text_channel(name=settings.masassins_announcements_channel_name, overwrites=masassins_announcements_channel, position=0)
-        await ctx.send("Created Announcements Channel")
-        
-        await masassins_channel.create_text_channel(name=settings.masassins_all_team_channel_name, overwrites=all_team_channel_overwrite, position=0)
-        await ctx.send("Created All-Team Discussion Channel")
+        masassins_channel = get(guild.channels, name=settings.masassins_category_channel_name)
 
         for team_name in settings.team_list:
             team_role = get(guild.roles, name=team_name)
@@ -143,6 +133,48 @@ class OwnerCog(commands.Cog):
         
         await ctx.send("All Done!")
 
+    @commands.command(name="update_team")
+    @commands.is_owner()
+    async def update_team(self, ctx, team_name, new_team_name):
+        cur = self.conn.cursor()
+        sql.update_team_name(cur, team_name, new_team_name)
+        await ctx.send(f"Updated team name {team_name} to {new_team_name} ")
+
+    @commands.command(name="add_team")
+    @commands.is_owner()
+    async def add_team(self, ctx, team_name):
+        cur = self.conn.cursor()
+        sql.insert_team(cur, team_name)
+        await ctx.send(f"Inserted team {team_name} ")
+
+    @commands.command(name="add_role")
+    @commands.is_owner()
+    async def add_role(self, ctx, group_name):
+        guild = ctx.guild
+        team_role = get(guild.roles, name=group_name)
+        if team_role is None:
+            await ctx.send("Creating new team role {} ...".format(group_name))
+            team_role = await guild.create_role(name=group_name, hoist=True)
+            await ctx.send("The Team Role {} is created".format(group_name))
+        
+    @commands.command(name="add_channel")
+    @commands.is_owner()
+    async def add_channel(self, ctx, group_name):
+        guild = ctx.guild
+        
+        masassins_channel = get(guild.channels, name=settings.masassins_category_channel_name)
+        team_role = get(guild.roles, name=group_name)
+        admin_role = get(guild.roles, name=settings.admin_role)
+        staff_role = get(guild.roles, name=settings.MASA_staff_role)
+        team_channel_overwrite = {
+                admin_role: discord.PermissionOverwrite(read_messages=True),
+                team_role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                staff_role: discord.PermissionOverwrite(read_messages=False)
+            }
+        await masassins_channel.create_text_channel(name=group_name, overwrites=team_channel_overwrite)    
+        await ctx.send(f"Created {group_name} channel")
+    
     @commands.command(name="delete_channels")
     @commands.is_owner()
     async def delete_channels(self, ctx):
@@ -150,11 +182,6 @@ class OwnerCog(commands.Cog):
 
         channels_list = guild.channels
         for channel in channels_list:
-            for base_channel_name in settings.base_channels_namelist:
-                if base_channel_name.lower() == channel.name.lower():
-                    await ctx.send("Deleting {}...".format(base_channel_name))
-                    await channel.delete()
-                    await ctx.send("Deleted {}".format(base_channel_name))
             for team_name in settings.team_list:
                 if channel.name.lower() == team_name.lower():
                     await ctx.send("Deleting {} channel...".format(team_name))
@@ -162,3 +189,4 @@ class OwnerCog(commands.Cog):
                     await ctx.send("Deleted {} channel".format(team_name))
 
         await ctx.send("Complete!")
+

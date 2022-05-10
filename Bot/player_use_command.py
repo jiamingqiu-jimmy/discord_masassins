@@ -69,7 +69,7 @@ class PlayerUseCog(commands.Cog):
                 sql.update_player_hp(cur, player_name, (max_player_hp - player_health))
             else:
                 sql.update_player_hp(cur, player_name, settings.potion_healing)
-                await ctx.send("You have used a potion! you have gained {} health".format(settings.potion_healing))
+                await ctx.send("You have used a potion! {} have gained {} health".format(player_name, settings.potion_healing))
             
             sql.delete_team_item(cur, team_name, item_name)
             
@@ -95,7 +95,8 @@ class PlayerUseCog(commands.Cog):
             await target_player.add_roles(masassins_alive_role)       
             sql.update_player_hp(cur, player_name, settings.revive_healing)
             await ctx.send("{} has been given revive. He has been revived!".format(player_name))
-            
+            announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+            await announcements_channel.send(f'{player_name} has been revived by his team!')
             sql.delete_team_item(cur, team_name, item_name)
 
         elif item_name == settings.item_name_master_ball:
@@ -105,13 +106,16 @@ class PlayerUseCog(commands.Cog):
                 await ctx.send("The player is already on your team")
                 return 
 
-            if team_name == settings.team_name_alumni:
-                await ctx.send("You cannot capture an alumni with the Master Ball!")
-                return
+            # if team_name == settings.team_name_alumni:
+            #     await ctx.send("You cannot capture an alumni with the Master Ball!")
+            #     return
             
             if team_name == settings.team_name_gym_leaders:
-                await ctx.send("You cannot capture a gym leader with the Master Ball!")
-                return   
+                await ctx.send("You cannot capture a Gym-Leader with the Master Ball!")
+                return
+            if team_name == settings.team_name_elite_four:
+                await ctx.send("You cannot capture an Elite-Four with the Master Ball!")
+                return
             
             previous_init_team_experience = sql.get_team_experience(cur, team_name)
             previous_new_team_experience = sql.get_team_experience(cur, new_team_name)
@@ -160,7 +164,7 @@ class PlayerUseCog(commands.Cog):
             #gacha ball, throw gacha ball at a player.
             catch = random.uniform(0,1)
             if catch >= settings.gacha_ball_catch_chance:
-                await ctx.send("{} got away...".format(player_name))
+                await ctx.send(f'You rolled a {catch} which is >= {settings.gacha_ball_catch_chance}. {player_name} got away...')
             else:
                 sql.update_player_team(cur, player_name, new_team_name)
                 
@@ -171,7 +175,11 @@ class PlayerUseCog(commands.Cog):
                 #Adding New Team
                 new_team = get(guild.roles, name=new_team_name)
                 await player.add_roles(new_team)
-                await ctx.send("{} has been caught by a gacha ball".format(player_name))
+                await ctx.send(f'You rolled a {catch}!!!! {player_name} has been caught by a gacha ball, transferring to {new_team_name}')
+                
+                announcements_channel = get(guild.channels, name=settings.masassins_announcements_channel_name)
+                await announcements_channel.send(f'{player_name} has been caught by a Gacha Ball thrown from Team {new_team_name}')
+
             #Remove item from team
             sql.delete_team_item(cur, new_team_name, item_name)
         elif item_name == settings.item_name_poke_ball:

@@ -47,7 +47,7 @@ SELECT_PLAYER_ID_FROM_PLAYER_NAME = """
     WHERE name=?
 """
 
-SELECT_PLAYER_ITEMS = """
+SELECT_PLAYER_ITEM = """
     SELECT *
     FROM players_items
     WHERE player_id=

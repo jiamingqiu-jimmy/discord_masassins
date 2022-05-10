@@ -160,12 +160,11 @@ async def pokemart(ctx):
     )
 
     for item_name in settings.item_list:
-        item_cost = 0
         title_name = 0
-
-        item_cost = " - {} gold".format(settings.item_cost_dict[item_name])
-        title_name = item_name + item_cost
-        
+        if item_name in settings.item_emoji_dict.keys():
+            title_name = f'{settings.item_emoji_dict[item_name]} {item_name} - {settings.item_cost_dict[item_name]} gold'
+        else:
+            title_name = f'{item_name} - {settings.item_cost_dict[item_name]}'
         embed.add_field(name=title_name,value=settings.item_dict[item_name],inline=False)
 
     await ctx.send(embed=embed)
@@ -193,9 +192,6 @@ async def buy(ctx, *args):
         return
 
     print(team_name)
-    if sql.get_team_item(cur,team_name,item_name) is not None:
-        await ctx.send("Your team can only hold one of this item!")
-        return
     #Give item to team
     await ctx.send("You have bought a {}".format(item_name))
     
@@ -215,8 +211,7 @@ async def buy_error(ctx, error):
 async def view_all(ctx):
     cur = conn.cursor()
     for team_name in settings.team_list:
-        if team_name is not settings.team_name_gym_leaders and team_name is not settings.team_name_alumni:
-            await view.view_team(cur, ctx, team_name)
+        await view.view_team(cur, ctx, team_name)
 
 @bot.command(name="v")
 async def v(ctx, team_name):

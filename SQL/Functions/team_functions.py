@@ -53,7 +53,15 @@ def insert_teams( cur, team_list ):
     for team_name in team_list:
         cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_gold))
     cur.connection.commit()
-    
+
+def insert_team( cur, team_name):
+    cur.execute(insert_commands.INSERT_TEAM, (team_name, settings.team_starting_gold))
+    cur.connection.commit()
+
+def update_team_name(cur, team_name, new_team_name):
+    cur.execute(update_commands.UPDATE_TEAM_NAME, (new_team_name, team_name))
+    cur.connection.commit()
+
 #Give Gold
 def update_team_gold(cur, team_name, gold_increase_decrease_amount):
    cur.execute(update_commands.UPDATE_TEAM_GOLD, (gold_increase_decrease_amount, team_name))
